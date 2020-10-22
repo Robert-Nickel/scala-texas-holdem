@@ -1,1 +1,1 @@
-case class Player(name: String, stack: Int)
+case class Player(name: String, stack: Int, holeCards: (Option[Card], Option[Card]))
