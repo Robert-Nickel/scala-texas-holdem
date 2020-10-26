@@ -1,3 +1,5 @@
 package main.scala.poker.model
 
-case class Card(symbol: Char , value: Char)
+case class Card(value: Char, symbol: Char) {
+  override def toString: String = s"$value$symbol"
+}

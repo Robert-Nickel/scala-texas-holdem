@@ -25,17 +25,22 @@ object Main extends App {
   val symbols = List('h', 's', 'd', 'c')
   val deck = values.flatMap(v => symbols.map(s => Card(v._1, s))).toList
 
-  println("Welcome at the no-limit texas holdem table, whats your name?")
-  val name = StdIn.readLine() // TODO: check its not one of the existing names
-  val names = List("Alice", "Bob", "Charlie", "Dora", "Emil", name)
+  val botNames = List("Alice", "Bob", "Charlie", "Dora", "Emil")
+  println("Welcome at the no-limit texas holdem table. What's your name?")
+  val name = StdIn.readLine()
+  if(botNames.contains(name)) {
+    println("Sorry, another player with this name exists.")
+    System.exit(0)
+  }
+  val names = botNames :+ name
+
   val table = Table(names.map(name => Player(name, startingStack, (Option.empty, Option.empty))))
   val dealer = Dealer()
   val shuffledDeck = dealer.shuffleDeck(deck)
   val (newTable, newDeck) = dealer.handOutCards(table, shuffledDeck)
 
+  newTable.players.map( player => println(s"${player.name} joined the table"))
   println(s"Hello $name. Your starting stack is $startingStack$$. " +
-    s"Your starting hand is ${newTable.players.find(player => player.name.equals(name)).get.holeCards}")
-  // TODO: toString for starting hand
-  println(s"The players at the table are ${table.players.map(player => player.name).mkString(", ")}")
+    s"Your starting hand is ${newTable.players.find(player => player.name.equals(name)).get.getHoleCardsString()}")
   // TODO: Use worksheet for the beginning
 }
