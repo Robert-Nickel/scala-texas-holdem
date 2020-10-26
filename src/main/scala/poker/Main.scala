@@ -1,7 +1,10 @@
+package poker
+
 import scala.collection.immutable.HashMap
 import scala.io.StdIn
 
 object Main extends App {
+  // TODO: use packages to structure classes
   val startingStack = 200 // TODO: config?
   val values = HashMap(
     ('2', Set(2)),
@@ -31,5 +34,7 @@ object Main extends App {
 
   println(s"Hello $name. Your starting stack is $startingStack$$. " +
     s"Your starting hand is ${newTable.players.find(player => player.name.equals(name)).get.holeCards}")
-  println(s"The other players at the table are ${table.players.map(player => player.name).mkString(", ")}")
+  // TODO: toString for starting hand
+  println(s"The players at the table are ${table.players.map(player => player.name).mkString(", ")}")
+  // TODO: Use worksheet for the beginning
 }

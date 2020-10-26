@@ -1,3 +1,6 @@
 /.idea
 /out
 scala-texas-holdem.iml
+/project/target
+/target
+/.bsp

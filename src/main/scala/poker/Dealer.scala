@@ -1,6 +1,9 @@
+package poker
+
 import scala.util.Random
 
 case class Dealer() {
+  // TODO: extract randomness
   def shuffleDeck(deck: List[Card]): List[Card] = Random.shuffle(deck)
 
   def handOutCards(table: Table, deck: List[Card]) = {
