@@ -1,10 +1,11 @@
-package poker
+package main.scala.poker
+
+import main.scala.poker.model.{Card, Player, Table}
 
 import scala.collection.immutable.HashMap
 import scala.io.StdIn
 
 object Main extends App {
-  // TODO: use packages to structure classes
   val startingStack = 200 // TODO: config?
   val values = HashMap(
     ('2', Set(2)),
