@@ -8,10 +8,14 @@ case class Dealer() {
   // TODO: extract randomness
   def shuffleDeck(deck: List[Card]): List[Card] = Random.shuffle(deck)
 
-  def handOutCards(player: Player, deck: List[Card]): (Player, List[Card]) = {
-    val playerWithOneCard = player.receiveCard(deck.head)
-    val newDeck = deck.tail
-    val playerWithTwoCards = playerWithOneCard.receiveCard(newDeck.head)
-    (playerWithTwoCards, newDeck.tail)
+  def handOutCards(players: List[Player], deck: List[Card]): (List[Player], List[Card]) = {
+    var varDeck = deck
+    (players.map(player => {
+      val firstCard = varDeck.head
+      varDeck = varDeck.tail
+      val secondCard = varDeck.head
+      varDeck = varDeck.tail
+      Player(player.name, player.stack, (Option.apply(firstCard), Option.apply(secondCard)))
+    }), varDeck)
   }
 }
