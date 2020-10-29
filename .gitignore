@@ -2,6 +2,7 @@
 /out
 scala-texas-holdem.iml
 /project/target
+/project/project/target/config-classes
 /target
 /.bsp
 .DS_Store

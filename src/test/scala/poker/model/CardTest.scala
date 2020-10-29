@@ -4,7 +4,7 @@ import main.scala.poker.model.{Card}
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 
-class CardTest extends AnyWordSpec {+
+class CardTest extends AnyWordSpec {
   
   "A Card" when {
     "given value is A and symbol is s" should {
