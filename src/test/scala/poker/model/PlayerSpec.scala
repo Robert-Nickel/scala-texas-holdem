@@ -1,9 +1,11 @@
+package poker.model
+
 import main.scala.poker.model.{Card, Player}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 
-class PlayerTest extends AnyWordSpec with Matchers {
+class PlayerSpec extends AnyWordSpec with Matchers {
 
   "A Player" when {
     "given hole cards are Ah, As" should {

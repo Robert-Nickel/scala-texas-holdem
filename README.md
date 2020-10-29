@@ -1,7 +1,9 @@
  # Texas Holdem for the CLI with Scala for Modern Programming at HTWG WS20/21
  
  [![Build Status](https://travis-ci.com/Robert-Nickel/scala-texas-holdem.svg?branch=master)](https://travis-ci.com/Robert-Nickel/scala-texas-holdem)
- [![Coverage Status](https://coveralls.io/repos/github/Robert-Nickel/scala-texas-holdem/badge.svg?branch=master)](https://coveralls.io/github/Robert-Nickel/scala-texas-holdem?branch=master)  
+ [![Coverage Status](https://coveralls.io/repos/github/Robert-Nickel/scala-texas-holdem/badge.svg?branch=master)](https://coveralls.io/github/Robert-Nickel/scala-texas-holdem?branch=master)
+ 
+ 
  Notes to begin with:
  - Play No-limit Texas Holdem with 5 other players (6 handed)
  - The other players are bots that make random but valid moves, which take a couple of seconds each, so that the human player can follow along (optional: name generator? avoid stupid moves?)
