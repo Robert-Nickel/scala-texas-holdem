@@ -1,12 +1,10 @@
 package main.scala.poker
 
-import main.scala.poker.model.Table
+import main.scala.poker.model.{Player, Table}
 import poker.InitHelper
 
-import scala.annotation.tailrec
 import scala.collection.immutable.HashMap
-import scala.io.StdIn
-import scala.util.{Failure, Random, Success}
+import scala.util.Random
 
 object Main extends App {
   val startingStack = 200
@@ -26,29 +24,25 @@ object Main extends App {
     ('A', Set(1, 14))
   )
   val symbols = List('h', 's', 'd', 'c')
-  val botNames = List("Alice", "Bob", "Charlie", "Dora", "Emil")
+  val names = List("Alice", "Bob", "Charlie", "Dora", "Emil", "You")
+  val positions = Vector((0, 8), (20, 8), (40, 8), (0, 16), (20, 16), (40, 16))
   val deck = Random.shuffle(InitHelper.createDeck(values, symbols))
-
-  println("Welcome at the no-limit texas hold'em table. What's your name?")
-  val name = getUserName()
-  val names = botNames :+ name
   val table = Table(InitHelper.createPlayers(names, startingStack))
+  var isRunning = true
 
   Dealer.handOutCards(table.players, deck) match {
-    case Failure(exception) => println(exception)
-    case Success((newPlayers, newDeck)) =>
-      println(s"Hello $name. Your starting stack is $startingStack$$. " +
-        s"Your starting hand is ${newPlayers.find(player => player.name.equals(name)).get.getHoleCardsString()}")
-  }
-
-  @tailrec
-  private def getUserName(): String = {
-    val name = StdIn.readLine()
-    if (botNames.contains(name)) {
-      println("Sorry, another player with this name exists. Please enter another name.")
-      getUserName()
-    } else {
-      name
-    }
+    case None => println("Something terrible happened.")
+      System.exit(0)
+    case Some((newPlayers, newDeck)) =>
+      while (isRunning) {
+        for (_ <- 1 to 100) {
+          println("");
+        }
+        println("   |")
+        println("   v")
+        newPlayers.foreach(player => print(s"${player.name} ${player.stack}" + "          "))
+        println("\n________")
+        Thread.sleep(5_000)
+      }
   }
 }
