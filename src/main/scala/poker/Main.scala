@@ -1,12 +1,12 @@
 package main.scala.poker
 
-import main.scala.poker.model.{Card, Player, Table}
+import main.scala.poker.model.Table
 import poker.InitHelper
 
 import scala.annotation.tailrec
 import scala.collection.immutable.HashMap
 import scala.io.StdIn
-import scala.util.Random
+import scala.util.{Failure, Random, Success}
 
 object Main extends App {
   val startingStack = 200
@@ -34,9 +34,12 @@ object Main extends App {
   val names = botNames :+ name
   val table = Table(InitHelper.createPlayers(names, startingStack))
 
-  val playersWithCards, newDeck = Dealer.handOutCards(table.players, deck)
-  println(s"Hello $name. Your starting stack is $startingStack$$. " +
-    s"Your starting hand is ${table.players.find(player => player.name.equals(name)).get.getHoleCardsString()}")
+  Dealer.handOutCards(table.players, deck) match {
+    case Failure(exception) => println(exception)
+    case Success((newPlayers, newDeck)) =>
+      println(s"Hello $name. Your starting stack is $startingStack$$. " +
+        s"Your starting hand is ${newPlayers.find(player => player.name.equals(name)).get.getHoleCardsString()}")
+  }
 
   @tailrec
   private def getUserName(): String = {
