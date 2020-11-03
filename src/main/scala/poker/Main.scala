@@ -4,7 +4,7 @@ import main.scala.poker.model.{Player, Table}
 import poker.InitHelper
 
 import scala.collection.immutable.HashMap
-import scala.util.Random
+import scala.util.{Failure, Random, Success}
 
 object Main extends App {
   val startingStack = 200
@@ -31,9 +31,9 @@ object Main extends App {
   var isRunning = true
 
   Dealer.handOutCards(table.players, deck) match {
-    case None => println("Something terrible happened.")
+    case Failure(f) => println(f.getMessage())
       System.exit(0)
-    case Some((newPlayers, newDeck)) =>
+    case Success((newPlayers, newDeck)) =>
       while (isRunning) {
         for (_ <- 1 to 100) {
           println("");

@@ -5,12 +5,12 @@ import main.scala.poker.model.{Card, Player}
 import scala.util.{Failure, Success, Try}
 
 object Dealer {
-  def handOutCards(players: List[Player], deck: List[Card]): Option[(List[Player], List[Card])] = {
+  def handOutCards(players: List[Player], deck: List[Card]): Try[(List[Player], List[Card])] = {
     var varDeck = deck
     if (deck.size < players.size * 2) {
-      None
+      Failure(new Throwable("Not enough cards for remaining players."))
     } else {
-      Some((players.map(player => {
+      Success((players.map(player => {
         val firstCard = varDeck.head
         varDeck = varDeck.tail
         val secondCard = varDeck.head

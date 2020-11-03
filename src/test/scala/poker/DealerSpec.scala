@@ -34,7 +34,7 @@ class DealerSpec extends AnyWordSpec with Matchers {
      val deck = List(Card('A', 's'))
      "return a list of players n empty list of players and a unchanged deck" in {
        val tryMonad = Dealer.handOutCards(List(Player("Bob", 200, (Option.empty, Option.empty))), deck)
-       tryMonad shouldBe(None)
+       tryMonad shouldBe a [Failure[_]]
      }
    }
  }
