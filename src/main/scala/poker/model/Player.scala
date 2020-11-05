@@ -11,11 +11,6 @@ case class Player(name: String, stack: Int, holeCards: (Option[Card], Option[Car
     }
   }
 
-  def act(): Player = {
-    // TODO different behavior for human player
-    fold()
-  }
-
   def fold(): Player = {
     Thread.sleep(1_000)
     this.copy(holeCards = (None, None))

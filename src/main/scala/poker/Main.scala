@@ -42,9 +42,8 @@ object Main extends App {
   @tailrec
   def drawTableRecursively(table: Table): Table = {
     drawTable(table)
-    table.currentPlayerAct()
-    Thread.sleep(3_000)
-    drawTableRecursively(table.currentPlayerAct().nextPlayer())
+    table.currentPlayerFold()
+    drawTableRecursively(table.currentPlayerFold().nextPlayer())
   }
 
   def drawTable(table: Table): Unit = {

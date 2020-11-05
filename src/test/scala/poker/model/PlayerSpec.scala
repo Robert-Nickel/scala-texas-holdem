@@ -20,10 +20,16 @@ class PlayerSpec extends AnyWordSpec with Matchers {
         player.getHoleCardsString() should be("[xx][xx]")
       }
     }
-    "given name is Bob and stack is 200 and hole cards are Ah, As" should {
+    "given hole cards" should {
       val player = Player("Bob", 200, (Option.apply(Card('A', 'h')), Option.apply(Card('A', 's'))))
-      "return correct string representation" in {
-        player.toString() should be("Player: Bob, Stack: 200, Cards: Ah As")
+      "return he is in round" in {
+        player.isInRound should be(true)
+      }
+    }
+    "given hole cards and triggered fold action" should {
+      val player = Player("Bob", 200, (None, None)).fold()
+      "return he is not in round" in {
+        player.isInRound should be(false)
       }
     }
   }
