@@ -5,7 +5,7 @@ import main.scala.poker.model.{Card, Player}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import scala.util.{Failure, Success}
+import scala.util.Failure
 
 
 class DealerSpec extends AnyWordSpec with Matchers {
