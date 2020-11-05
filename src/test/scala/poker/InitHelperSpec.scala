@@ -20,7 +20,7 @@ class InitHelperSpec extends AnyWordSpec {
     "given a list of names and the startingStack" should {
       val names = List("Jack D.", "Jim B.")
       "create new Players with name and startingStack and no cards" in {
-        val players = List(Player("Jack D.", 1000, (Option.empty, Option.empty)), Player("Jim B.", 1000, (Option.empty, Option.empty)))
+        val players = List(Player("Jack D.", 1000, (None, None)), Player("Jim B.", 1000, (None, None)))
         InitHelper.createPlayers(names, 1000) should be(players)
       }
     }

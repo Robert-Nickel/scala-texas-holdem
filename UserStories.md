@@ -1,6 +1,6 @@
 # User Stories
 ~~Karten mischen und verteilen~~
-- statische Anzeige eigenem Stack / Karten
+~~statische Anzeige eigenem Stack / Karten~~
 - Eingabe Fold verarbeiten
 - dynamische Anzeige der Aktionen (Bet, Fold, Call) von Spielern
 - Eingabe Call verarbeiten

@@ -15,7 +15,7 @@ class DealerSpec extends AnyWordSpec with Matchers {
  "Dealer" when {
    "given a list of players with no hole cards and a deck" should {
      val deck = List(Card('T', 'h'), Card('T', 's'), Card('A', 'h'), Card('A', 's'))
-     val players = List(Player("Bob", 200, (Option.empty, Option.empty)))
+     val players = List(Player("Bob", 200, (None, None)))
      "return a list of players with hole cards and a reduced deck" in {
        val (newPlayers, newDeck)   = Dealer.handOutCards(players, deck).get
        newPlayers should be(List(Player("Bob", 200, (Option.apply(Card('T', 'h')), Option.apply(Card('T', 's'))))))
@@ -33,7 +33,7 @@ class DealerSpec extends AnyWordSpec with Matchers {
    "given an list of players and a single card as deck" should {
      val deck = List(Card('A', 's'))
      "return a list of players n empty list of players and a unchanged deck" in {
-       val tryMonad = Dealer.handOutCards(List(Player("Bob", 200, (Option.empty, Option.empty))), deck)
+       val tryMonad = Dealer.handOutCards(List(Player("Bob", 200, (None, None))), deck)
        tryMonad shouldBe a [Failure[_]]
      }
    }

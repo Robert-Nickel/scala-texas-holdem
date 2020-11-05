@@ -4,6 +4,7 @@ import main.scala.poker.model.{Player, Table}
 import poker.{InitHelper, PrintHelper}
 
 import scala.Console.println
+import scala.annotation.tailrec
 import scala.collection.immutable.HashMap
 import scala.util.{Failure, Random, Success}
 
@@ -38,10 +39,12 @@ object Main extends App {
       drawTableRecursively(Table(newPlayers, newDeck))
   }
 
+  @tailrec
   def drawTableRecursively(table: Table): Table = {
     drawTable(table)
-    Thread.sleep(5_000)
-    drawTableRecursively(table.nextPlayer())
+    table.currentPlayerAct()
+    Thread.sleep(3_000)
+    drawTableRecursively(table.currentPlayerAct().nextPlayer())
   }
 
   def drawTable(table: Table): Unit = {
