@@ -36,14 +36,30 @@ object Main extends App {
     case Failure(f) => println(f.getMessage())
       System.exit(0)
     case Success((newPlayers, newDeck)) =>
-      drawTableRecursively(Table(newPlayers, newDeck))
+      nextMove(Table(newPlayers, newDeck))
   }
 
   @tailrec
-  def drawTableRecursively(table: Table): Table = {
-    drawTable(table)
-    table.currentPlayerFold()
-    drawTableRecursively(table.currentPlayerFold().nextPlayer())
+  def nextMove(table: Table): Table = {
+    val newTable = table match {
+      case table if table.players(table.currentPlayer).isInRound
+        // ACT
+      => table.currentPlayerFold()
+      case _
+        // SKIP
+      => table
+    }
+
+    // DRAW
+    drawTable(newTable)
+
+    // RECURSE
+    if (newTable.players.exists(p => p.isInRound)) {
+      nextMove(newTable.nextPlayer())
+    } else {
+      println("Game over")
+      newTable
+    }
   }
 
   def drawTable(table: Table): Unit = {
