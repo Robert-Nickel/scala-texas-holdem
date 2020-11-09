@@ -6,17 +6,15 @@ import scala.util.{Failure, Success, Try}
 
 object Dealer {
   def handOutCards(players: List[Player], deck: List[Card]): Try[(List[Player], List[Card])] = {
-    var varDeck = deck
-    if (deck.size < players.size * 2) {
-      Failure(new Throwable("Not enough cards for remaining players."))
-    } else {
-      Success((players.map(player => {
-        val firstCard = varDeck.head
-        varDeck = varDeck.tail
-        val secondCard = varDeck.head
-        varDeck = varDeck.tail
+    (players.size, deck.size) match {
+      case (playersize, _) if playersize == 0 => Success(players, deck)
+      case (_, decksize) if decksize < players.size * 2 =>
+        Failure(new Throwable("Not enough cards for remaining players."))
+      case _ => Success((players.map(player => {
+        val firstCard = deck.head
+        val secondCard = deck.tail.head
         Player(player.name, player.stack, (Option.apply(firstCard), Option.apply(secondCard)))
-      }), varDeck))
+      }), deck.tail.tail))
     }
   }
 }
