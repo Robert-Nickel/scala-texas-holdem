@@ -14,6 +14,6 @@ object InitHelper {
   }
 
   def createPlayers(names: List[String], startingStack: Int): List[Player] = {
-    names.map(name => Player(name, startingStack, (None, None)))
+    names.map(name => Player(name, startingStack, None))
   }
 }

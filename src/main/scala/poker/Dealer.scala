@@ -13,7 +13,7 @@ object Dealer {
       case _ => Success((players.map(player => {
         val firstCard = deck.head
         val secondCard = deck.tail.head
-        Player(player.name, player.stack, (Option.apply(firstCard), Option.apply(secondCard)))
+        Player(player.name, player.stack, Some(firstCard, secondCard))
       }), deck.tail.tail))
     }
   }
