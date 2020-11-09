@@ -31,6 +31,7 @@ object Main extends App {
   val positions = Vector((0, 8), (20, 8), (40, 8), (0, 16), (20, 16), (40, 16))
   val deck = Random.shuffle(InitHelper.createDeck(values, symbols))
   val table = Table(InitHelper.createPlayers(names, startingStack), deck)
+  val validPlayerOptions = Set("fold", "call", "raise", "all-in")
 
   Dealer.handOutCards(table.players, deck) match {
     case Failure(f) => println(f.getMessage())
@@ -38,6 +39,15 @@ object Main extends App {
     case Success((newPlayers, newDeck)) =>
       nextMove(Table(newPlayers, newDeck))
   }
+  // TODO: gibt es annotations fuer Methoden mit side-effects?
+  def getValidatedInput(): String = {
+    println(s"Your options are: $validPlayerOptions")
+    StdIn.readLine() match {
+      case input if validPlayerOptions.contains(input) => input
+      case _ => getValidatedInput()
+    }
+  }
+
 
   @tailrec
   def nextMove(table: Table): Table = {
@@ -47,8 +57,7 @@ object Main extends App {
     val currentPlayer = table.getCurrentPlayer()
     val input = currentPlayer.name match {
       case "You" => {
-        println("Fold with input fold")
-        Some(StdIn.readLine())
+        Some(getValidatedInput())
       }
       case _ => None
     }
@@ -66,7 +75,7 @@ object Main extends App {
     if (newTable.players.exists(p => p.isInRound)) {
       nextMove(newTable.nextPlayer())
     } else {
-      drawTable(table)
+      drawTable(newTable)
       println("Game over")
       newTable
     }

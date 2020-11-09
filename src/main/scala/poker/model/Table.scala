@@ -10,7 +10,7 @@ case class Table(players: List[Player], deck: List[Card] = List(), currentPlayer
     val newActivePlayer = input match {
       case Some("fold") => activePlayer.fold()
       case None => activePlayer.fold()
-      // TODO: Handle "abc" case
+      case _ => activePlayer
     }
     val newPlayers = players.patch(currentPlayer, Seq(newActivePlayer), 1)
     this.copy(players = newPlayers)

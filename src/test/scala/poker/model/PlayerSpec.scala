@@ -1,6 +1,6 @@
 package poker.model
 
-import main.scala.poker.model.{Card, Player}
+import main.scala.poker.model.{Card, Player, Table}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
@@ -31,6 +31,13 @@ class PlayerSpec extends AnyWordSpec with Matchers {
       val player = Player("Bob", 200, None).fold()
       "return he is not in round" in {
         player.isInRound should be(false)
+      }
+    }
+    "given someone raised before and player is in round and has sufficient stack to call" should {
+      val player = Player("Bill", 200, Some(Card('A', 'h'), Card('A', 's')))
+      "return player with reduced stack" in {
+        val newPlayer = player.call(50)
+        newPlayer.stack should be(150)
       }
     }
   }
