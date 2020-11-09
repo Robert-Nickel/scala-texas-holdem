@@ -5,23 +5,18 @@ case class Table(players: List[Player], deck: List[Card] = List(), currentPlayer
     this.copy(currentPlayer = (currentPlayer + 1) % players.length)
   }
 
-  // TODO: change to more general currentPlayerAct()
-  def currentPlayerFold(): Table = {
+  def currentPlayerAct(input: Option[String]): Table = {
     val activePlayer = players(currentPlayer)
-    if (activePlayer.isInRound) {
-      // TODO: replace with more general act()
-      val newActivePlayer = activePlayer.fold()
-      val newPlayers = players.patch(currentPlayer, Seq(newActivePlayer), 1)
-      this.copy(players = newPlayers)
-    } else {
-      if (players.exists(p => p.isInRound)) {
-        val table = nextPlayer()
-        table.currentPlayerFold()
-      } else {
-        this
-      }
-
+    val newActivePlayer = input match {
+      case Some("fold") => activePlayer.fold()
+      case None => activePlayer.fold()
+      // TODO: Handle "abc" case
     }
-    // TODO exit condition
+    val newPlayers = players.patch(currentPlayer, Seq(newActivePlayer), 1)
+    this.copy(players = newPlayers)
+  }
+
+  def getCurrentPlayer(): Player = {
+    this.players(this.currentPlayer)
   }
 }

@@ -6,6 +6,7 @@ import poker.{InitHelper, PrintHelper}
 import scala.Console.println
 import scala.annotation.tailrec
 import scala.collection.immutable.HashMap
+import scala.io.StdIn
 import scala.util.{Failure, Random, Success}
 
 object Main extends App {
@@ -30,7 +31,6 @@ object Main extends App {
   val positions = Vector((0, 8), (20, 8), (40, 8), (0, 16), (20, 16), (40, 16))
   val deck = Random.shuffle(InitHelper.createDeck(values, symbols))
   val table = Table(InitHelper.createPlayers(names, startingStack), deck)
-  var isRunning = true
 
   Dealer.handOutCards(table.players, deck) match {
     case Failure(f) => println(f.getMessage())
@@ -41,22 +41,32 @@ object Main extends App {
 
   @tailrec
   def nextMove(table: Table): Table = {
-    val newTable = table match {
-      case table if table.players(table.currentPlayer).isInRound
-        // ACT
-      => table.currentPlayerFold()
-      case _
-        // SKIP
-      => table
+    // DRAW
+    drawTable(table)
+
+    val currentPlayer = table.getCurrentPlayer()
+    val input = currentPlayer.name match {
+      case "You" => {
+        println("Fold with input fold")
+        Some(StdIn.readLine())
+      }
+      case _ => None
     }
 
-    // DRAW
-    drawTable(newTable)
+    val newTable = table match {
+      case table if currentPlayer.isInRound =>
+        // ACT
+        table.currentPlayerAct(input)
+      case _ =>
+        // SKIP
+        table
+    }
 
     // RECURSE
     if (newTable.players.exists(p => p.isInRound)) {
       nextMove(newTable.nextPlayer())
     } else {
+      drawTable(table)
       println("Game over")
       newTable
     }

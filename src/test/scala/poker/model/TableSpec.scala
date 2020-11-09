@@ -26,28 +26,35 @@ class TableSpec extends AnyWordSpec with Matchers {
     "given players" should {
       val table = Table(players)
       "fold for the current player in" in {
-        val newTable = table.currentPlayerFold()
+        val newTable = table.currentPlayerAct(None)
         val currentPlayer = newTable.currentPlayer
         val playerWithoutHoleCards = Seq(newTable.players(currentPlayer).copy(holeCards = None))
         newTable should be(table.copy(players.patch(currentPlayer, playerWithoutHoleCards, 1)))
       }
     }
-    "given currentPlayer is not in the round" should {
+    "given input is 'fold'" should {
       val table = Table(List(
-        Player("Bob", 200, None),
         Player("Ali", 200, Some(Card('A', 'h'), Card('A', 's')))))
-      "skip the current player and fold for the next player" in {
-        val newTable = table.currentPlayerFold()
-        newTable.players.exists(p => p.isInRound) should be(false)
+      "return a table where the player has no hole cards" in {
+        val newTable = table.currentPlayerAct(Some("fold"))
+        newTable.players.head.holeCards should be(None)
       }
     }
-    "given no players have cards anymore" should {
+    "given no input" should {
       val table = Table(List(
-        Player("Bob", 200, None),
-        Player("Ali", 200, None)))
-      "stop folding the next player and return the table" in {
-        val newTable = table.currentPlayerFold()
-        newTable should be(table)
+        Player("Zoe", 200, Some(Card('A', 'h'), Card('A', 's')))))
+      "return a table where the player has no hole cards" in {
+        val newTable = table.currentPlayerAct(None)
+        newTable.players.head.holeCards should be(None)
+      }
+    }
+
+    "given players" should {
+      val player = Player("Zoe", 200, Some(Card('A', 'h'), Card('A', 's')))
+      val table = Table(List(player))
+      "return the current player" in {
+        val currentPlayer = table.getCurrentPlayer()
+        currentPlayer should be(player)
       }
     }
   }
