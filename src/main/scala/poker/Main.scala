@@ -40,15 +40,6 @@ object Main extends App {
       nextMove(Table(newPlayers, newDeck))
   }
 
-  // TODO: gibt es annotations fuer Methoden mit side-effects?
-  def getValidatedInput(): String = {
-    println(s"Your options are: $validPlayerOptions")
-    StdIn.readLine() match {
-      case input if validPlayerOptions.contains(input) => input
-      case _ => getValidatedInput()
-    }
-  }
-
   @tailrec
   def nextMove(table: Table): Table = {
     // DRAW
@@ -83,7 +74,7 @@ object Main extends App {
 
   @tailrec
   def currentPlayerAct(input: Option[String], table: Table): Table = {
-    table.currentPlayerAct(input) match {
+    table.currentPlayerAct(input, values) match {
       case Success(newTable) => newTable
       case _ => if (input.isEmpty) {
         currentPlayerAct(None, table)
@@ -106,6 +97,14 @@ object Main extends App {
     print(s"${PrintHelper.getCurrentPlayerUnderscore(table.currentPlayer)}")
     for (_ <- 1 to 6) {
       println("");
+    }
+  }
+
+  def getValidatedInput(): String = {
+    println(s"Your options are: $validPlayerOptions")
+    StdIn.readLine() match {
+      case input if validPlayerOptions.contains(input) => input
+      case _ => getValidatedInput()
     }
   }
 }
