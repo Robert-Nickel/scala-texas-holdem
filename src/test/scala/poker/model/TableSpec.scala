@@ -8,28 +8,32 @@ import org.scalatest.wordspec.AnyWordSpec
 class TableSpec extends AnyWordSpec with Matchers {
 
   val players = List(
-    Player("Bob", 200, Some(Card('A', 'h'), Card('A', 's'))),
+    Player("Bob", 200, Some(Card('A', 'h'), Card('A', 's')), currentBet = 10),
     Player("Jon", 200, Some(Card('K', 'h'), Card('K', 's'))))
 
-  "Given a Table" when {
+  "Given a Table with no specified current player" when {
+    val table = Table(players)
     "next player is called" should {
-      val table = Table(players)
-      "take the default of 0 and return a table with current player = 1" in {
+      "default currentPlayer = 0 and return a table with current player = 1" in {
         table.nextPlayer() should be(table.copy(currentPlayer = 1))
       }
     }
-    "next player is called with current player = 1" should {
-      val table = Table(players, currentPlayer = 1)
+  }
+  "Given a table with current player = 1" when {
+    val table = Table(players, currentPlayer = 1)
+    "next player" should {
       "return a table with current player = 0" in {
         table.nextPlayer() should be(table.copy(currentPlayer = 0))
       }
     }
-    "get current player is called" should {
-      val player = Player("Zoe", 200, Some(Card('A', 'h'), Card('A', 's')))
-      val table = Table(List(player))
+    "get current player" should {
       "return the current player" in {
-        val currentPlayer = table.getCurrentPlayer()
-        currentPlayer should be(player)
+        table.getCurrentPlayer().name should be("Jon")
+      }
+    }
+    "get highest overall bet" should {
+      "return 10" in {
+        table.getHighestOverallBet() should be(10)
       }
     }
   }
