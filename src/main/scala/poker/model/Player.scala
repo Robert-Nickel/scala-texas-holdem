@@ -54,8 +54,8 @@ case class Player(name: String, stack: Int, holeCards: Option[(Card, Card)], cur
     handValue match {
       case x if x > 30 => safeRaise(stack, highestOverallBet)
       case x if x > 20 => safeRaise(3 * BB, highestOverallBet)
-      case _ if highestOverallBet <= 3 * BB => call(highestOverallBet)
       case _ if stack < 10 * BB => safeRaise(stack, highestOverallBet)
+      case _ if highestOverallBet <= 3 * BB => call(highestOverallBet)
       case _ => fold()
     }
   }
@@ -67,13 +67,7 @@ case class Player(name: String, stack: Int, holeCards: Option[(Card, Card)], cur
       val sum = values(card1.value).max + values(card2.value).max
       val suitedValue = if (card1.symbol == card2.symbol) 6 else 0
       val delta = (values(card1.value).max - values(card2.value).max).abs
-      val connectorValue = delta match {
-        case 0 => 8
-        case 1 => 6
-        case 2 => 3
-        case 3 => 1
-        case _ => 0
-      }
+      val connectorValue = 8 - delta * 2
       sum + suitedValue + connectorValue
     } else {
       0

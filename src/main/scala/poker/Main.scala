@@ -31,7 +31,7 @@ object Main extends App {
   val positions = Vector((0, 8), (20, 8), (40, 8), (0, 16), (20, 16), (40, 16))
   val deck = Random.shuffle(InitHelper.createDeck(values, symbols))
   val table = Table(InitHelper.createPlayers(names, startingStack), deck)
-  val validPlayerOptions = Set("fold", "call", "raise", "all-in")
+  val validPlayerOptions = Set("fold", "call") // TODO: add raise X and all-in if its implemented
 
   Dealer.handOutCards(table.players, deck) match {
     case Failure(f) => println(f.getMessage())
