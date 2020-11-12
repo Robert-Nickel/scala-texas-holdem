@@ -5,6 +5,9 @@ import main.scala.poker.model.{Card, Player}
 import scala.util.{Failure, Success, Try}
 
 object Dealer {
+
+  // TODO: After betting round get currentBet from every player (and reset it to 0)
+
   def handOutCards(players: List[Player], deck: List[Card]): Try[(List[Player], List[Card])] = {
     (players.size, deck.size) match {
       case (playersize, _) if playersize == 0 => Success(players, deck)

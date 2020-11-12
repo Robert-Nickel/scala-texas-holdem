@@ -26,7 +26,7 @@ class TableSpec extends AnyWordSpec with Matchers {
     "given players" should {
       val table = Table(players)
       "fold for the current player in" in {
-        val newTable = table.currentPlayerAct(None)
+        val newTable = table.currentPlayerAct(None).get
         val currentPlayer = newTable.currentPlayer
         val playerWithoutHoleCards = Seq(newTable.players(currentPlayer).copy(holeCards = None))
         newTable should be(table.copy(players.patch(currentPlayer, playerWithoutHoleCards, 1)))
@@ -37,7 +37,7 @@ class TableSpec extends AnyWordSpec with Matchers {
         Player("Ali", 200, Some(Card('A', 'h'), Card('A', 's')))))
       "return a table where the player has no hole cards" in {
         val newTable = table.currentPlayerAct(Some("fold"))
-        newTable.players.head.holeCards should be(None)
+        newTable.get.players.head.holeCards should be(None)
       }
     }
     "given no input" should {
@@ -45,7 +45,7 @@ class TableSpec extends AnyWordSpec with Matchers {
         Player("Zoe", 200, Some(Card('A', 'h'), Card('A', 's')))))
       "return a table where the player has no hole cards" in {
         val newTable = table.currentPlayerAct(None)
-        newTable.players.head.holeCards should be(None)
+        newTable.get.players.head.holeCards should be(None)
       }
     }
 

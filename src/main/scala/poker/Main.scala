@@ -7,7 +7,7 @@ import scala.Console.println
 import scala.annotation.tailrec
 import scala.collection.immutable.HashMap
 import scala.io.StdIn
-import scala.util.{Failure, Random, Success}
+import scala.util.{Failure, Random, Success, Try}
 
 object Main extends App {
   val startingStack = 200
@@ -39,6 +39,7 @@ object Main extends App {
     case Success((newPlayers, newDeck)) =>
       nextMove(Table(newPlayers, newDeck))
   }
+
   // TODO: gibt es annotations fuer Methoden mit side-effects?
   def getValidatedInput(): String = {
     println(s"Your options are: $validPlayerOptions")
@@ -47,7 +48,6 @@ object Main extends App {
       case _ => getValidatedInput()
     }
   }
-
 
   @tailrec
   def nextMove(table: Table): Table = {
@@ -65,7 +65,7 @@ object Main extends App {
     val newTable = table match {
       case table if currentPlayer.isInRound =>
         // ACT
-        table.currentPlayerAct(input)
+        currentPlayerAct(input, table)
       case _ =>
         // SKIP
         table
@@ -78,6 +78,16 @@ object Main extends App {
       drawTable(newTable)
       println("Game over")
       newTable
+    }
+  }
+
+  @tailrec
+  def currentPlayerAct(input: Option[String], table: Table): Table = {
+    table.currentPlayerAct(input) match {
+      case Success(newTable) => newTable
+      case _ => if (input.isEmpty) {
+        currentPlayerAct(None, table)
+      } else currentPlayerAct(Some(getValidatedInput()), table)
     }
   }
 
