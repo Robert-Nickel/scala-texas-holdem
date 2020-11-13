@@ -47,7 +47,8 @@ case class Player(name: String, stack: Int, holeCards: Option[(Card, Card)], cur
     }
   }
 
-  def act(highestOverallBet: Int, BB: Int, values: HashMap[Char, Set[Int]]): Player = {
+  // TODO: maybe consider extracting this
+  def actAsBot(highestOverallBet: Int, BB: Int, values: HashMap[Char, Set[Int]]): Player = {
     Thread.sleep(500)
     val handValue = getHandValue(values)
 
@@ -67,7 +68,7 @@ case class Player(name: String, stack: Int, holeCards: Option[(Card, Card)], cur
       val sum = values(card1.value).max + values(card2.value).max
       val suitedValue = if (card1.symbol == card2.symbol) 6 else 0
       val delta = (values(card1.value).max - values(card2.value).max).abs
-      val connectorValue = 8 - delta * 2
+      val connectorValue = Set(8 - delta * 2, 0).max
       sum + suitedValue + connectorValue
     } else {
       0

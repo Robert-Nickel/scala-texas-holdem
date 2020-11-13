@@ -29,7 +29,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
   "Given a Player with name 'You'" when {
     "hole cards are Ah, As and getHoleCardsAsString is called" should {
       val player = Player("You", 200, Some(Card('A', 'h'), Card('A', 's')))
-      "return correct string representation" in {
+      "return [Ah][As]" in {
         player.getHoleCardsString() should be("[Ah][As]")
       }
     }
@@ -38,17 +38,17 @@ class PlayerSpec extends AnyWordSpec with Matchers {
   "Given a Player with name 'Ali'" when {
     val player = Player("Ali", 200, Some(Card('A', 'h'), Card('A', 's')))
     "hole cards are Ah, As and getHoleCardsAsString is called" should {
-      "return correct string representation" in {
+      "return [xx][xx]" in {
         player.getHoleCardsString() should be("[xx][xx]")
       }
     }
-    "holding hole cards, isInRound" should {
-      "return true" in {
+    "holding hole cards" should {
+      "return isInRound = true" in {
         player.isInRound should be(true)
       }
     }
     "fold" should {
-      "return he is not in round" in {
+      "return isInRound = false" in {
         player.fold().isInRound should be(false)
       }
     }
@@ -104,63 +104,63 @@ class PlayerSpec extends AnyWordSpec with Matchers {
         newPlayer.currentBet should be(120)
       }
     }
-    "act with aces" should {
+    "act as bot with aces" should {
       "go all-in" in {
-        val newPlayer = player.act(123, 2, values)
+        val newPlayer = player.actAsBot(123, 2, values)
         newPlayer.stack should be(0)
         newPlayer.currentBet should be(200)
       }
     }
   }
 
-  "Given a bot player with 9Qo with a hand value above 20" when {
+  "Given 9Qo resulting in a hand value above 20" when {
     val player = Player("Bob", 200, Some(Card('Q', 'h'), Card('9', 's')))
-    "act" should {
+    "act as bot" should {
       "raise 3 BB" in {
-        player.act(0, 2, values).currentBet should be(6)
+        player.actAsBot(0, 2, values).currentBet should be(6)
       }
     }
   }
 
-  "Given a bot player with 37o and a highest overall bet of 2 BB" when {
+  "Given 37o and a highest overall bet of 2 BB" when {
     val player = Player("Bob", 200, Some(Card('3', 'h'), Card('7', 's')))
-    "act" should {
+    "act as bot" should {
       "call" in {
-        player.act(4, 2, values).currentBet should be(4)
+        player.actAsBot(4, 2, values).currentBet should be(4)
       }
     }
   }
 
-  "Given a bot player with less than 10 BB left" when {
+  "Given less than 10 BB left" when {
     val player = Player("Bob", 16, Some(Card('3', 'h'), Card('7', 's')))
-    "act" should {
+    "act as bot" should {
       "all-in" in {
-        player.act(4, 2, values).currentBet should be(16)
+        player.actAsBot(4, 2, values).currentBet should be(16)
       }
     }
   }
 
-  "Given a bot player with less than 10 BB left" when {
+  "Given less than 10 BB left" when {
     val player = Player("Bob", 16, Some(Card('3', 'h'), Card('7', 's')))
-    "act with 37o is called" should {
+    "act as bot with 37o is called" should {
       "all-in" in {
-        player.act(4, 2, values).currentBet should be(16)
+        player.actAsBot(4, 2, values).currentBet should be(16)
       }
     }
   }
 
-  "Given a bot player with 46o and a stack of 200 " when {
+  "Given 46o and a stack of 200 " when {
     val player = Player("Bob", 200, Some(Card('4', 'h'), Card('6', 's')))
-    "act is called" should {
+    "act as bot is called" should {
       "fold" in {
-        val newPlayer = player.act(20, 2, values)
+        val newPlayer = player.actAsBot(20, 2, values)
         newPlayer.currentBet should be(0)
         newPlayer.stack should be(200)
       }
     }
   }
 
-  "Given a bot player" when {
+  "Given player with different hole cards" when {
     "hand value is calculated" should {
       "return 36" in {
         Player("Jim", 200, holeCards = Some(Card('A', 'h'), Card('A', 's')))

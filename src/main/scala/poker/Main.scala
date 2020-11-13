@@ -56,7 +56,7 @@ object Main extends App {
     val newTable = table match {
       case table if currentPlayer.isInRound =>
         // ACT
-        currentPlayerAct(input, table)
+        safeCurrentPlayerAct(input, table)
       case _ =>
         // SKIP
         table
@@ -73,12 +73,13 @@ object Main extends App {
   }
 
   @tailrec
-  def currentPlayerAct(input: Option[String], table: Table): Table = {
-    table.currentPlayerAct(input, values) match {
+  def safeCurrentPlayerAct(input: Option[String], table: Table): Table = {
+    table.tryCurrentPlayerAct(input, values) match {
       case Success(newTable) => newTable
       case _ => if (input.isEmpty) {
-        currentPlayerAct(None, table)
-      } else currentPlayerAct(Some(getValidatedInput()), table)
+        safeCurrentPlayerAct(None, table)
+        // TODO: Try to get this in table class
+      } else safeCurrentPlayerAct(Some(getValidatedInput()), table)
     }
   }
 

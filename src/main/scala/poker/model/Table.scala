@@ -12,12 +12,12 @@ case class Table(players: List[Player], deck: List[Card] = List(), currentPlayer
     this.copy(currentPlayer = (currentPlayer + 1) % players.length)
   }
 
-  def currentPlayerAct(input: Option[String], values: HashMap[Char, Set[Int]]): Try[Table] = {
+  def tryCurrentPlayerAct(input: Option[String], values: HashMap[Char, Set[Int]]): Try[Table] = {
     val activePlayer = players(currentPlayer)
     val newActivePlayerTry = input match {
       case Some("fold") => Success(activePlayer.fold())
       case Some("call") => Success(activePlayer.call(getHighestOverallBet()))
-      case None => Success(activePlayer.act(getHighestOverallBet(), BB, values))
+      case None => Success(activePlayer.actAsBot(getHighestOverallBet(), BB, values))
       case _ => Failure(new Throwable("invalid move by player"))
     }
     newActivePlayerTry match {
