@@ -3,7 +3,7 @@ package main.scala.poker.model
 import scala.collection.immutable.HashMap
 import scala.util.{Failure, Success, Try}
 
-case class Player(name: String, stack: Int, holeCards: Option[(Card, Card)], currentBet: Int = 0) {
+case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] = None, currentBet: Int = 0) {
 
   def getHoleCardsString(): String = {
     if (name.equals("You")) {
@@ -77,15 +77,5 @@ case class Player(name: String, stack: Int, holeCards: Option[(Card, Card)], cur
 
   def isInRound: Boolean = {
     holeCards.isDefined
-  }
-
-  val myPlayer = "Bob"() With 200 fold
-
-  implicit class PlayerWithName(name: String) {
-    def  apply() = Player(name, 0, None)
-  }
-
-  implicit class PlayerWithStack(player: Player) {
-    def With(stack: Int) = Player(player.name, stack , player.holeCards)
   }
 }

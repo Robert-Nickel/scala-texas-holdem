@@ -45,8 +45,6 @@ object Main extends App {
     // DRAW
     drawTable(table)
 
-    "Alice".call
-
     val currentPlayer = table.getCurrentPlayer()
     val input = currentPlayer.name match {
       case "You" => {
@@ -110,11 +108,4 @@ object Main extends App {
       case _ => getValidatedInput()
     }
   }
-
-  implicit class MyRichString(string: String) {
-    def apply() =  Player(string, 200, None)
-  }
-
-  "Bob"()
-
 }
