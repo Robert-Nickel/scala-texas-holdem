@@ -1,31 +1,15 @@
 package poker.model
 
-import main.scala.poker.model.{Card, Player}
+import main.scala.poker.model.Player
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
+import poker._
 
-import scala.collection.immutable.HashMap
-import scala.util.Failure
 import scala.language.postfixOps
+import scala.util.Failure
 
 class PlayerSpec extends AnyWordSpec with Matchers {
-
-  val values = HashMap(
-    ('2', Set(2)),
-    ('3', Set(3)),
-    ('4', Set(4)),
-    ('5', Set(5)),
-    ('6', Set(6)),
-    ('7', Set(7)),
-    ('8', Set(8)),
-    ('9', Set(9)),
-    ('T', Set(10)),
-    ('J', Set(11)),
-    ('Q', Set(12)),
-    ('K', Set(13)),
-    ('A', Set(1, 14))
-  )
 
   "Given a Player with name 'You'" when {
     "hole cards are Ah, As and getHoleCardsAsString is called" should {
@@ -164,7 +148,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
   "Given players with different hole cards" when {
     "hand value is calculated" should {
       "return 36" in {
-        (Player("Jim") hasCards "Ah As").getHandValue(values) should be(36)
+        (Player("Jim") hasCards  "Ah As").getHandValue(values) should be(36)
       }
       "return 39" in {
         (Player("Jim") hasCards "Ah Kh").getHandValue(values) should be(39)
@@ -176,20 +160,6 @@ class PlayerSpec extends AnyWordSpec with Matchers {
         Player("Jim").getHandValue(values) should be(0)
       }
     }
-  }
-
-  implicit class PlayerWithStack(player: Player) {
-    def is(stack: Int): PlayerWithStack = PlayerWithStack(player = player.copy(stack = stack))
-
-    def are(stack: Int): PlayerWithStack = is(stack)
-
-    def deep(): Player = player
-  }
-
-  implicit class PlayerWithCards(player: Player) {
-    def hasCards(cards: String): Player = player.copy(holeCards = Some((Card(cards(0), cards(1)), Card(cards(3), cards(4)))))
-
-    def haveCards(cards: String): Player = hasCards(cards)
   }
 
 }

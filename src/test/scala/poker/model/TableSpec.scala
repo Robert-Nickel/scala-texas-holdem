@@ -4,27 +4,11 @@ import main.scala.poker.model.{Card, Player, Table}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
+import poker.values
 
-import scala.collection.immutable.HashMap
 import scala.util.Failure
 
 class TableSpec extends AnyWordSpec with Matchers {
-
-  val values = HashMap(
-    ('2', Set(2)),
-    ('3', Set(3)),
-    ('4', Set(4)),
-    ('5', Set(5)),
-    ('6', Set(6)),
-    ('7', Set(7)),
-    ('8', Set(8)),
-    ('9', Set(9)),
-    ('T', Set(10)),
-    ('J', Set(11)),
-    ('Q', Set(12)),
-    ('K', Set(13)),
-    ('A', Set(1, 14))
-  )
 
   val players = List(
     Player("Bob", 200, Some(Card('A', 'h'), Card('A', 's')), currentBet = 10),
