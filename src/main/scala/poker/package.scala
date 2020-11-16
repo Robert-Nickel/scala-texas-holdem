@@ -20,6 +20,9 @@ package object poker {
     ('A', Set(1, 14))
   )
 
+  val sb = 1
+  val bb = 2
+
   implicit class PlayerDSL(player: Player) {
     def is(stack: Int): PlayerDSL = PlayerDSL(player = player.copy(stack = stack))
 
@@ -30,6 +33,26 @@ package object poker {
     def hasCards(cards: String): Player = player.copy(holeCards = Some((Card(cards(0), cards(1)), Card(cards(3), cards(4)))))
 
     def haveCards(cards: String): Player = hasCards(cards)
+
+    def posts(blind: Int): Player = player.copy(stack = player.stack - blind)
+
+    def post(blind: Int): Player = posts(blind)
+
+    def isInRound(): Boolean = {
+      player.holeCards.isDefined
+    }
+
+    def areInRound() = isInRound()
+
+    def isInGame(): Boolean = {
+      player.stack > 0 || player.currentBet > 0
+    }
+
+    def areInGame(): Boolean = isInGame()
+
+    // highest overall bet is not necessary when going all-in
+    // TODO: handle failure case if shove is called with stack == 0
+    def shoves(unit: Unit): Player = player.raise(player.stack, 0).get
   }
 
 }

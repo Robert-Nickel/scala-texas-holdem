@@ -33,7 +33,8 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
 
   def raise(amount: Int, highestOverallBet: Int): Try[Player] = {
     amount match {
-      case x if x >= stack => Success(this.copy(stack = 0, currentBet = currentBet + stack)) // All-in
+      case x if x >= stack && stack < 1 => Failure(new Throwable("Stack is too small"))
+      case x if x >= stack && stack >= 1 => Success(this.copy(stack = 0, currentBet = currentBet + stack)) // All-in
       case x if x < highestOverallBet * 2 => Failure(new Throwable("Raise is not high enough."))
       case _ => Success(this.copy(stack = stack - (amount - currentBet), currentBet = amount))
     }
@@ -73,9 +74,5 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
     } else {
       0
     }
-  }
-
-  def isInRound: Boolean = {
-    holeCards.isDefined
   }
 }

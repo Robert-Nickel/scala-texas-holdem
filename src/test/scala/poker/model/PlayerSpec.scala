@@ -11,14 +11,45 @@ import scala.util.Failure
 
 class PlayerSpec extends AnyWordSpec with Matchers {
 
-  "Given a Player with name 'You'" when {
+  "Given a Player with name 'You', Stack is 200 and cards are Ah As" when {
+    val player = (Player("You") are 200 deep) haveCards "Ah As"
     "hole cards are Ah, As and getHoleCardsAsString is called" should {
-      val player = (Player("You") are 200 deep) haveCards "Ah As"
       "return [Ah][As]" in {
         player.getHoleCardsString() should be("[Ah][As]")
       }
     }
+    "holding hole cards" should {
+      "return areInRound = true" in {
+        player.areInRound should be(true)
+      }
+      "return isInGame = true" in {
+        player.isInGame should be(true)
+      }
+    }
   }
+  "Given a Player with name 'You', and no hole cards" when {
+    val you = Player("You")
+    "areInRound is called" should {
+      "return areInRound = false" in {
+        you.areInRound should be(false)
+      }
+    }
+  }
+
+  "Given a Player with name 'You', Stack is 0 and CurrentBet is 0" when {
+    val you = (Player("You") are 0 deep)
+    "areInGame is called" should {
+      "return areInGame = false" in {
+        you.areInGame should be(false)
+      }
+    }
+    "raise is called" should {
+      "return a failure" in {
+        you.raise(50, 0) shouldBe a [Failure[_]]
+      }
+    }
+  }
+
 
   "Given a Player with name 'Ali'" when {
     val ali = (Player("Ali") is 200 deep) hasCards "Ah As"
@@ -75,6 +106,14 @@ class PlayerSpec extends AnyWordSpec with Matchers {
         newBob shouldBe a[Failure[_]]
       }
     }
+    "shoves all-in with 200" should {
+      "return bob with stack = 0 and currentBet = 200" in {
+        val newBob = bob shoves()
+        newBob.stack should be(0)
+        newBob.currentBet should be(200)
+      }
+    }
+
     "safeRaises with 100 where highest overall bet is 50" should {
       "return bob with stack = 100 and currentBet = 100" in {
         val newBob = bob.safeRaise(100, 50)
@@ -94,6 +133,21 @@ class PlayerSpec extends AnyWordSpec with Matchers {
         val newBob = bob.actAsBot(123, 2, values)
         newBob.stack should be(0)
         newBob.currentBet should be(200)
+      }
+    }
+
+    "player posts sb" should {
+      "have reduced stack" in {
+        val newBob = bob posts sb
+        newBob.stack should be (199)
+      }
+    }
+
+    "you post bb" should {
+      "have reduced stack" in {
+        val you = (Player("You") are 200 deep) haveCards "Ah As"
+        val newYou = you post bb
+        newYou.stack should be (198)
       }
     }
   }

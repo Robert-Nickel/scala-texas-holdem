@@ -1,7 +1,7 @@
 package main.scala.poker
 
 import main.scala.poker.model.{Player, Table}
-import poker.{InitHelper, PrintHelper, values}
+import poker.{InitHelper, PlayerDSL, PrintHelper, values}
 
 import scala.Console.println
 import scala.annotation.tailrec
@@ -87,6 +87,10 @@ object Main extends App {
     }
   }
 
+  // println: Try Monad mit Success / Failure mit String fuer Main
+  // readline: value in main auslesen & als argument uebergeben
+  // Switch-case in validateInput (gibt zustand zurueck) zurueck
+  // Main Loop bis gewuenschter Zustand erreicht
   def getValidatedInput(): String = {
     println(s"Your options are: $validPlayerOptions")
     StdIn.readLine() match {
