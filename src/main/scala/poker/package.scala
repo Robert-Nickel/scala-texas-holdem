@@ -1,6 +1,7 @@
-import main.scala.poker.model.{Card, Player}
+import main.scala.poker.model.{Card, Player, Table}
 
 import scala.collection.immutable.HashMap
+import scala.util.Try
 
 package object poker {
 
@@ -34,9 +35,9 @@ package object poker {
 
     def haveCards(cards: String): Player = hasCards(cards)
 
-    def posts(blind: Int): Player = player.copy(stack = player.stack - blind)
+    def posts(blind: Int): Try[Player] = player.raise(blind, 0)
 
-    def post(blind: Int): Player = posts(blind)
+    def post(blind: Int): Try[Player] = posts(blind)
 
     def isInRound(): Boolean = {
       player.holeCards.isDefined

@@ -50,7 +50,6 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     }
   }
 
-
   "Given a Player with name 'Ali'" when {
     val ali = (Player("Ali") is 200 deep) hasCards "Ah As"
     "hole cards are Ah, As and getHoleCardsAsString is called" should {
@@ -138,7 +137,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
 
     "player posts sb" should {
       "have reduced stack" in {
-        val newBob = bob posts sb
+        val newBob = bob.posts(sb).get
         newBob.stack should be (199)
       }
     }
@@ -146,7 +145,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     "you post bb" should {
       "have reduced stack" in {
         val you = (Player("You") are 200 deep) haveCards "Ah As"
-        val newYou = you post bb
+        val newYou = you.post(bb).get
         newYou.stack should be (198)
       }
     }

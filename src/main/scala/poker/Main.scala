@@ -31,7 +31,7 @@ object Main extends App {
     // DRAW
     drawTable(table)
 
-    val currentPlayer = table.getCurrentPlayer()
+    val currentPlayer = table.getCurrentPlayer
     val input = currentPlayer.name match {
       case "You" => {
         Some(getValidatedInput())
@@ -40,7 +40,7 @@ object Main extends App {
     }
 
     val newTable = table match {
-      case table if currentPlayer.isInRound =>
+      case table if currentPlayer.isInRound() =>
         // ACT
         safeCurrentPlayerAct(input, table)
       case _ =>
@@ -49,8 +49,9 @@ object Main extends App {
     }
 
     // RECURSE
-    if (newTable.players.exists(p => p.isInRound)) {
-      nextMove(newTable.nextPlayer())
+    // TODO: isInRound != isInGame
+    if (newTable.players.exists(p => p.isInRound())) {
+      nextMove(newTable.nextPlayer)
     } else {
       drawTable(newTable)
       println("Game over")
