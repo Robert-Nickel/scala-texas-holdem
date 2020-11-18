@@ -45,7 +45,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     }
     "raise is called" should {
       "return a failure" in {
-        you.raise(50, 0) shouldBe a [Failure[_]]
+        you.raise(50, 0) shouldBe a[Failure[_]]
       }
     }
   }
@@ -65,6 +65,33 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     "fold" should {
       "return isInRound = false" in {
         ali.fold().isInRound should be(false)
+      }
+    }
+  }
+
+  "Given a Player with name 'Ali' and no hole cards" when {
+    val ali = (Player("Ali") is 200 deep)
+    "getHoleCardsAsString is called" should {
+      "return --------" in {
+        ali.getHoleCardsString() should be("--------")
+      }
+    }
+  }
+
+  "Given a Player with name 'Ali' with aces" when {
+    val ali = (Player("Ali") is 200 deep).hasCards("Ah As")
+    "actAsBot is called" should {
+      "call, if a 5BB raise is smaller than double the highestOverallBet" in {
+        ali.actAsBot(8, cardValues).currentBet should be(8)
+      }
+    }
+  }
+
+  "Given a Player with name 'Ali' with Q9" when {
+    val ali = (Player("Ali") is 200 deep).hasCards("Qh 9s")
+    "actAsBot is called" should {
+      "call, if a 3BB raise is smaller than double the highestOverallBet" in {
+        ali.actAsBot(4, cardValues).currentBet should be(4)
       }
     }
   }
@@ -123,7 +150,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     "player posts sb" should {
       "have reduced stack" in {
         val newBob = bob.posts(sb).get
-        newBob.stack should be (199)
+        newBob.stack should be(199)
       }
     }
 
@@ -131,7 +158,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
       "have reduced stack" in {
         val you = (Player("You") are 200 deep) haveCards "Ah As"
         val newYou = you.post(bb).get
-        newYou.stack should be (198)
+        newYou.stack should be(198)
       }
     }
   }
@@ -186,7 +213,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
   "Given players with different hole cards" when {
     "hand value is calculated" should {
       "return 36" in {
-        (Player("Jim") hasCards  "Ah As").getHandValue(cardValues) should be(36)
+        (Player("Jim") hasCards "Ah As").getHandValue(cardValues) should be(36)
       }
       "return 39" in {
         (Player("Jim") hasCards "Ah Kh").getHandValue(cardValues) should be(39)

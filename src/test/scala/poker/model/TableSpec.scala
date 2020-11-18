@@ -23,6 +23,15 @@ class TableSpec extends AnyWordSpec with Matchers {
     }
   }
 
+  "Given a Table where the current player is not in the round" when {
+    val table = Table(List(Player("Jack")))
+    "tryCurrentPlayerAct" should {
+      "skip" in {
+        table.tryCurrentPlayerAct(None).get should be(table)
+      }
+    }
+  }
+
   "Given a table with current player = 1 and currentBettingRound = 1" when {
     val table = Table(players, currentPlayer = 1, currentBettingRound = 1)
     "next player" should {

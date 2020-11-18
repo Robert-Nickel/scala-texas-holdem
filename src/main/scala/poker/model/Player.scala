@@ -66,12 +66,7 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
           tryRaise.get
         }
       case _ if stack < 10 * bb =>
-        val tryRaise = raise(stack, highestOverallBet)
-        if (tryRaise.isFailure) {
-          call(highestOverallBet)
-        } else {
-          tryRaise.get
-        }
+        raise(stack, highestOverallBet).get
       case _ if highestOverallBet <= 3 * bb => call(highestOverallBet)
       case _ => fold()
     }
