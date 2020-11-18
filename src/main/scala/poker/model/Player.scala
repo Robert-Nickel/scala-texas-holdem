@@ -1,5 +1,7 @@
 package main.scala.poker.model
 
+import poker.bb
+
 import scala.collection.immutable.HashMap
 import scala.util.{Failure, Success, Try}
 
@@ -32,7 +34,9 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
   def raise(amount: Int, highestOverallBet: Int): Try[Player] = {
     // TODO: Something here leads to a StackOverflowError.
     amount match {
-      case amount if amount >= stack =>
+      case _ if stack == 0 =>
+        Failure(new Throwable("You have no more chips. You cannot raise."))
+      case amount if amount >= stack && stack != 0 =>
         Success(this.copy(stack = 0, currentBet = currentBet + stack)) // All-in
       case amount if amount < highestOverallBet * 2 =>
         Failure(new Throwable("Raise is not high enough."))
@@ -41,24 +45,34 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
     }
   }
 
-  def safeRaise(amount: Int, highestOverallBet: Int): Player = {
-    if (raise(amount, highestOverallBet).isFailure) {
-      safeRaise(amount + 5, highestOverallBet)
-    } else {
-      raise(amount, highestOverallBet).get
-    }
-  }
-
   // TODO: maybe consider extracting this
-  def actAsBot(highestOverallBet: Int, BB: Int, values: HashMap[Char, Set[Int]]): Player = {
-    Thread.sleep(500)
+  def actAsBot(highestOverallBet: Int, values: HashMap[Char, Set[Int]]): Player = {
+    Thread.sleep(1_000)
     val handValue = getHandValue(values)
 
     handValue match {
-      case x if x > 30 => safeRaise(stack, highestOverallBet)
-      case x if x > 20 => safeRaise(3 * BB, highestOverallBet)
-      case _ if stack < 10 * BB => safeRaise(stack, highestOverallBet)
-      case _ if highestOverallBet <= 3 * BB => call(highestOverallBet)
+      case handValue if handValue > 30 =>
+        val tryRaise = raise(5 * bb, highestOverallBet)
+        if (tryRaise.isFailure) {
+          call(highestOverallBet)
+        } else {
+          tryRaise.get
+        }
+      case x if x > 20 =>
+        val tryRaise = raise(3 * bb, highestOverallBet)
+        if (tryRaise.isFailure) {
+          call(highestOverallBet)
+        } else {
+          tryRaise.get
+        }
+      case _ if stack < 10 * bb =>
+        val tryRaise = raise(stack, highestOverallBet)
+        if (tryRaise.isFailure) {
+          call(highestOverallBet)
+        } else {
+          tryRaise.get
+        }
+      case _ if highestOverallBet <= 3 * bb => call(highestOverallBet)
       case _ => fold()
     }
   }

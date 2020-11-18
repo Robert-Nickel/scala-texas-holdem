@@ -113,25 +113,10 @@ class PlayerSpec extends AnyWordSpec with Matchers {
       }
     }
 
-    "safeRaises with 100 where highest overall bet is 50" should {
-      "return bob with stack = 100 and currentBet = 100" in {
-        val newBob = bob.safeRaise(100, 50)
-        newBob.stack should be(100)
-        newBob.currentBet should be(100)
-      }
-    }
-    "safeRaises with 100 where highest overall bet is 60" should {
-      "return a bob with stack = 80 and currentBet is 120" in {
-        val newBob = bob.safeRaise(100, 60)
-        newBob.stack should be(80)
-        newBob.currentBet should be(120)
-      }
-    }
     "act as bot with aces" should {
-      "go all-in" in {
-        val newBob = bob.actAsBot(123, 2, cardValues)
-        newBob.stack should be(0)
-        newBob.currentBet should be(200)
+      "raise 5 bb" in {
+        val newBob = bob.actAsBot(4, cardValues)
+        newBob.currentBet should be(10)
       }
     }
 
@@ -155,7 +140,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     val bob = (Player("Bob") is 200 deep) hasCards "Qh 9s"
     "act as bot" should {
       "raise 3 BB" in {
-        bob.actAsBot(0, 2, cardValues).currentBet should be(6)
+        bob.actAsBot(0, cardValues).currentBet should be(6)
       }
     }
   }
@@ -164,7 +149,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     val bob = (Player("Bob") is 200 deep) hasCards "3h 7s"
     "act as bot" should {
       "call" in {
-        bob.actAsBot(4, 2, cardValues).currentBet should be(4)
+        bob.actAsBot(4, cardValues).currentBet should be(4)
       }
     }
   }
@@ -173,7 +158,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     val bob = (Player("Bob") is 16 deep) hasCards "3h 7s"
     "act as bot" should {
       "all-in" in {
-        bob.actAsBot(4, 2, cardValues).currentBet should be(16)
+        bob.actAsBot(4, cardValues).currentBet should be(16)
       }
     }
   }
@@ -182,7 +167,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     val bob = (Player("Bob") is 16 deep) hasCards "3h 7s"
     "act as bot with 37o is called" should {
       "all-in" in {
-        bob.actAsBot(4, 2, cardValues).currentBet should be(16)
+        bob.actAsBot(4, cardValues).currentBet should be(16)
       }
     }
   }
@@ -191,7 +176,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     val bob = (Player("Bob") is 200 deep) hasCards "4h 6s"
     "act as bot is called" should {
       "fold" in {
-        val newBob = bob.actAsBot(20, 2, cardValues)
+        val newBob = bob.actAsBot(20, cardValues)
         newBob.currentBet should be(0)
         newBob.stack should be(200)
       }

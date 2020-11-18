@@ -20,7 +20,7 @@ case class Table(players: List[Player], deck: List[Card] = List(), currentPlayer
       case (activePlayer, Some("fold")) => Success(activePlayer.fold())
       case (activePlayer, Some("call")) => Success(activePlayer.call(getHighestOverallBet))
       // bot player
-      case (activePlayer, None) => Success(activePlayer.actAsBot(getHighestOverallBet, bb, cardValues))
+      case (activePlayer, None) => Success(activePlayer.actAsBot(getHighestOverallBet, cardValues))
       case _ => Failure(new Throwable("invalid move by player"))
     }
     newActivePlayerTry match {

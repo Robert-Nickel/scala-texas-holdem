@@ -51,8 +51,8 @@ class TableSpec extends AnyWordSpec with Matchers {
       }
     }
     "tryCurrentPlayerAct with no input" should {
-      "return a table where the active player goes all-in" in {
-        table.tryCurrentPlayerAct(None).get.players(1).stack should be(0)
+      "return a table where the active player raises 5 bb" in {
+        table.tryCurrentPlayerAct(None).get.players(1).currentBet should be(10)
       }
     }
     "tryCurrentPlayerAct with 'abc'" should {
@@ -62,7 +62,10 @@ class TableSpec extends AnyWordSpec with Matchers {
     }
   }
 
-  val threePlayers = List(Player("Alice").is(10).deep(), Player("Bob").is(100).deep(), Player("Charles").is(50).deep())
+  val threePlayers = List(
+    Player("Alice").is(10).deep().hasCards("7h 2s"),
+    Player("Bob").is(100).deep().hasCards("7c 2d"),
+    Player("Charles").is(50).deep().hasCards("7s 2h"))
   "Given a table with current player is SB and currentBettingRound = 0" when {
     val table = Table(threePlayers, currentPlayer = 1, currentBettingRound = 0)
     "tryCurrentPlayerAct" should {
