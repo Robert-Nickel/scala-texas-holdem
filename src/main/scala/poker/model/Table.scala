@@ -1,14 +1,16 @@
 package main.scala.poker.model
 
-import poker.{PlayerDSL, bb, sb}
+import poker.{PlayerDSL, bb, sb, cardValues}
 
-import scala.collection.immutable.HashMap
 import scala.util.{Failure, Success, Try}
 
 case class Table(players: List[Player], deck: List[Card] = List(), currentPlayer: Int = 0, currentBettingRound: Int = 0) {
 
-  def tryCurrentPlayerAct(humanInput: Option[String], values: HashMap[Char, Set[Int]]): Try[Table] = {
+  def tryCurrentPlayerAct(humanInput: Option[String]): Try[Table] = {
+    // TODO: Skip if the currentPlayer is not in the round
     val newActivePlayerTry = (players(currentPlayer), humanInput) match {
+      // skip
+      case (activePlayer, _) if !activePlayer.isInRound() => Success(activePlayer)
       // small blind
       case (activePlayer, _) if isPreFlop && isSB(activePlayer) && activePlayer.currentBet < sb =>
         activePlayer.post(sb)
@@ -18,7 +20,7 @@ case class Table(players: List[Player], deck: List[Card] = List(), currentPlayer
       case (activePlayer, Some("fold")) => Success(activePlayer.fold())
       case (activePlayer, Some("call")) => Success(activePlayer.call(getHighestOverallBet))
       // bot player
-      case (activePlayer, None) => Success(activePlayer.actAsBot(getHighestOverallBet, bb, values))
+      case (activePlayer, None) => Success(activePlayer.actAsBot(getHighestOverallBet, bb, cardValues))
       case _ => Failure(new Throwable("invalid move by player"))
     }
     newActivePlayerTry match {

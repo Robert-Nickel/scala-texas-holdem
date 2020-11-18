@@ -5,7 +5,8 @@ import scala.util.Try
 
 package object poker {
 
-  val values = HashMap(
+  val cardSymbols = List('h', 's', 'd', 'c')
+  val cardValues = HashMap(
     ('2', Set(2)),
     ('3', Set(3)),
     ('4', Set(4)),

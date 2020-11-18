@@ -1,86 +1,99 @@
 package main.scala.poker
 
-import main.scala.poker.Main.{deck, table}
-import main.scala.poker.model.Table
-import poker.{InitHelper, PlayerDSL, PrintHelper, values}
+import main.scala.poker.model.{Player, Table}
+import poker.{InitHelper, PlayerDSL, PrintHelper, cardSymbols, cardValues}
 
-import scala.Console.println
 import scala.annotation.tailrec
 import scala.io.StdIn
-import scala.util.{Failure, Random, Success}
+import scala.util.Random
 
 object Main extends App {
   val startingStack = 200
-
-  val symbols = List('h', 's', 'd', 'c')
   val names = List("Amy", "Bob", "Mia", "Zoe", "Emi", "You")
-  val positions = Vector((0, 8), (20, 8), (40, 8), (0, 16), (20, 16), (40, 16))
-  val deck = Random.shuffle(InitHelper.createDeck(values, symbols))
-  val table = Table(InitHelper.createPlayers(names, startingStack), deck)
   val validPlayerOptions = Set("fold", "call") // TODO: add raise X and all-in if its implemented
 
-  @tailrec
-  def playRound(table: Table): Table = {
-    if (table.players.count(p => p.isInGame()) > 1) {
-      Dealer.handOutCards(table.players, deck) match {
-        case Failure(f) => println(f.getMessage)
-          System.exit(0)
-          table
-        case Success((newPlayers, newDeck)) =>
-          drawTable(table)
-          // The input once per round seems odd -> shouldn't it be ~once per bettingRound
-          val currentPlayer = table.getCurrentPlayer
-          val input = currentPlayer.name match {
-            case "You" => {
-              Some(getValidatedInput())
-            }
-            case _ => None
-          }
-          val newTable = table match {
-            case table if currentPlayer.isInRound() =>
-              // ACT
-              playBettingRound(input, table)
-            case _ =>
-              // SKIP
-              table
-          }
+  val gameOverTable = playRounds(Table(
+    InitHelper.createPlayers(names, startingStack),
+    Random.shuffle(InitHelper.createDeck(cardValues, cardSymbols))))
+  drawTable(gameOverTable)
+  println("Game over!")
 
-          // RECURSE
-          if (newTable.currentBettingRound == 4 || newTable.players.count(p => p.isInRound()) == 1) {
-            newTable
-          } else {
-            playRound(newTable.nextPlayer)
-          }
-        //playRound(table.copy(players = newPlayers, deck = newDeck))
-      }
+  @tailrec
+  def playRounds(table: Table): Table = {
+    val newTable = playBettingRounds(table)
+    if (shouldPlayNextRound(newTable)) {
+      playRounds(resetTable(newTable))
     } else {
-      println("Game over")
-      table
+      newTable
     }
   }
 
   @tailrec
-  def playBettingRound(input: Option[String], table: Table): Table = {
+  def playBettingRounds(table: Table): Table = {
+    val newTable = playMoves(table)
+    if (shouldPlayNextBettingRound(newTable)) {
+      playBettingRounds(newTable.copy(currentBettingRound = table.currentBettingRound + 1))
+    } else {
+      newTable
+    }
+  }
+
+  @tailrec
+  def playMoves(table: Table): Table = {
+    val newTable = playMove(table)
+    if (shouldPlayNextMove(newTable)) {
+      playMoves(newTable)
+    } else {
+      newTable
+    }
+  }
+
+  @tailrec
+  def playMove(table: Table): Table = {
+    val newTryTable = table.tryCurrentPlayerAct(getMaybeInput(table))
+    if (newTryTable.isFailure) {
+      playMove(table)
+    } else {
+      val newTable = newTryTable.get.nextPlayer
+      drawTable(newTable)
+      newTable
+    }
+  }
+
+  def shouldPlayNextRound(table: Table): Boolean = {
+    table.players.count(p => p.isInGame()) > 1
+  }
+
+  def shouldPlayNextBettingRound(table: Table): Boolean = {
+    table.currentBettingRound < 4 && table.players.count(p => p.isInRound()) > 1
+  }
+
+  def shouldPlayNextMove(table: Table): Boolean = {
     val maxCurrentBet = table.players.map(p => p.currentBet).max
-    if (table.players.exists(p => p.currentBet != maxCurrentBet && p.isInRound())) {
-      playMove(input, table)
-    } else if (table.currentBettingRound < 4) {
-      // TODO: collect current bets into pot
-      val newTable = table.copy(currentBettingRound = table.currentBettingRound + 1)
-      playBettingRound(input, newTable)
+    table.players.exists(player => player.currentBet != maxCurrentBet && player.isInRound())
+  }
+
+  def isHumanPlayer(player: Player): Boolean = {
+    player.name == "You"
+  }
+
+  def getMaybeInput(table: Table): Option[String] = {
+    val currentPlayer = table.getCurrentPlayer
+    if (isHumanPlayer(currentPlayer) && currentPlayer.isInRound()) {
+      Some(getValidatedInput())
     } else {
-      table
+      None
     }
   }
 
-  @tailrec
-  def playMove(input: Option[String], table: Table): Table = {
-    table.tryCurrentPlayerAct(input, values) match {
-      case Success(newTable) => newTable
-      case _ => if (input.isEmpty) {
-        playMove(None, table)
-        // TODO: Try to get this in table class
-      } else playMove(Some(getValidatedInput()), table)
+  def resetTable(table: Table): Table = {
+    val tryPlayersAndDeck = Dealer.handOutCards(table.players, Random.shuffle(InitHelper.createDeck(cardValues, cardSymbols)))
+    if (tryPlayersAndDeck.isFailure) {
+      System.exit(1)
+      table
+    } else {
+      val playersAndDeck = tryPlayersAndDeck.get
+      table.copy(players = playersAndDeck._1, deck = playersAndDeck._2)
     }
   }
 
@@ -88,6 +101,11 @@ object Main extends App {
     for (_ <- 1 to 100) {
       println("");
     }
+    table.players.foreach(player => {
+      print(s"${player.currentBet}\t\t\t\t")
+    })
+    println("")
+    println("_" * 88)
     table.players.foreach(player => {
       print(s"${player.getHoleCardsString()}\t\t")
     })
@@ -97,7 +115,7 @@ object Main extends App {
     })
     println("")
     print(s"${PrintHelper.getCurrentPlayerUnderscore(table.currentPlayer)}")
-    for (_ <- 1 to 6) {
+    for (_ <- 1 to 4) {
       println("");
     }
   }

@@ -6,16 +6,14 @@ import scala.util.{Failure, Success, Try}
 case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] = None, currentBet: Int = 0) {
 
   def getHoleCardsString(): String = {
-    if (name.equals("You")) {
-      s"${
-        if (holeCards.isDefined) {
-          holeCards.get._1 + "" + holeCards.get._2
-        } else {
-          "None None"
-        }
-      }"
+    if (holeCards.isDefined) {
+      if (name.equals("You")) {
+        s"${holeCards.get._1}${holeCards.get._2}"
+      } else {
+        "[xx][xx]"
+      }
     } else {
-      "[xx][xx]"
+      "-" * 8
     }
   }
 
@@ -32,11 +30,14 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
   }
 
   def raise(amount: Int, highestOverallBet: Int): Try[Player] = {
+    // TODO: Something here leads to a StackOverflowError.
     amount match {
-      case x if x >= stack && stack < 1 => Failure(new Throwable("Stack is too small"))
-      case x if x >= stack && stack >= 1 => Success(this.copy(stack = 0, currentBet = currentBet + stack)) // All-in
-      case x if x < highestOverallBet * 2 => Failure(new Throwable("Raise is not high enough."))
-      case _ => Success(this.copy(stack = stack - (amount - currentBet), currentBet = amount))
+      case amount if amount >= stack =>
+        Success(this.copy(stack = 0, currentBet = currentBet + stack)) // All-in
+      case amount if amount < highestOverallBet * 2 =>
+        Failure(new Throwable("Raise is not high enough."))
+      case _ =>
+        Success(this.copy(stack = stack - amount + currentBet, currentBet = amount))
     }
   }
 
