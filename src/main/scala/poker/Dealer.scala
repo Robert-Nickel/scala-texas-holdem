@@ -1,6 +1,7 @@
 package main.scala.poker
 
-import main.scala.poker.model.{Card, Player}
+import main.scala.poker.model.{Card, Player, Table}
+import poker.PlayerDSL
 
 import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
@@ -18,5 +19,18 @@ object Dealer {
       case _ =>
         handOutCards(players.tail, deck.tail.tail, newPlayers :+ players.head.copy(holeCards = Some(deck.head, deck.tail.head)))
     }
+  }
+
+  def shouldPlayNextRound(table: Table): Boolean = {
+    table.players.count(p => p.isInGame()) > 1
+  }
+
+  def shouldPlayNextBettingRound(table: Table): Boolean = {
+    table.currentBettingRound < 4 && table.players.count(p => p.isInRound()) > 1
+  }
+
+  def shouldPlayNextMove(table: Table): Boolean = {
+    val maxCurrentBet = table.players.map(p => p.currentBet).max
+    table.players.exists(player => player.currentBet != maxCurrentBet && player.isInRound())
   }
 }

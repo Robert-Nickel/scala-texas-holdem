@@ -7,7 +7,6 @@ import scala.util.{Failure, Success, Try}
 case class Table(players: List[Player], deck: List[Card] = List(), currentPlayer: Int = 0, currentBettingRound: Int = 0) {
 
   def tryCurrentPlayerAct(humanInput: Option[String]): Try[Table] = {
-    // TODO: Skip if the currentPlayer is not in the round
     val newActivePlayerTry = (players(currentPlayer), humanInput) match {
       // skip
       case (activePlayer, _) if !activePlayer.isInRound() => Success(activePlayer)

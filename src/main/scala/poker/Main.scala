@@ -1,6 +1,7 @@
 package main.scala.poker
 
-import main.scala.poker.model.{Player, Table}
+import main.scala.poker.Dealer.{shouldPlayNextBettingRound, shouldPlayNextMove, shouldPlayNextRound}
+import main.scala.poker.model.Table
 import poker.{InitHelper, PlayerDSL, PrintHelper, cardSymbols, cardValues}
 
 import scala.annotation.tailrec
@@ -60,26 +61,9 @@ object Main extends App {
     }
   }
 
-  def shouldPlayNextRound(table: Table): Boolean = {
-    table.players.count(p => p.isInGame()) > 1
-  }
-
-  def shouldPlayNextBettingRound(table: Table): Boolean = {
-    table.currentBettingRound < 4 && table.players.count(p => p.isInRound()) > 1
-  }
-
-  def shouldPlayNextMove(table: Table): Boolean = {
-    val maxCurrentBet = table.players.map(p => p.currentBet).max
-    table.players.exists(player => player.currentBet != maxCurrentBet && player.isInRound())
-  }
-
-  def isHumanPlayer(player: Player): Boolean = {
-    player.name == "You"
-  }
-
   def getMaybeInput(table: Table): Option[String] = {
     val currentPlayer = table.getCurrentPlayer
-    if (isHumanPlayer(currentPlayer) && currentPlayer.isInRound()) {
+    if (currentPlayer.isHumanPlayer && currentPlayer.isInRound) {
       Some(getValidatedInput())
     } else {
       None
@@ -99,7 +83,7 @@ object Main extends App {
 
   def drawTable(table: Table): Unit = {
     for (_ <- 1 to 100) {
-      println("");
+      println("")
     }
     table.players.foreach(player => {
       val spacesAfterCurrentBet = 16 - player.currentBet.toString.length
@@ -119,19 +103,13 @@ object Main extends App {
       val spacesAfterStack = 16 - player.stack.toString.length
       print(s"${player.stack}" + " " * spacesAfterStack)
     })
-
-
     println("")
     print(s"${PrintHelper.getCurrentPlayerUnderscore(table.currentPlayer)}")
     for (_ <- 1 to 4) {
-      println("");
+      println("")
     }
   }
 
-  // println: Try Monad mit Success / Failure mit String fuer Main
-  // readline: value in main auslesen & als argument uebergeben
-  // Switch-case in validateInput (gibt zustand zurueck) zurueck
-  // Main Loop bis gewuenschter Zustand erreicht
   def getValidatedInput(): String = {
     println(s"Your options are: $validPlayerOptions")
     StdIn.readLine() match {

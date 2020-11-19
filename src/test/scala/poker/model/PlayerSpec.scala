@@ -26,6 +26,9 @@ class PlayerSpec extends AnyWordSpec with Matchers {
         player.isInGame should be(true)
       }
     }
+    "is human player is called" in {
+      player.isHumanPlayer() should be (true)
+    }
   }
   "Given a Player with name 'You', and no hole cards" when {
     val you = Player("You")
@@ -66,6 +69,9 @@ class PlayerSpec extends AnyWordSpec with Matchers {
       "return isInRound = false" in {
         ali.fold().isInRound should be(false)
       }
+    }
+    "is human player is called" in {
+      ali.isHumanPlayer() should be (false)
     }
   }
 
