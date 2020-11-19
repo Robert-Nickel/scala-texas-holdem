@@ -32,7 +32,6 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
   }
 
   def raise(amount: Int, highestOverallBet: Int): Try[Player] = {
-    // TODO: Something here leads to a StackOverflowError.
     amount match {
       case _ if stack == 0 =>
         Failure(new Throwable("You have no more chips. You cannot raise."))

@@ -9,7 +9,7 @@ class PrintHelperSpec extends AnyWordSpec with Matchers {
     "given a integer" should {
       val currentPlayerUnderscore = PrintHelper.getCurrentPlayerUnderscore(3)
       "return string with the right indentation to underline the current player" in {
-        currentPlayerUnderscore should be("\t\t\t\t\t\t\t\t\t\t\t\t________")
+        currentPlayerUnderscore should be(" " * 3 * 16 + "_" * 8)
       }
     }
   }

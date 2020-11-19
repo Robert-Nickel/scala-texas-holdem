@@ -102,17 +102,25 @@ object Main extends App {
       println("");
     }
     table.players.foreach(player => {
-      print(s"${player.currentBet}\t\t\t\t")
+      val spacesAfterCurrentBet = 16 - player.currentBet.toString.length
+      print(s"${player.currentBet}" + " " * spacesAfterCurrentBet)
     })
     println("")
     println("_" * 88)
     table.players.foreach(player => {
-      print(s"${player.getHoleCardsString()}\t\t")
+      print(s"${player.getHoleCardsString()}" + " " * 8)
     })
     println("")
     table.players.foreach(player => {
-      print(s"${player.name} ${player.stack}\t\t\t")
+      print(s"${player.name} " + " " * 12)
     })
+    println("")
+    table.players.foreach(player => {
+      val spacesAfterStack = 16 - player.stack.toString.length
+      print(s"${player.stack}" + " " * spacesAfterStack)
+    })
+
+
     println("")
     print(s"${PrintHelper.getCurrentPlayerUnderscore(table.currentPlayer)}")
     for (_ <- 1 to 4) {
