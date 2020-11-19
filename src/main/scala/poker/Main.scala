@@ -6,32 +6,37 @@ import poker.{InitHelper, PlayerDSL, PrintHelper, cardSymbols, cardValues}
 
 import scala.annotation.tailrec
 import scala.io.StdIn
-import scala.util.Random
+import scala.util.{Failure, Random}
 
 object Main extends App {
   val startingStack = 200
   val names = List("Amy", "Bob", "Mia", "Zoe", "Emi", "You")
   val validPlayerOptions = Set("fold", "call") // TODO: add raise X and all-in if its implemented
 
-  val gameOverTable = playRounds(Table(
+  val gameOverTable = playRounds(resetTable(Table(
     InitHelper.createPlayers(names, startingStack),
-    Random.shuffle(InitHelper.createDeck(cardValues, cardSymbols))))
+    Random.shuffle(InitHelper.createDeck(cardValues, cardSymbols)))))
   drawTable(gameOverTable)
   println("Game over!")
 
   @tailrec
   def playRounds(table: Table): Table = {
+    println("------------- ROUND STARTS -------------")
     val newTable = playBettingRounds(table)
-    if (shouldPlayNextRound(newTable)) {
-      playRounds(resetTable(newTable))
+    val newNewTable = newTable.payTheWinner
+    println("------------- ROUND ENDS -------------")
+    if (shouldPlayNextRound(newNewTable)) {
+      playRounds(newNewTable)
     } else {
-      newTable
+      newNewTable
     }
   }
 
   @tailrec
   def playBettingRounds(table: Table): Table = {
-    val newTable = playMoves(table)
+    println("------------- BETTING ROUND STARTS -------------")
+    val newTable = playMoves(table).collectCurrentBets.copy(currentPlayer = 1)
+    println("------------- BETTING ROUND ENDS -------------")
     if (shouldPlayNextBettingRound(newTable)) {
       playBettingRounds(newTable.copy(currentBettingRound = table.currentBettingRound + 1))
     } else {
@@ -51,19 +56,21 @@ object Main extends App {
 
   @tailrec
   def playMove(table: Table): Table = {
+    drawTable(table)
     val newTryTable = table.tryCurrentPlayerAct(getMaybeInput(table))
     if (newTryTable.isFailure) {
       playMove(table)
     } else {
-      val newTable = newTryTable.get.nextPlayer
-      drawTable(newTable)
-      newTable
+      drawTable(newTryTable.get)
+      newTryTable.get.nextPlayer
     }
   }
 
   def getMaybeInput(table: Table): Option[String] = {
     val currentPlayer = table.getCurrentPlayer
-    if (currentPlayer.isHumanPlayer && currentPlayer.isInRound) {
+    if (currentPlayer.isHumanPlayer &&
+      currentPlayer.isInRound &&
+      !(table.isSB(currentPlayer) || table.isBB(currentPlayer))) {
       Some(getValidatedInput())
     } else {
       None
@@ -77,14 +84,16 @@ object Main extends App {
       table
     } else {
       val playersAndDeck = tryPlayersAndDeck.get
-      table.copy(players = playersAndDeck._1, deck = playersAndDeck._2)
+      table.copy(players = playersAndDeck._1, deck = playersAndDeck._2, currentPlayer = 1)
     }
   }
 
   def drawTable(table: Table): Unit = {
-    for (_ <- 1 to 100) {
+    for (_ <- 1 to 40) {
       println("")
     }
+    println(" " * (39 - (table.pot.toString.length / 2)) + s"Pot: ${table.pot}")
+    println("")
     table.players.foreach(player => {
       val spacesAfterCurrentBet = 16 - player.currentBet.toString.length
       print(s"${player.currentBet}" + " " * spacesAfterCurrentBet)

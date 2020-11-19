@@ -1,6 +1,6 @@
 package main.scala.poker.model
 
-import poker.bb
+import poker.{bb, cardValues}
 
 import scala.collection.immutable.HashMap
 import scala.util.{Failure, Success, Try}
@@ -45,9 +45,9 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
   }
 
   // TODO: maybe consider extracting this
-  def actAsBot(highestOverallBet: Int, values: HashMap[Char, Set[Int]]): Player = {
+  def actAsBot(highestOverallBet: Int): Player = {
     Thread.sleep(1_000)
-    val handValue = getHandValue(values)
+    val handValue = getHandValue()
 
     handValue match {
       case handValue if handValue > 30 =>
@@ -66,18 +66,19 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
         }
       case _ if stack < 10 * bb =>
         raise(stack, highestOverallBet).get
+        // TODO: What if no prior bet has been made? Technically its a check then.
       case _ if highestOverallBet <= 3 * bb => call(highestOverallBet)
       case _ => fold()
     }
   }
 
-  def getHandValue(values: HashMap[Char, Set[Int]]): Int = {
+  def getHandValue(): Int = {
     if (holeCards.isDefined) {
       val card1 = holeCards.get._1
       val card2 = holeCards.get._2
-      val sum = values(card1.value).max + values(card2.value).max
+      val sum = cardValues(card1.value).max + cardValues(card2.value).max
       val suitedValue = if (card1.symbol == card2.symbol) 6 else 0
-      val delta = (values(card1.value).max - values(card2.value).max).abs
+      val delta = (cardValues(card1.value).max - cardValues(card2.value).max).abs
       val connectorValue = Set(8 - delta * 2, 0).max
       sum + suitedValue + connectorValue
     } else {

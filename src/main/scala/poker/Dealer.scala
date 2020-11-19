@@ -26,7 +26,7 @@ object Dealer {
   }
 
   def shouldPlayNextBettingRound(table: Table): Boolean = {
-    table.currentBettingRound < 4 && table.players.count(p => p.isInRound()) > 1
+    table.currentBettingRound < 4 && !table.isOnlyOnePlayerInRound
   }
 
   def shouldPlayNextMove(table: Table): Boolean = {
