@@ -26,7 +26,7 @@ object Main extends App {
   def playRounds(table: Table): Table = {
     printText("------------- ROUND STARTS -------------")
     val newTable = playBettingRounds(table)
-    val newNewTable = newTable.payTheWinner
+    val newNewTable = newTable.payTheWinner.rotateButton
     printText("------------- ROUND ENDS -------------")
     if (shouldPlayNextRound(newNewTable)) {
       playRounds(newNewTable)

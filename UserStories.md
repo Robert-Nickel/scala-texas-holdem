@@ -8,11 +8,10 @@
 ~~- Anzeige des Pots~
 ~~- Anzeige von anderen Spielern + Guthaben~~
 ~~- Der Spieler ist immer der Dealer am Anfang~~
-
-- Schreibe Output in file für debugging
+~~- Schreibe Output in file für debugging~
+~~- Dealer button rotation~~
 - Eingabe Raise verarbeiten
 - Eingabe Allin verarbeiten 
-- Dealer button rotation
 - dynamische Anzeige der Aktionen (Bet, Fold, Call) von Spielern
 - Showdown Logik (regulaere Ausdruecke?)
 - statische Anzeige von Community Karten 

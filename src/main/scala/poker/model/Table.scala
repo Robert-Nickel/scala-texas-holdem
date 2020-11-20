@@ -49,6 +49,10 @@ case class Table(players: List[Player],
     )
   }
 
+  def rotateButton: Table = {
+    this.copy(players = players.drop(1) ++ players.take(1))
+  }
+
   def getWinner: Player = {
     if (isOnlyOnePlayerInRound) {
       players.find(player => player.isInRound()).get
@@ -81,30 +85,52 @@ case class Table(players: List[Player],
   def isBB(player: Player): Boolean = players(2) == player
 
   def getPrintableTable: String = {
-    val currentBets = players.flatMap(player => {
-      val spacesAfterCurrentBet = 16 - player.currentBet.toString.length
-      s"${player.currentBet}" + " " * spacesAfterCurrentBet
-    }).mkString
+    def getCurrentBets = {
+      players.flatMap(player => {
+        val spacesAfterCurrentBet = 16 - player.currentBet.toString.length
+        s"${player.currentBet}" + " " * spacesAfterCurrentBet
+      }).mkString
+    }
 
-    val holeCards = players.map(player => {
-      s"${player.getHoleCardsString()}" + " " * 8
-    }).mkString
+    def getHoleCards = {
+      players.map(player => {
+        s"${player.getHoleCardsString()}" + " " * 8
+      }).mkString
+    }
 
-    val names = players.map(player => {
-      s"${player.name} " + " " * 12
-    }).mkString
+    def getNames = {
+      players.head.name + " (D) " + " " * 8 +
+        players.tail.map(player => {
+          s"${player.name} " + " " * 12
+        }).mkString
+    }
 
-    val stacks = players.map(player => {
-      val spacesAfterStack = 16 - player.stack.toString.length
-      s"${player.stack}" + " " * spacesAfterStack
-    }).mkString
+    def getStacks = {
+      players.map(player => {
+        val spacesAfterStack = 16 - player.stack.toString.length
+        s"${player.stack}" + " " * spacesAfterStack
+      }).mkString
+    }
 
-    "\n" + " " * (39 - (pot.toString.length / 2)) + s"Pot: ${pot}\n" +
-      currentBets + "\n" +
-      "_" * 88 + "\n" +
-      holeCards + "\n" +
-      names + "\n" +
-      stacks + "\n" +
-      s"${" " * 16 * currentPlayer}________" + "\n"
+    def getCurrentPlayerUnderline = {
+      s"${" " * 16 * currentPlayer}________"
+    }
+
+    def getPot = {
+      " " * (39 - (pot.toString.length / 2)) + s"Pot: $pot"
+    }
+
+    def getBettingLine = {
+      "_" * 88
+    }
+
+    "\n" +
+      getPot + "\n" +
+      getCurrentBets + "\n" +
+      getBettingLine + "\n" +
+      getHoleCards + "\n" +
+      getNames + "\n" +
+      getStacks + "\n" +
+      getCurrentPlayerUnderline + "\n"
   }
 }
