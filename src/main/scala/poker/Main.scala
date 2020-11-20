@@ -19,23 +19,32 @@ object Main extends App {
     case Failure(throwable) => printText(throwable.getMessage)
   }
 
-  @tailrec
   def playRounds(table: Table): Table = {
     printText("------------- ROUND STARTS -------------")
     val newTable = playBettingRounds(table)
-    val newNewTable = newTable.payTheWinner.rotateButton
     printText("------------- ROUND ENDS -------------")
-    if (newNewTable.shouldPlayNextRound) {
-      playRounds(newNewTable)
-    } else {
-      newNewTable
+    val newNewTable = newTable
+      .payTheWinner
+      .rotateButton
+      .handOutCards(Random.shuffle(getDeck)) match {
+      case Success(table) =>
+        if (table.shouldPlayNextRound) {
+          playRounds(table)
+        } else {
+          table
+        }
+      case Failure(throwable) =>
+        printText(throwable.getMessage)
+        newTable
     }
+    newNewTable
   }
 
   @tailrec
   def playBettingRounds(table: Table): Table = {
     printText("------------- BETTING ROUND STARTS -------------")
-    val newTable = playMoves(table).collectCurrentBets.copy(currentPlayer = 1)
+    val newTable = playMoves(table.setCurrentPlayerToSB())
+      .collectCurrentBets
     printText("------------- BETTING ROUND ENDS -------------")
     if (newTable.shouldPlayNextBettingRound) {
       playBettingRounds(newTable.copy(currentBettingRound = table.currentBettingRound + 1))

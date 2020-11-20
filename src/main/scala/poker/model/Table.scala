@@ -60,14 +60,17 @@ case class Table(players: List[Player],
     this.copy(players = players.drop(1) ++ players.take(1))
   }
 
-  def handOutCards(deck: List[Card], newPlayers: List[Player] = List()): Try[Table] = {
-    (players.size, deck.size) match {
+  def handOutCards(deck: List[Card]): Try[Table] = {
+    handOutCardsToAllPlayers(players, deck)
+  }
+
+  private def handOutCardsToAllPlayers(oldPlayers: List[Player], deck: List[Card], newPlayers: List[Player] = List()): Try[Table] = {
+    (oldPlayers.size, deck.size) match {
       case (oldPlayerSize, _) if oldPlayerSize == 0 => Success(Table(newPlayers, deck))
-      case (_, deckSize) if deckSize < players.size * 2 =>
+      case (_, deckSize) if deckSize < oldPlayers.size * 2 =>
         Failure(new Throwable("Not enough cards for remaining players."))
       case _ =>
-        this.copy(players = players.tail)
-          .handOutCards(deck.tail.tail, newPlayers :+ players.head.copy(holeCards = Some(deck.head, deck.tail.head)))
+        handOutCardsToAllPlayers(oldPlayers.tail, deck.tail.tail, newPlayers :+ oldPlayers.head.copy(holeCards = Some(deck.head, deck.tail.head)))
     }
   }
 
