@@ -1,6 +1,6 @@
 package main.scala.poker.model
 
-import poker.{PlayerDSL, bb, sb, cardValues}
+import poker.{PlayerDSL, bb, cardValues, sb}
 
 import scala.util.{Failure, Success, Try}
 
@@ -79,4 +79,32 @@ case class Table(players: List[Player],
   def isSB(player: Player): Boolean = players(1) == player
 
   def isBB(player: Player): Boolean = players(2) == player
+
+  def getPrintableTable: String = {
+    val currentBets = players.flatMap(player => {
+      val spacesAfterCurrentBet = 16 - player.currentBet.toString.length
+      s"${player.currentBet}" + " " * spacesAfterCurrentBet
+    }).mkString
+
+    val holeCards = players.map(player => {
+      s"${player.getHoleCardsString()}" + " " * 8
+    }).mkString
+
+    val names = players.map(player => {
+      s"${player.name} " + " " * 12
+    }).mkString
+
+    val stacks = players.map(player => {
+      val spacesAfterStack = 16 - player.stack.toString.length
+      s"${player.stack}" + " " * spacesAfterStack
+    }).mkString
+
+    "\n" + " " * (39 - (pot.toString.length / 2)) + s"Pot: ${pot}\n" +
+      currentBets + "\n" +
+      "_" * 88 + "\n" +
+      holeCards + "\n" +
+      names + "\n" +
+      stacks + "\n" +
+      s"${" " * 16 * currentPlayer}________" + "\n"
+  }
 }

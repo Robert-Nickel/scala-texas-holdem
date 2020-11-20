@@ -2,7 +2,6 @@ package main.scala.poker.model
 
 import poker.{bb, cardValues}
 
-import scala.collection.immutable.HashMap
 import scala.util.{Failure, Success, Try}
 
 case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] = None, currentBet: Int = 0) {

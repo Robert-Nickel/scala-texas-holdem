@@ -6,3 +6,4 @@ scala-texas-holdem.iml
 /target
 /.bsp
 .DS_Store
+poker.txt

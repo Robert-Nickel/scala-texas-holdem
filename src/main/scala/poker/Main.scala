@@ -1,14 +1,17 @@
 package main.scala.poker
 
+import java.io.{File, FileWriter, PrintWriter}
+
 import main.scala.poker.Dealer.{shouldPlayNextBettingRound, shouldPlayNextMove, shouldPlayNextRound}
 import main.scala.poker.model.Table
-import poker.{InitHelper, PlayerDSL, PrintHelper, cardSymbols, cardValues}
+import poker.{InitHelper, PlayerDSL, cardSymbols, cardValues}
 
 import scala.annotation.tailrec
 import scala.io.StdIn
-import scala.util.{Failure, Random}
+import scala.util.Random
 
 object Main extends App {
+  new File("poker.txt").delete()
   val startingStack = 200
   val names = List("Amy", "Bob", "Mia", "Zoe", "Emi", "You")
   val validPlayerOptions = Set("fold", "call") // TODO: add raise X and all-in if its implemented
@@ -16,7 +19,8 @@ object Main extends App {
   val gameOverTable = playRounds(resetTable(Table(
     InitHelper.createPlayers(names, startingStack),
     Random.shuffle(InitHelper.createDeck(cardValues, cardSymbols)))))
-  drawTable(gameOverTable)
+  printToConsole(gameOverTable)
+  printToFile(gameOverTable)
   println("Game over!")
 
   @tailrec
@@ -56,12 +60,14 @@ object Main extends App {
 
   @tailrec
   def playMove(table: Table): Table = {
-    drawTable(table)
+    printToConsole(table)
+    printToFile(table)
     val newTryTable = table.tryCurrentPlayerAct(getMaybeInput(table))
     if (newTryTable.isFailure) {
       playMove(table)
     } else {
-      drawTable(newTryTable.get)
+      printToConsole(newTryTable.get)
+      printToFile(table)
       newTryTable.get.nextPlayer
     }
   }
@@ -88,34 +94,19 @@ object Main extends App {
     }
   }
 
-  def drawTable(table: Table): Unit = {
-    for (_ <- 1 to 40) {
+  def printToConsole(table: Table): Unit = {
+    for (_ <- 1 to 10) {
       println("")
     }
-    println(" " * (39 - (table.pot.toString.length / 2)) + s"Pot: ${table.pot}")
-    println("")
-    table.players.foreach(player => {
-      val spacesAfterCurrentBet = 16 - player.currentBet.toString.length
-      print(s"${player.currentBet}" + " " * spacesAfterCurrentBet)
-    })
-    println("")
-    println("_" * 88)
-    table.players.foreach(player => {
-      print(s"${player.getHoleCardsString()}" + " " * 8)
-    })
-    println("")
-    table.players.foreach(player => {
-      print(s"${player.name} " + " " * 12)
-    })
-    println("")
-    table.players.foreach(player => {
-      val spacesAfterStack = 16 - player.stack.toString.length
-      print(s"${player.stack}" + " " * spacesAfterStack)
-    })
-    println("")
-    print(s"${PrintHelper.getCurrentPlayerUnderscore(table.currentPlayer)}")
-    for (_ <- 1 to 4) {
+    println(table.getPrintableTable)
+    for (_ <- 1 to 2) {
       println("")
+    }
+  }
+
+  def printToFile(table: Table): Unit = {
+    new PrintWriter(new FileWriter("poker.txt", true)) {
+      write(table.getPrintableTable); close()
     }
   }
 
