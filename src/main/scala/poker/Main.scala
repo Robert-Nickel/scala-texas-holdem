@@ -66,8 +66,6 @@ object Main extends App {
     if (newTryTable.isFailure) {
       playMove(table)
     } else {
-      printToConsole(newTryTable.get)
-      printToFile(table)
       newTryTable.get.nextPlayer
     }
   }
