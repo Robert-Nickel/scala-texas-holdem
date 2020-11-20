@@ -19,16 +19,15 @@ object Main extends App {
   val gameOverTable = playRounds(resetTable(Table(
     InitHelper.createPlayers(names, startingStack),
     Random.shuffle(InitHelper.createDeck(cardValues, cardSymbols)))))
-  printToConsole(gameOverTable)
-  printToFile(gameOverTable)
-  println("Game over!")
+  printText(gameOverTable.getPrintableTable)
+  printText("Game over!")
 
   @tailrec
   def playRounds(table: Table): Table = {
-    println("------------- ROUND STARTS -------------")
+    printText("------------- ROUND STARTS -------------")
     val newTable = playBettingRounds(table)
     val newNewTable = newTable.payTheWinner
-    println("------------- ROUND ENDS -------------")
+    printText("------------- ROUND ENDS -------------")
     if (shouldPlayNextRound(newNewTable)) {
       playRounds(newNewTable)
     } else {
@@ -38,9 +37,9 @@ object Main extends App {
 
   @tailrec
   def playBettingRounds(table: Table): Table = {
-    println("------------- BETTING ROUND STARTS -------------")
+    printText("------------- BETTING ROUND STARTS -------------")
     val newTable = playMoves(table).collectCurrentBets.copy(currentPlayer = 1)
-    println("------------- BETTING ROUND ENDS -------------")
+    printText("------------- BETTING ROUND ENDS -------------")
     if (shouldPlayNextBettingRound(newTable)) {
       playBettingRounds(newTable.copy(currentBettingRound = table.currentBettingRound + 1))
     } else {
@@ -60,8 +59,7 @@ object Main extends App {
 
   @tailrec
   def playMove(table: Table): Table = {
-    printToConsole(table)
-    printToFile(table)
+    printText(table.getPrintableTable)
     val newTryTable = table.tryCurrentPlayerAct(getMaybeInput(table))
     if (newTryTable.isFailure) {
       playMove(table)
@@ -92,24 +90,16 @@ object Main extends App {
     }
   }
 
-  def printToConsole(table: Table): Unit = {
-    for (_ <- 1 to 10) {
-      println("")
-    }
-    println(table.getPrintableTable)
-    for (_ <- 1 to 2) {
-      println("")
-    }
-  }
-
-  def printToFile(table: Table): Unit = {
+  def printText(text: String): Unit = {
     new PrintWriter(new FileWriter("poker.txt", true)) {
-      write(table.getPrintableTable); close()
+      write(text);
+      close()
     }
+    println(text)
   }
 
   def getValidatedInput(): String = {
-    println(s"Your options are: $validPlayerOptions")
+    printText(s"Your options are: $validPlayerOptions")
     StdIn.readLine() match {
       case input if validPlayerOptions.contains(input) => input
       case _ => getValidatedInput()
