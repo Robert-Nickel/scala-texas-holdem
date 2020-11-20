@@ -3,7 +3,7 @@ package poker.model
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
-import poker.dsl.PlayerDSL.PlayerDSL
+import poker.dsl.TableDSL.TableDSL
 import poker.{bb, sb}
 
 import scala.util.Failure

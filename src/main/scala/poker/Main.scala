@@ -1,21 +1,18 @@
-package main.scala.poker
+package poker
 
 import java.io.{File, FileWriter, PrintWriter}
 
-import main.scala.poker.Dealer.{shouldPlayNextBettingRound, shouldPlayNextMove, shouldPlayNextRound}
-import poker.dsl.PlayerDSL.PlayerDSL
-import poker.dsl.TablePrintingDSL.TablePrintingDSL
+import poker.dsl.TableDSL.TableDSL
 import poker.model.Table
-import poker.{getDeck, getPlayers, syntaxValidOptions}
 
 import scala.annotation.tailrec
 import scala.io.StdIn
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Random, Success}
 
 object Main extends App {
   new File("poker.txt").delete()
 
-  Table(getPlayers, getDeck).reset match {
+  Table(getPlayers, getDeck).handOutCards(Random.shuffle(getDeck)) match {
     case Success(table) =>
       printText(playRounds(table).getPrintableTable)
       printText("Game over!")
@@ -28,7 +25,7 @@ object Main extends App {
     val newTable = playBettingRounds(table)
     val newNewTable = newTable.payTheWinner.rotateButton
     printText("------------- ROUND ENDS -------------")
-    if (shouldPlayNextRound(newNewTable)) {
+    if (newNewTable.shouldPlayNextRound) {
       playRounds(newNewTable)
     } else {
       newNewTable
@@ -40,7 +37,7 @@ object Main extends App {
     printText("------------- BETTING ROUND STARTS -------------")
     val newTable = playMoves(table).collectCurrentBets.copy(currentPlayer = 1)
     printText("------------- BETTING ROUND ENDS -------------")
-    if (shouldPlayNextBettingRound(newTable)) {
+    if (newTable.shouldPlayNextBettingRound) {
       playBettingRounds(newTable.copy(currentBettingRound = table.currentBettingRound + 1))
     } else {
       newTable
@@ -50,7 +47,7 @@ object Main extends App {
   @tailrec
   def playMoves(table: Table): Table = {
     val newTable = playMove(table)
-    if (shouldPlayNextMove(newTable)) {
+    if (newTable.shouldPlayNextMove) {
       playMoves(newTable)
     } else {
       newTable

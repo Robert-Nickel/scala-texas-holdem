@@ -4,7 +4,6 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 import poker._
-import poker.dsl.PlayerDSL.PlayerDSL
 
 import scala.language.postfixOps
 import scala.util.Failure
@@ -27,7 +26,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
       }
     }
     "is human player is called" in {
-      player.isHumanPlayer() should be (true)
+      player.isHumanPlayer should be(true)
     }
   }
   "Given a Player with name 'You', and no hole cards" when {
@@ -71,7 +70,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
       }
     }
     "is human player is called" in {
-      ali.isHumanPlayer() should be (false)
+      ali.isHumanPlayer should be(false)
     }
   }
 

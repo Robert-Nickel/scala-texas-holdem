@@ -1,9 +1,45 @@
 package poker.dsl
 
-import poker.model.Table
+import poker.model.{Player, Table}
 
-object TablePrintingDSL {
-  implicit class TablePrintingDSL(table: Table) {
+object TableDSL {
+
+  /**
+   * This exists to simplify (read) access to the table
+   */
+  implicit class TableDSL(table: Table) {
+
+    def getCurrentPlayer: Player = {
+      table.players(table.currentPlayer)
+    }
+
+    def getHighestOverallBet: Int = {
+      table.players.map(player => player.currentBet).max
+    }
+
+    def isOnlyOnePlayerInRound: Boolean = {
+      table.players.count(p => p.isInRound) == 1
+    }
+
+    def isSB(player: Player): Boolean = table.players(1) == player
+
+    def isBB(player: Player): Boolean = table.players(2) == player
+
+    def isPreFlop: Boolean = table.currentBettingRound == 0
+
+    def shouldPlayNextRound: Boolean = {
+      table.players.count(p => p.isInGame()) > 1
+    }
+
+    def shouldPlayNextBettingRound: Boolean = {
+      table.currentBettingRound < 4 && !table.isOnlyOnePlayerInRound
+    }
+
+    def shouldPlayNextMove: Boolean = {
+      val maxCurrentBet = table.players.map(p => p.currentBet).max
+      table.players.exists(player => player.currentBet != maxCurrentBet && player.isInRound)
+    }
+
     def getPrintableTable: String = {
       def getCurrentBets = {
         table.players.flatMap(player => {
@@ -33,7 +69,7 @@ object TablePrintingDSL {
       }
 
       def getCurrentPlayerUnderline = {
-        s"${" " * 16 * table.currentPlayer}"+"_"*8
+        s"${" " * 16 * table.currentPlayer}" + "_" * 8
       }
 
       def getPot = {
@@ -54,4 +90,5 @@ object TablePrintingDSL {
         getCurrentPlayerUnderline + "\n"
     }
   }
+
 }

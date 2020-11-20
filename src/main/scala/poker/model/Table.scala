@@ -1,10 +1,9 @@
 package poker.model
 
-import main.scala.poker.Dealer
-import poker.dsl.PlayerDSL.PlayerDSL
-import poker.{bb, getDeck, sb}
+import poker.dsl.TableDSL.{TableDSL}
+import poker.{bb, sb}
 
-import scala.util.{Failure, Random, Success, Try}
+import scala.util.{Failure, Success, Try}
 
 case class Table(players: List[Player],
                  deck: List[Card] = List(),
@@ -13,20 +12,20 @@ case class Table(players: List[Player],
                  pot: Int = 0) {
   // TODO: add board like board: List[Card] = List() (3 entries after flop, 4 after turn and 5 after river)
 
-  def tryCurrentPlayerAct(humanInput: Option[String]): Try[Table] = {
-    val newActivePlayerTry = (players(currentPlayer), humanInput) match {
+  def tryCurrentPlayerAct(maybeInput: Option[String]): Try[Table] = {
+    val newActivePlayerTry = (players(currentPlayer), maybeInput) match {
       // skip
-      case (activePlayer, _) if !activePlayer.isInRound() => Success(activePlayer)
+      case (activePlayer, _) if !activePlayer.isInRound => Success(activePlayer)
       // small blind
-      case (activePlayer, _) if isPreFlop && isSB(activePlayer) && activePlayer.currentBet < sb =>
+      case (activePlayer, _) if this.isPreFlop && this.isSB(activePlayer) && activePlayer.currentBet < sb =>
         activePlayer.post(sb)
       // big blind
-      case (activePlayer, _) if isPreFlop && isBB(activePlayer) && activePlayer.currentBet < bb =>
+      case (activePlayer, _) if this.isPreFlop && this.isBB(activePlayer) && activePlayer.currentBet < bb =>
         activePlayer.post(bb)
       case (activePlayer, Some("fold")) => Success(activePlayer.fold())
-      case (activePlayer, Some("call")) => Success(activePlayer.call(getHighestOverallBet))
+      case (activePlayer, Some("call")) => Success(activePlayer.call(this.getHighestOverallBet))
       // bot player
-      case (activePlayer, None) => Success(activePlayer.actAsBot(getHighestOverallBet))
+      case (activePlayer, None) => Success(activePlayer.actAsBot(this.getHighestOverallBet))
       case _ => Failure(new Throwable("invalid move by player"))
     }
     newActivePlayerTry match {
@@ -45,7 +44,12 @@ case class Table(players: List[Player],
   }
 
   def payTheWinner: Table = {
-    val winner = getWinner
+    val winner = if (this.isOnlyOnePlayerInRound) {
+      players.find(player => player.isInRound).get
+    } else {
+      // TODO: go the right way to decide which hand wins
+      players.maxBy(player => player.getHandValue())
+    }
     this.copy(
       players = players.patch(players.indexOf(winner), Seq(winner.copy(stack = winner.stack + pot)), 1),
       pot = 0
@@ -56,43 +60,22 @@ case class Table(players: List[Player],
     this.copy(players = players.drop(1) ++ players.take(1))
   }
 
-  def getWinner: Player = {
-    if (isOnlyOnePlayerInRound) {
-      players.find(player => player.isInRound()).get
-    } else {
-      // TODO: go the right way to decide which hand wins
-      players.maxBy(player => player.getHandValue())
+  def handOutCards(deck: List[Card], newPlayers: List[Player] = List()): Try[Table] = {
+    (players.size, deck.size) match {
+      case (oldPlayerSize, _) if oldPlayerSize == 0 => Success(Table(newPlayers, deck))
+      case (_, deckSize) if deckSize < players.size * 2 =>
+        Failure(new Throwable("Not enough cards for remaining players."))
+      case _ =>
+        this.copy(players = players.tail)
+          .handOutCards(deck.tail.tail, newPlayers :+ players.head.copy(holeCards = Some(deck.head, deck.tail.head)))
     }
   }
 
-  def reset: Try[Table] = {
-    val tryPlayersAndDeck = Dealer.handOutCards(players, Random.shuffle(getDeck))
-    if(tryPlayersAndDeck.isSuccess) {
-      Success(tryPlayersAndDeck.get.copy(currentPlayer = 1))
-    } else {
-      tryPlayersAndDeck
-    }
+  def setCurrentPlayerToSB(): Table = {
+    this.copy(currentPlayer = 1)
   }
 
   def nextPlayer: Table = {
     this.copy(currentPlayer = (currentPlayer + 1) % players.length)
   }
-
-  def isOnlyOnePlayerInRound: Boolean = {
-    players.count(p => p.isInRound()) == 1
-  }
-
-  def getCurrentPlayer: Player = {
-    this.players(this.currentPlayer)
-  }
-
-  def getHighestOverallBet: Int = {
-    players.map(player => player.currentBet).max
-  }
-
-  def isPreFlop: Boolean = currentBettingRound == 0
-
-  def isSB(player: Player): Boolean = players(1) == player
-
-  def isBB(player: Player): Boolean = players(2) == player
 }
