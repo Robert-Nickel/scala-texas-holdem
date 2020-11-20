@@ -1,4 +1,4 @@
-package main.scala.poker.model
+package poker.model
 
 import poker.{bb, cardValues}
 

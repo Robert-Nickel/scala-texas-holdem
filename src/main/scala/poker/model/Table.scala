@@ -1,14 +1,17 @@
-package main.scala.poker.model
+package poker.model
 
-import poker.{PlayerDSL, bb, cardValues, sb}
+import main.scala.poker.Dealer
+import poker.dsl.PlayerDSL.PlayerDSL
+import poker.{bb, getDeck, sb}
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Random, Success, Try}
 
 case class Table(players: List[Player],
                  deck: List[Card] = List(),
                  currentPlayer: Int = 0,
                  currentBettingRound: Int = 0,
                  pot: Int = 0) {
+  // TODO: add board like board: List[Card] = List() (3 entries after flop, 4 after turn and 5 after river)
 
   def tryCurrentPlayerAct(humanInput: Option[String]): Try[Table] = {
     val newActivePlayerTry = (players(currentPlayer), humanInput) match {
@@ -62,6 +65,15 @@ case class Table(players: List[Player],
     }
   }
 
+  def reset: Try[Table] = {
+    val tryPlayersAndDeck = Dealer.handOutCards(players, Random.shuffle(getDeck))
+    if(tryPlayersAndDeck.isSuccess) {
+      Success(tryPlayersAndDeck.get.copy(currentPlayer = 1))
+    } else {
+      tryPlayersAndDeck
+    }
+  }
+
   def nextPlayer: Table = {
     this.copy(currentPlayer = (currentPlayer + 1) % players.length)
   }
@@ -83,54 +95,4 @@ case class Table(players: List[Player],
   def isSB(player: Player): Boolean = players(1) == player
 
   def isBB(player: Player): Boolean = players(2) == player
-
-  def getPrintableTable: String = {
-    def getCurrentBets = {
-      players.flatMap(player => {
-        val spacesAfterCurrentBet = 16 - player.currentBet.toString.length
-        s"${player.currentBet}" + " " * spacesAfterCurrentBet
-      }).mkString
-    }
-
-    def getHoleCards = {
-      players.map(player => {
-        s"${player.getHoleCardsString()}" + " " * 8
-      }).mkString
-    }
-
-    def getNames = {
-      players.head.name + " (D) " + " " * 8 +
-        players.tail.map(player => {
-          s"${player.name} " + " " * 12
-        }).mkString
-    }
-
-    def getStacks = {
-      players.map(player => {
-        val spacesAfterStack = 16 - player.stack.toString.length
-        s"${player.stack}" + " " * spacesAfterStack
-      }).mkString
-    }
-
-    def getCurrentPlayerUnderline = {
-      s"${" " * 16 * currentPlayer}________"
-    }
-
-    def getPot = {
-      " " * (39 - (pot.toString.length / 2)) + s"Pot: $pot"
-    }
-
-    def getBettingLine = {
-      "_" * 88
-    }
-
-    "\n" +
-      getPot + "\n" +
-      getCurrentBets + "\n" +
-      getBettingLine + "\n" +
-      getHoleCards + "\n" +
-      getNames + "\n" +
-      getStacks + "\n" +
-      getCurrentPlayerUnderline + "\n"
-  }
 }

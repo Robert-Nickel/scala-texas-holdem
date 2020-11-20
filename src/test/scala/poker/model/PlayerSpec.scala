@@ -1,10 +1,10 @@
 package poker.model
 
-import main.scala.poker.model.Player
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 import poker._
+import poker.dsl.PlayerDSL.PlayerDSL
 
 import scala.language.postfixOps
 import scala.util.Failure

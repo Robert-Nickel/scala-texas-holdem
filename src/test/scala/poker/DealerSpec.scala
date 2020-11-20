@@ -1,9 +1,10 @@
 package poker
 
 import main.scala.poker.Dealer
-import main.scala.poker.model.{Card, Player, Table}
+import poker.model.{Card, Player, Table}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import poker.dsl.PlayerDSL.PlayerDSL
 
 import scala.util.Failure
 
@@ -15,18 +16,18 @@ class DealerSpec extends AnyWordSpec with Matchers {
 
     "given a list of players with no hole cards and a deck" should {
       "return a list of players with different hole cards and a reduced deck" in {
-        val (newPlayers, newDeck) = Dealer.handOutCards(players, deck).get
-        newPlayers should be(List(Player("Bob", 200, Some(Card('T', 'h'), Card('T', 's'))),
+        val table = Dealer.handOutCards(players, deck).get
+        table.players should be(List(Player("Bob", 200, Some(Card('T', 'h'), Card('T', 's'))),
           Player("Ali", 200, Some(Card('A', 'h'), Card('A', 's'))))
         )
-        newDeck should be(List(Card('Q', 'h'), Card('Q', 's')))
+        table.deck should be(List(Card('Q', 'h'), Card('Q', 's')))
       }
     }
     "given an empty list of players and a deck" should {
       "return an empty list of players and a unchanged deck" in {
-        val (newPlayers, newDeck) = Dealer.handOutCards(List(), deck).get
-        newPlayers shouldBe empty
-        newDeck should be(deck)
+        val table = Dealer.handOutCards(List(), deck).get
+        table.players shouldBe empty
+        table.deck should be(deck)
       }
     }
     "given an list of players and a single card as deck" should {

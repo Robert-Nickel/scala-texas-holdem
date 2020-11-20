@@ -3,24 +3,24 @@ package main.scala.poker
 import java.io.{File, FileWriter, PrintWriter}
 
 import main.scala.poker.Dealer.{shouldPlayNextBettingRound, shouldPlayNextMove, shouldPlayNextRound}
-import main.scala.poker.model.Table
-import poker.{InitHelper, PlayerDSL, cardSymbols, cardValues}
+import poker.dsl.PlayerDSL.PlayerDSL
+import poker.dsl.TablePrintingDSL.TablePrintingDSL
+import poker.model.Table
+import poker.{getDeck, getPlayers, syntaxValidOptions}
 
 import scala.annotation.tailrec
 import scala.io.StdIn
-import scala.util.Random
+import scala.util.{Failure, Success}
 
 object Main extends App {
   new File("poker.txt").delete()
-  val startingStack = 200
-  val names = List("Amy", "Bob", "Mia", "Zoe", "Emi", "You")
-  val validPlayerOptions = Set("fold", "call") // TODO: add raise X and all-in if its implemented
 
-  val gameOverTable = playRounds(resetTable(Table(
-    InitHelper.createPlayers(names, startingStack),
-    Random.shuffle(InitHelper.createDeck(cardValues, cardSymbols)))))
-  printText(gameOverTable.getPrintableTable)
-  printText("Game over!")
+  Table(getPlayers, getDeck).reset match {
+    case Success(table) =>
+      printText(playRounds(table).getPrintableTable)
+      printText("Game over!")
+    case Failure(throwable) => printText(throwable.getMessage)
+  }
 
   @tailrec
   def playRounds(table: Table): Table = {
@@ -68,25 +68,23 @@ object Main extends App {
     }
   }
 
+  @tailrec
+  def getValidatedInput: String = {
+    printText(s"Your options are: $syntaxValidOptions")
+    StdIn.readLine() match {
+      case input if syntaxValidOptions.contains(input.toLowerCase) => input
+      case _ => getValidatedInput
+    }
+  }
+
   def getMaybeInput(table: Table): Option[String] = {
     val currentPlayer = table.getCurrentPlayer
     if (currentPlayer.isHumanPlayer &&
       currentPlayer.isInRound &&
       !(table.isSB(currentPlayer) || table.isBB(currentPlayer))) {
-      Some(getValidatedInput())
+      Some(getValidatedInput)
     } else {
       None
-    }
-  }
-
-  def resetTable(table: Table): Table = {
-    val tryPlayersAndDeck = Dealer.handOutCards(table.players, Random.shuffle(InitHelper.createDeck(cardValues, cardSymbols)))
-    if (tryPlayersAndDeck.isFailure) {
-      System.exit(1)
-      table
-    } else {
-      val playersAndDeck = tryPlayersAndDeck.get
-      table.copy(players = playersAndDeck._1, deck = playersAndDeck._2, currentPlayer = 1)
     }
   }
 
@@ -96,13 +94,5 @@ object Main extends App {
       close()
     }
     println(text)
-  }
-
-  def getValidatedInput(): String = {
-    printText(s"Your options are: $validPlayerOptions")
-    StdIn.readLine() match {
-      case input if validPlayerOptions.contains(input) => input
-      case _ => getValidatedInput()
-    }
   }
 }
