@@ -1,7 +1,7 @@
 
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
-import poker.model.Player
+import poker.model.{Action, Player, Verb}
 
 class HandHistoryParserTest extends AnyWordSpec {
   val parser = new HandHistoryParser
@@ -30,8 +30,15 @@ class HandHistoryParserTest extends AnyWordSpec {
     "return a new player with name adevlupec and 53368 stack " in {
        parser.parse(parser.player, "Seat 1: adevlupec (53368 in chips)").get should be(Player("adevlupec", 53368))
     }
+  }
+
+  "given Seat 2: Dette32 (10845 in chips)" should {
+    "Dette32: calls 100" in {
+      parser.parse(parser.action, "Dette32: calls 100").get should be(Action(Verb.CALL, Some(100)))
+    }
 
   }
+
 
 
 }

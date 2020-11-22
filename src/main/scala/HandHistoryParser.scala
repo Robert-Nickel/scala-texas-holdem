@@ -1,4 +1,4 @@
-import poker.model.Player
+import poker.model.{Action, Player, Verb}
 
 import scala.util.parsing.combinator.RegexParsers
 
@@ -15,12 +15,19 @@ class HandHistoryParser extends RegexParsers {
   // 4. Table Hero gets Hand Card
   // 5. Table Action
 
-  def integer: Parser[Int] =  """\d+""".r ^^ (_.toInt)
+  def integer: Parser[Int] =  """\d+""".r ^^ (_.trim.toInt)
   def word: Parser[String] = "([^\\s]+)".r
 
   def name1 = "Seat [1-6]: ".r ~> word
-  def name2 = word <~ ":".r
+  def name2 = "([^:]+)".r  <~ ":"
   def name = name1 | name2
+
+  def action = name2 ~> word ~ integer ^^ {
+    case word ~ integer =>
+      word match {
+      case "calls" => Action(Verb.CALL, Some(integer))
+    }
+  }
 
   def chips: Parser[Int] = "[(]".r ~> integer <~ "in chips[)]".r
 
