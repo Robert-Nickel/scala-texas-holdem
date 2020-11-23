@@ -8,7 +8,7 @@ package object poker {
   val startingStack = 200
   val sb = 1
   val bb = 2
-  val cardSymbols = List('h', 's', 'd', 'c')
+  val cardSymbols = List('♥', '♠', '♦', '♣')
   val cardValues: HashMap[Char, Set[Int]] = HashMap(
     ('2', Set(2)),
     ('3', Set(3)),

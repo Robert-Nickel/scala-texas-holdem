@@ -4,7 +4,7 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 import poker.dsl.TableDSL.TableDSL
-import poker.{bb, sb}
+import poker.{bb, getDeck, sb}
 
 import scala.util.Failure
 
@@ -99,6 +99,32 @@ class TableSpec extends AnyWordSpec with Matchers {
     "tryCurrentPlayerAct with input" should {
       "post bb and ignore input" in {
         table.tryCurrentPlayerAct(None).get.players(2).currentBet should be(bb)
+      }
+    }
+  }
+
+  "Given a table and a deck" when {
+    val deck = getDeck
+    val table = Table(threePlayers, getDeck)
+    "flop" should {
+      "show 3 board cards and reduce the deck by three" in {
+        val newTable = table.flop
+        newTable.deck.size should be(deck.size - 3)
+        newTable.board should be(List(Card('8', '♥'), Card('8', '♠'), Card('8', '♦')))
+      }
+    }
+    "turn" should {
+      "show turn card and reduce the deck by one" in {
+        val newTable = table.flop.turn
+        newTable.deck.size should be(deck.size - 4)
+        newTable.board should be(List(Card('8', '♥'), Card('8', '♠'), Card('8', '♦'), Card('8', '♣')))
+      }
+    }
+    "river" should {
+      "show river card and reduce the deck by one" in {
+        val newTable = table.flop.turn.river
+        newTable.deck.size should be(deck.size - 5)
+        newTable.board should be(List(Card('8', '♥'), Card('8', '♠'), Card('8', '♦'), Card('8', '♣'), Card('4', '♥')))
       }
     }
   }

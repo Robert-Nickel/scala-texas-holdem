@@ -10,6 +10,7 @@
 ~~- Der Spieler ist immer der Dealer am Anfang~~
 ~~- Schreibe Output in file für debugging~
 ~~- Dealer button rotation~~
+- Board
 - Eingabe Raise verarbeiten
 - Eingabe Allin verarbeiten 
 - dynamische Anzeige der Aktionen (Bet, Fold, Call) von Spielern

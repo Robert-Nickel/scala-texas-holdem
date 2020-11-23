@@ -1,3 +1,5 @@
+package poker.dsl
+
 import poker.model.{Action, Player, Verb}
 
 import scala.util.parsing.combinator.RegexParsers

@@ -26,6 +26,7 @@ object Main extends App {
     val newNewTable = newTable
       .payTheWinner
       .rotateButton
+      .resetBoard
       .handOutCards(Random.shuffle(getDeck)) match {
       case Success(table) =>
         if (table.shouldPlayNextRound) {
@@ -47,7 +48,7 @@ object Main extends App {
       .collectCurrentBets
     printText("------------- BETTING ROUND ENDS -------------")
     if (newTable.shouldPlayNextBettingRound) {
-      playBettingRounds(newTable.copy(currentBettingRound = table.currentBettingRound + 1))
+      playBettingRounds(newTable.copy(currentBettingRound = table.currentBettingRound + 1).showBoardIfRequired)
     } else {
       newTable
     }

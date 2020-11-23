@@ -1,16 +1,17 @@
 package poker.model
 
-import poker.dsl.TableDSL.{TableDSL}
+import poker.dsl.TableDSL.TableDSL
 import poker.{bb, sb}
 
+import scala.::
 import scala.util.{Failure, Success, Try}
 
 case class Table(players: List[Player],
                  deck: List[Card] = List(),
                  currentPlayer: Int = 0,
                  currentBettingRound: Int = 0,
-                 pot: Int = 0) {
-  // TODO: add board like board: List[Card] = List() (3 entries after flop, 4 after turn and 5 after river)
+                 pot: Int = 0,
+                 board: List[Card] = List()) {
 
   def tryCurrentPlayerAct(maybeInput: Option[String]): Try[Table] = {
     val newActivePlayerTry = (players(currentPlayer), maybeInput) match {
@@ -37,6 +38,32 @@ case class Table(players: List[Player],
     }
   }
 
+  def showBoardIfRequired: Table = {
+    if (currentBettingRound == 1) {
+      flop
+    } else if (currentBettingRound == 2) {
+      turn
+    } else if (currentBettingRound == 3) {
+      river
+    } else {
+      this
+    }
+  }
+
+  def flop: Table = {
+    val newBoard = board :+ deck.head :+ deck.tail.head :+ deck.tail.tail.head
+    val newDeck = deck.tail.tail.tail
+    copy(board = newBoard, deck = newDeck)
+  }
+
+  def turn: Table = {
+    copy(board = board :+ deck.head, deck = deck.tail)
+  }
+
+  def river: Table = {
+    turn
+  }
+
   def collectCurrentBets: Table = {
     this.copy(
       pot = pot + this.players.map(player => player.currentBet).sum,
@@ -50,14 +77,18 @@ case class Table(players: List[Player],
       // TODO: go the right way to decide which hand wins
       players.maxBy(player => player.getHandValue())
     }
-    this.copy(
+    copy(
       players = players.patch(players.indexOf(winner), Seq(winner.copy(stack = winner.stack + pot)), 1),
       pot = 0
     )
   }
 
   def rotateButton: Table = {
-    this.copy(players = players.drop(1) ++ players.take(1))
+    copy(players = players.drop(1) ++ players.take(1))
+  }
+
+  def resetBoard: Table = {
+    copy(board = List())
   }
 
   def handOutCards(deck: List[Card]): Try[Table] = {

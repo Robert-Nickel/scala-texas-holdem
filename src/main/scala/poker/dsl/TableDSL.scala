@@ -41,11 +41,24 @@ object TableDSL {
     }
 
     def getPrintableTable: String = {
+      def getPot = {
+        " " * (42 - (table.pot.toString.length / 2)) + s"Pot ${table.pot}"
+      }
+
+      def getBoard = {
+        " " * (44 - (table.board.size * 4) / 2) +
+        table.board.map(card => s"[${card.value}${card.symbol}]").mkString
+      }
+
       def getCurrentBets = {
-        table.players.flatMap(player => {
+        table.players.map(player => {
           val spacesAfterCurrentBet = 16 - player.currentBet.toString.length
           s"${player.currentBet}" + " " * spacesAfterCurrentBet
         }).mkString
+      }
+
+      def getBettingLine = {
+        "_" * 88
       }
 
       def getHoleCards = {
@@ -72,16 +85,9 @@ object TableDSL {
         s"${" " * 16 * table.currentPlayer}" + "_" * 8
       }
 
-      def getPot = {
-        " " * (39 - (table.pot.toString.length / 2)) + s"Pot: ${table.pot}"
-      }
-
-      def getBettingLine = {
-        "_" * 88
-      }
-
       "\n" +
-        getPot + "\n\n" +
+        getPot + "\n" +
+        getBoard + "\n\n" +
         getCurrentBets + "\n" +
         getBettingLine + "\n" +
         getHoleCards + "\n" +
