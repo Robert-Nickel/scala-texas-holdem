@@ -2,8 +2,10 @@ import poker.model.{Action, Player, Verb}
 
 import scala.util.parsing.combinator.RegexParsers
 
-/** Aim is to get multiple tables in correct order so its possible to replay the
- * game by calling printText(Table) */
+/**
+ * Aim is to get multiple tables in correct order so its possible to replay the
+ * game by calling printText(Table)
+ */
 class HandHistoryParser extends RegexParsers {
   // first parse the Player Names and only show the first 3 characters
   // read the table blind amounts
@@ -22,15 +24,17 @@ class HandHistoryParser extends RegexParsers {
   def name2 = "([^:]+)".r  <~ ":"
   def name = name1 | name2
 
-  def action = name2 ~> word ~ integer ^^ {
+  def action = name2 ~> word ~ opt(integer) ^^ {
     case word ~ integer =>
       word match {
-      case "calls" => Action(Verb.CALL, Some(integer))
+      case "calls" => Action(Verb.CALL, integer)
+      case "checks" => Action(Verb.CHECK, None)
+      case "folds" => Action(Verb.FOLD, None)
+      case "raises" => Action(Verb.RAISE, integer)
     }
   }
 
   def chips: Parser[Int] = "[(]".r ~> integer <~ "in chips[)]".r
 
   def player: Parser[Player] = name ~ chips ^^ { case name ~ chips => Player(name, chips)}
-
 }
