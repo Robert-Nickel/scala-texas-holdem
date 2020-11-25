@@ -14,7 +14,7 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
         "[xx][xx]"
       }
     } else {
-      "-" * 8
+      " " * 8
     }
   }
 
