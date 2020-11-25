@@ -1,5 +1,6 @@
 package poker.model
 
+import poker.evaluator.Evaluator
 import poker.{bb, sb}
 
 import scala.util.{Failure, Success, Try}
@@ -72,11 +73,14 @@ case class Table(players: List[Player],
     val winner = if (this.isOnlyOnePlayerInRound) {
       players.find(player => player.isInRound).get
     } else {
-      // TODO: go the right way to decide which hand wins
-      players.maxBy(player => player.getHandValue())
+      players
+        .filter(player => player.isInRound)
+        .maxBy(player => Evaluator.eval(
+          List(player.holeCards.get._1, player.holeCards.get._2)
+            .appendedAll(board)).value)
     }
     copy(
-      players = players.patch(players.indexOf(winner), Seq(winner.copy(stack = winner.stack + pot)), 1),
+      players = players.patch(players.indexOf(), Seq(winner.copy(stack = winner.stack + pot)), 1),
       pot = 0
     )
   }
