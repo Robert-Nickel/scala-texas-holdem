@@ -1,9 +1,7 @@
 package poker.model
 
-import poker.dsl.TableDSL.TableDSL
 import poker.{bb, sb}
 
-import scala.::
 import scala.util.{Failure, Success, Try}
 
 case class Table(players: List[Player],
@@ -91,15 +89,13 @@ case class Table(players: List[Player],
     copy(board = List())
   }
 
-  def handOutCards(deck: List[Card]): Try[Table] = {
+  def handOutCards(deck: List[Card]): Table = {
     handOutCardsToAllPlayers(players, deck)
   }
 
-  private def handOutCardsToAllPlayers(oldPlayers: List[Player], deck: List[Card], newPlayers: List[Player] = List()): Try[Table] = {
+  private def handOutCardsToAllPlayers(oldPlayers: List[Player], deck: List[Card], newPlayers: List[Player] = List()): Table = {
     (oldPlayers.size, deck.size) match {
-      case (oldPlayerSize, _) if oldPlayerSize == 0 => Success(Table(newPlayers, deck))
-      case (_, deckSize) if deckSize < oldPlayers.size * 2 =>
-        Failure(new Throwable("Not enough cards for remaining players."))
+      case (oldPlayerSize, _) if oldPlayerSize == 0 => Table(newPlayers, deck)
       case _ =>
         handOutCardsToAllPlayers(oldPlayers.tail, deck.tail.tail, newPlayers :+ oldPlayers.head.copy(holeCards = Some(deck.head, deck.tail.head)))
     }

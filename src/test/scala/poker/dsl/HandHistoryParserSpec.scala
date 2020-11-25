@@ -5,7 +5,7 @@ import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 import poker.model.{Action, Player, Verb}
 
-class HandHistoryParserTest extends AnyWordSpec {
+class HandHistoryParserSpec extends AnyWordSpec {
   val parser = new HandHistoryParser
 
   "Given integers" should {

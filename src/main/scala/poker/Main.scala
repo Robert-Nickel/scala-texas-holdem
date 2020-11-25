@@ -2,22 +2,18 @@ package poker
 
 import java.io.{File, FileWriter, PrintWriter}
 
-import poker.dsl.TableDSL.TableDSL
 import poker.model.Table
 
 import scala.annotation.tailrec
 import scala.io.StdIn
-import scala.util.{Failure, Random, Success}
+import scala.util.Random
 
 object Main extends App {
   new File("poker.txt").delete()
 
-  Table(getPlayers, getDeck).handOutCards(Random.shuffle(getDeck)) match {
-    case Success(table) =>
-      printText(playRounds(table).getPrintableTable)
-      printText("Game over!")
-    case Failure(throwable) => printText(throwable.getMessage)
-  }
+  val table = Table(players, getDeck).handOutCards(Random.shuffle(getDeck))
+  printText(playRounds(table).getPrintableTable)
+  printText("Game over!")
 
   def playRounds(table: Table): Table = {
     printText("------------- ROUND STARTS -------------")
@@ -27,16 +23,9 @@ object Main extends App {
       .payTheWinner
       .rotateButton
       .resetBoard
-      .handOutCards(Random.shuffle(getDeck)) match {
-      case Success(table) =>
-        if (table.shouldPlayNextRound) {
-          playRounds(table)
-        } else {
-          table
-        }
-      case Failure(throwable) =>
-        printText(throwable.getMessage)
-        newTable
+      .handOutCards(Random.shuffle(getDeck))
+    if (newNewTable.shouldPlayNextRound) {
+      playRounds(newNewTable)
     }
     newNewTable
   }

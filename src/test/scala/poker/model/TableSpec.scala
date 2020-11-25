@@ -3,19 +3,23 @@ package poker.model
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
-import poker.dsl.TableDSL.TableDSL
 import poker.{bb, getDeck, sb}
 
 import scala.util.Failure
 
 class TableSpec extends AnyWordSpec with Matchers {
 
-  val players = List(
+  val twoPlayers = List(
     Player("Bob", 200, Some(Card('A', 'h'), Card('A', 's')), currentBet = 10),
     Player("Jon", 200, Some(Card('K', 'h'), Card('K', 's'))))
 
+  val threePlayers = List(
+    Player("Alice").is(10).deep().hasCards("7h 2s"),
+    Player("Bob").is(100).deep().hasCards("7c 2d"),
+    Player("Charles").is(50).deep().hasCards("7s 2h"))
+
   "Given a Table with no specified current player" when {
-    val table = Table(players)
+    val table = Table(twoPlayers)
     "next player is called" should {
       "default currentPlayer = 0 and return a table with current player = 1" in {
         table.nextPlayer should be(table.copy(currentPlayer = 1))
@@ -33,7 +37,7 @@ class TableSpec extends AnyWordSpec with Matchers {
   }
 
   "Given a table with current player = 1 and currentBettingRound = 1" when {
-    val table = Table(players, currentPlayer = 1, currentBettingRound = 1)
+    val table = Table(twoPlayers, currentPlayer = 1, currentBettingRound = 1)
     "next player" should {
       "return a table with current player = 0" in {
         table.nextPlayer should be(table.copy(currentPlayer = 0))
@@ -71,10 +75,6 @@ class TableSpec extends AnyWordSpec with Matchers {
     }
   }
 
-  val threePlayers = List(
-    Player("Alice").is(10).deep().hasCards("7h 2s"),
-    Player("Bob").is(100).deep().hasCards("7c 2d"),
-    Player("Charles").is(50).deep().hasCards("7s 2h"))
   "Given a table with current player is SB and currentBettingRound = 0" when {
     val table = Table(threePlayers, currentPlayer = 1, currentBettingRound = 0)
     "tryCurrentPlayerAct" should {
@@ -126,6 +126,71 @@ class TableSpec extends AnyWordSpec with Matchers {
         newTable.deck.size should be(deck.size - 5)
         newTable.board should be(List(Card('8', '♥'), Card('8', '♠'), Card('8', '♦'), Card('8', '♣'), Card('4', '♥')))
       }
+    }
+  }
+
+  "Given a table and betting round = 0" should {
+    val table = Table(threePlayers, getDeck, currentBettingRound = 0)
+    "do nothing" in {
+      table.showBoardIfRequired.board.length should be(0)
+    }
+  }
+
+  "Given a table and betting round = 1" should {
+    val table = Table(threePlayers, getDeck, currentBettingRound = 1)
+    "flop" in {
+      table.showBoardIfRequired.board.length should be(3)
+    }
+  }
+
+  "Given a table and betting round = 2" should {
+    val table = Table(threePlayers, getDeck, currentBettingRound = 2)
+    "turn" in {
+      table.showBoardIfRequired.board.length should be(1)
+    }
+  }
+
+  "Given a table and betting round = 3" should {
+    val table = Table(threePlayers, getDeck, currentBettingRound = 3)
+    "river" in {
+      table.showBoardIfRequired.board.length should be(1)
+    }
+  }
+
+  "Given a table and players with current bet and flop and current player = 0" when {
+    val table = Table(twoPlayers, getDeck).flop
+
+    "collect current bets" should {
+      "set current bets to 0 and push it to the pot" in {
+        val newTable = table.collectCurrentBets
+        newTable.pot should be(10)
+        newTable.players.head.currentBet should be(0)
+      }
+    }
+    "rotate button" should {
+      "make Jon the new dealer" in {
+        table.rotateButton.players.head.name should be("Jon")
+      }
+    }
+    "reset board" should {
+      "leave an empty board" in {
+        table.resetBoard.board.length should be(0)
+      }
+    }
+    "set the current player to SB" should {
+      "set current player = 1" in {
+        table.setCurrentPlayerToSB().currentPlayer should be(1)
+      }
+    }
+  }
+
+  "Given table with players without cards" should {
+    val table = Table(List(Player("Bernard"), Player("Arnold")))
+    "give cards to the players" in {
+      val newTable = table.handOutCards(getDeck)
+      newTable.players.head.holeCards.isDefined shouldBe true
+      newTable.players(1).holeCards.isDefined shouldBe true
+      newTable.deck.length should be(48)
     }
   }
 }
