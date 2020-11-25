@@ -5,8 +5,7 @@ import scala.util.Try
 
 package object poker {
   val names = List("Amy", "Bob", "Mia", "Zoe", "Emi", "You")
-  val players = names.map(name => Player(name, startingStack))
-  val startingStack = 200
+  val players = names.map(name => Player(name, 200))
   val sb = 1
   val bb = 2
   val cardSymbols = List('♥', '♠', '♦', '♣')
