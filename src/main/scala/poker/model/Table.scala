@@ -1,6 +1,6 @@
 package poker.model
 
-import poker.evaluator.Evaluator
+import poker.evaluator.{Evaluation, Evaluator}
 import poker.{bb, sb}
 
 import scala.util.{Failure, Success, Try}
@@ -10,7 +10,12 @@ case class Table(players: List[Player],
                  currentPlayer: Int = 0,
                  currentBettingRound: Int = 0,
                  pot: Int = 0,
-                 board: List[Card] = List()) {
+                 board: List[Card] = List()
+                ) {
+
+  def resetPlayerActedThisBettingRound(): Table = {
+    this.copy(players = players.map(player => player.copy(hasActedThisBettingRound = false)))
+  }
 
   def tryCurrentPlayerAct(maybeInput: Option[String]): Try[Table] = {
     val newActivePlayerTry = (players(currentPlayer), maybeInput) match {
@@ -70,19 +75,27 @@ case class Table(players: List[Player],
   }
 
   def payTheWinner: Table = {
-    val winner = if (this.isOnlyOnePlayerInRound) {
-      players.find(player => player.isInRound).get
-    } else {
-      players
-        .filter(player => player.isInRound)
-        .maxBy(player => Evaluator.eval(
-          List(player.holeCards.get._1, player.holeCards.get._2)
-            .appendedAll(board)).value)
-    }
+    val winner = getTheWinner
     copy(
       players = players.patch(players.indexOf(), Seq(winner.copy(stack = winner.stack + pot)), 1),
       pot = 0
     )
+  }
+
+  def evaluate(player: Player): Evaluation = {
+    Evaluator.eval(
+      List(player.holeCards.get._1, player.holeCards.get._2)
+        .appendedAll(board))
+  }
+
+  def getTheWinner: Player = {
+    if (this.isOnlyOnePlayerInRound) {
+      players.find(player => player.isInRound).get
+    } else {
+      players
+        .filter(player => player.isInRound)
+        .maxBy(player => evaluate(player).value)
+    }
   }
 
   def rotateButton: Table = {
@@ -105,8 +118,12 @@ case class Table(players: List[Player],
     }
   }
 
-  def setCurrentPlayerToSB(): Table = {
-    this.copy(currentPlayer = 1)
+  def setCurrentPlayerToPlayerWithWorstPosition(): Table = {
+    val activePlayersExceptDealer = players.filter(player => player.isInRound).tail
+    val worstPosition = if (activePlayersExceptDealer.nonEmpty) {
+      players.indexWhere(player => player.name == activePlayersExceptDealer.head.name)
+    } else 0
+    this.copy(currentPlayer = worstPosition)
   }
 
   def nextPlayer: Table = {

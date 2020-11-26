@@ -179,7 +179,7 @@ class TableSpec extends AnyWordSpec with Matchers {
     }
     "set the current player to SB" should {
       "set current player = 1" in {
-        table.setCurrentPlayerToSB().currentPlayer should be(1)
+        table.setCurrentPlayerToPlayerWithWorstPosition().currentPlayer should be(1)
       }
     }
   }
@@ -217,6 +217,17 @@ class TableSpec extends AnyWordSpec with Matchers {
       val newTable = table.payTheWinner
       newTable.players.head.stack should be(300_000)
       newTable.pot should be(0)
+    }
+  }
+
+  "Given table where all players have acted " should {
+    val table = Table(players = List(
+      Player("Bernard", hasActedThisBettingRound = true).hasCards("2♠ 7♥"),
+      Player("Arnold", hasActedThisBettingRound =  true)))
+
+    "reset the hasActedThisBettingRoundFlag" in {
+      val newTable = table.resetPlayerActedThisBettingRound()
+      newTable.players.exists( player => player.hasActedThisBettingRound) should be(false)
     }
   }
 }

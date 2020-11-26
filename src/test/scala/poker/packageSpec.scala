@@ -17,7 +17,29 @@ class packageSpec extends AnyWordSpec {
 
     )
     "get a printable table" in {
-      table.getPrintableTable should be("\n                                       Pot 1000000\n                                  [A♥][K♥][Q♥][J♥][T♥]\n\n0               0               0               \n________________________________________________________________________________________\n                                                \nGin (D)         Tonic             Ice             \n0               0               0               \n                                ________\n")
+      table.getPrintableTable() should be("\n                                       Pot 1000000\n                                  [A♥][K♥][Q♥][J♥][T♥]\n\n0               0               0               \n________________________________________________________________________________________\n                                                \nGin (D)         Tonic             Ice             \n0               0               0               \n                                ________\n")
+    }
+  }
+
+  "Given a table at showdown" should {
+    val table = Table(
+      players = List(
+        Player("Amy", holeCards = Some(Card('7','♣'), Card('J','♥')), stack=176),
+        Player("Bob", holeCards = Some(Card('9','♠'), Card('6','♣')), stack=176),
+        Player("Mia", holeCards = Some(Card('3','♠'), Card('4','♦')), stack=176),
+        Player("Zoe", holeCards = Some(Card('2','♣'), Card('5','♠')), stack=176),
+        Player("Emi", holeCards = Some(Card('7','♦'), Card('J','♦')), stack=176),
+        Player("You", holeCards = Some(Card('4','♥'), Card('6','♥')), stack=176)
+      ),
+      deck = getDeck,
+      currentPlayer = 4,
+      currentBettingRound = 3,
+      pot = 144,
+      board = List(Card('9', '♥'), Card('9', '♣'), Card('K', '♦'), Card('Q', '♠'), Card('8', '♣')),
+
+    )
+    "get a printable winning" in {
+      table.getPrintableWinning should be("                                         Pot 144\n                                  [9♥][9♣][K♦][Q♠][8♣]\n\n0               0               0               0               0               0               \n________________________________________________________________________________________\n[7♣][J♥]        [9♠][6♣]        [3♠][4♦]        [2♣][5♠]        [7♦][J♦]        [4♥][6♥]        \nAmy (D)         Bob             Mia             Zoe             Emi             You             \n176             176             176             176             176             176             \n                                                                ________\n\nBob wins 144 with three of a kind")
     }
   }
 
@@ -88,10 +110,19 @@ class packageSpec extends AnyWordSpec {
     }
   }
 
-  "Given a table where all players have the same current bet" should {
+  "Given a table where all players have the same current bet and has not acted before" should {
     val table = Table(players = List(
-      Player("A", currentBet = 10, holeCards = Some(Card('A', '♥'), Card('K', '♥'))),
-      Player("B", currentBet = 10, holeCards = Some(Card('Q', '♥'), Card('J', '♥')))))
+      Player("A", currentBet = 10, holeCards = Some(Card('A', '♥'), Card('K', '♥')), hasActedThisBettingRound = true),
+      Player("B", currentBet = 10, holeCards = Some(Card('Q', '♥'), Card('J', '♥')), hasActedThisBettingRound = false)))
+    "not play next move" in {
+      table.shouldPlayNextMove shouldBe true
+    }
+  }
+
+  "Given a table where all players have the same current bet and acted before" should {
+    val table = Table(players = List(
+      Player("A", currentBet = 10, holeCards = Some(Card('A', '♥'), Card('K', '♥')), hasActedThisBettingRound = true),
+      Player("B", currentBet = 10, holeCards = Some(Card('Q', '♥'), Card('J', '♥')), hasActedThisBettingRound = true)))
     "not play next move" in {
       table.shouldPlayNextMove shouldBe false
     }

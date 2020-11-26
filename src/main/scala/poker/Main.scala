@@ -12,13 +12,16 @@ object Main extends App {
   new File("poker.txt").delete()
 
   val table = Table(players, getDeck).handOutCards(Random.shuffle(getDeck))
-  printText(playRounds(table).getPrintableTable)
+  printText(playRounds(table).getPrintableTable())
   printText("Game over!")
 
   def playRounds(table: Table): Table = {
     printText("------------- ROUND STARTS -------------")
     val newTable = playBettingRounds(table)
+    printText(newTable.getPrintableWinning)
+    Thread.sleep(3_000)
     printText("------------- ROUND ENDS -------------")
+
     val newNewTable = newTable
       .payTheWinner
       .rotateButton
@@ -33,7 +36,7 @@ object Main extends App {
   @tailrec
   def playBettingRounds(table: Table): Table = {
     printText("------------- BETTING ROUND STARTS -------------")
-    val newTable = playMoves(table.setCurrentPlayerToSB())
+    val newTable = playMoves(table.setCurrentPlayerToPlayerWithWorstPosition().resetPlayerActedThisBettingRound())
       .collectCurrentBets
     printText("------------- BETTING ROUND ENDS -------------")
     if (newTable.shouldPlayNextBettingRound) {
@@ -55,8 +58,12 @@ object Main extends App {
 
   @tailrec
   def playMove(table: Table): Table = {
-    printText(table.getPrintableTable)
-    val newTryTable = table.tryCurrentPlayerAct(getMaybeInput(table))
+    printText(table.getPrintableTable())
+    val maybeInput = getMaybeInput(table)
+    if (maybeInput.isEmpty) {
+      Thread.sleep(Random.nextInt(2000) + 500)
+    }
+    val newTryTable = table.tryCurrentPlayerAct(maybeInput)
     if (newTryTable.isFailure) {
       playMove(table)
     } else {

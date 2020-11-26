@@ -1,3 +1,4 @@
+import poker.Main.printText
 import poker.model.{Card, Player, Table}
 
 import scala.collection.immutable.HashMap
@@ -58,15 +59,23 @@ package object poker {
     }
 
     def shouldPlayNextBettingRound: Boolean = {
-      table.currentBettingRound < 4 && !table.isOnlyOnePlayerInRound
+      table.currentBettingRound < 3 && !table.isOnlyOnePlayerInRound
     }
 
     def shouldPlayNextMove: Boolean = {
       val maxCurrentBet = table.players.map(p => p.currentBet).max
-      table.players.exists(player => player.currentBet != maxCurrentBet && player.isInRound)
+      table.players.exists(player =>
+        player.isInRound && (player.currentBet != maxCurrentBet || !player.hasActedThisBettingRound))
     }
 
-    def getPrintableTable: String = {
+    def getPrintableWinning: String = {
+      val winner = table.getTheWinner
+      val evaluation = table.evaluate(winner)
+      table.getPrintableTable(showCards = true) + "\n" +
+        s"${winner.name} wins ${table.pot} with ${evaluation.handName}"
+    }
+
+    def getPrintableTable(showCards: Boolean = false): String = {
       def getPot = {
         " " * (42 - (table.pot.toString.length / 2)) + s"Pot ${table.pot}"
       }
@@ -87,9 +96,9 @@ package object poker {
         "_" * 88
       }
 
-      def getHoleCards = {
+      def getHoleCards(showCards: Boolean = false) = {
         table.players.map(player => {
-          s"${player.getHoleCardsString()}" + " " * 8
+          s"${player.getHoleCardsString(showCards)}" + " " * 8
         }).mkString
       }
 
@@ -116,7 +125,7 @@ package object poker {
         getBoard + "\n\n" +
         getCurrentBets + "\n" +
         getBettingLine + "\n" +
-        getHoleCards + "\n" +
+        getHoleCards(showCards) + "\n" +
         getNames + "\n" +
         getStacks + "\n" +
         getCurrentPlayerUnderline + "\n"
@@ -158,4 +167,5 @@ package object poker {
       player.name == "You"
     }
   }
+
 }
