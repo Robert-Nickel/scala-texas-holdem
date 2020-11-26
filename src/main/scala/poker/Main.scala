@@ -1,39 +1,43 @@
-package main.scala.poker
+package poker
 
-import main.scala.poker.Dealer.{shouldPlayNextBettingRound, shouldPlayNextMove, shouldPlayNextRound}
-import main.scala.poker.model.Table
-import poker.{InitHelper, PlayerDSL, PrintHelper, cardSymbols, cardValues}
+import java.io.{File, FileWriter, PrintWriter}
+
+import poker.model.Table
 
 import scala.annotation.tailrec
 import scala.io.StdIn
 import scala.util.Random
 
 object Main extends App {
-  val startingStack = 200
-  val names = List("Amy", "Bob", "Mia", "Zoe", "Emi", "You")
-  val validPlayerOptions = Set("fold", "call") // TODO: add raise X and all-in if its implemented
+  new File("poker.txt").delete()
 
-  val gameOverTable = playRounds(Table(
-    InitHelper.createPlayers(names, startingStack),
-    Random.shuffle(InitHelper.createDeck(cardValues, cardSymbols))))
-  drawTable(gameOverTable)
-  println("Game over!")
+  val table = Table(players, getDeck).handOutCards(Random.shuffle(getDeck))
+  printText(playRounds(table).getPrintableTable)
+  printText("Game over!")
 
-  @tailrec
   def playRounds(table: Table): Table = {
+    printText("------------- ROUND STARTS -------------")
     val newTable = playBettingRounds(table)
-    if (shouldPlayNextRound(newTable)) {
-      playRounds(resetTable(newTable))
-    } else {
-      newTable
+    printText("------------- ROUND ENDS -------------")
+    val newNewTable = newTable
+      .payTheWinner
+      .rotateButton
+      .resetBoard
+      .handOutCards(Random.shuffle(getDeck))
+    if (newNewTable.shouldPlayNextRound) {
+      playRounds(newNewTable)
     }
+    newNewTable
   }
 
   @tailrec
   def playBettingRounds(table: Table): Table = {
-    val newTable = playMoves(table)
-    if (shouldPlayNextBettingRound(newTable)) {
-      playBettingRounds(newTable.copy(currentBettingRound = table.currentBettingRound + 1))
+    printText("------------- BETTING ROUND STARTS -------------")
+    val newTable = playMoves(table.setCurrentPlayerToSB())
+      .collectCurrentBets
+    printText("------------- BETTING ROUND ENDS -------------")
+    if (newTable.shouldPlayNextBettingRound) {
+      playBettingRounds(newTable.copy(currentBettingRound = table.currentBettingRound + 1).showBoardIfRequired)
     } else {
       newTable
     }
@@ -42,7 +46,7 @@ object Main extends App {
   @tailrec
   def playMoves(table: Table): Table = {
     val newTable = playMove(table)
-    if (shouldPlayNextMove(newTable)) {
+    if (newTable.shouldPlayNextMove) {
       playMoves(newTable)
     } else {
       newTable
@@ -51,70 +55,40 @@ object Main extends App {
 
   @tailrec
   def playMove(table: Table): Table = {
+    printText(table.getPrintableTable)
     val newTryTable = table.tryCurrentPlayerAct(getMaybeInput(table))
     if (newTryTable.isFailure) {
       playMove(table)
     } else {
-      val newTable = newTryTable.get.nextPlayer
-      drawTable(newTable)
-      newTable
+      newTryTable.get.nextPlayer
+    }
+  }
+
+  @tailrec
+  def getValidatedInput: String = {
+    printText(s"Your options are: $syntaxValidOptions")
+    StdIn.readLine() match {
+      case input if syntaxValidOptions.contains(input.toLowerCase) => input
+      case _ => getValidatedInput
     }
   }
 
   def getMaybeInput(table: Table): Option[String] = {
     val currentPlayer = table.getCurrentPlayer
-    if (currentPlayer.isHumanPlayer && currentPlayer.isInRound) {
-      Some(getValidatedInput())
+    if (currentPlayer.isHumanPlayer &&
+      currentPlayer.isInRound &&
+      !(table.isSB(currentPlayer) || table.isBB(currentPlayer))) {
+      Some(getValidatedInput)
     } else {
       None
     }
   }
 
-  def resetTable(table: Table): Table = {
-    val tryPlayersAndDeck = Dealer.handOutCards(table.players, Random.shuffle(InitHelper.createDeck(cardValues, cardSymbols)))
-    if (tryPlayersAndDeck.isFailure) {
-      System.exit(1)
-      table
-    } else {
-      val playersAndDeck = tryPlayersAndDeck.get
-      table.copy(players = playersAndDeck._1, deck = playersAndDeck._2)
+  def printText(text: String): Unit = {
+    new PrintWriter(new FileWriter("poker.txt", true)) {
+      write(text);
+      close()
     }
-  }
-
-  def drawTable(table: Table): Unit = {
-    for (_ <- 1 to 100) {
-      println("")
-    }
-    table.players.foreach(player => {
-      val spacesAfterCurrentBet = 16 - player.currentBet.toString.length
-      print(s"${player.currentBet}" + " " * spacesAfterCurrentBet)
-    })
-    println("")
-    println("_" * 88)
-    table.players.foreach(player => {
-      print(s"${player.getHoleCardsString()}" + " " * 8)
-    })
-    println("")
-    table.players.foreach(player => {
-      print(s"${player.name} " + " " * 12)
-    })
-    println("")
-    table.players.foreach(player => {
-      val spacesAfterStack = 16 - player.stack.toString.length
-      print(s"${player.stack}" + " " * spacesAfterStack)
-    })
-    println("")
-    print(s"${PrintHelper.getCurrentPlayerUnderscore(table.currentPlayer)}")
-    for (_ <- 1 to 4) {
-      println("")
-    }
-  }
-
-  def getValidatedInput(): String = {
-    println(s"Your options are: $validPlayerOptions")
-    StdIn.readLine() match {
-      case input if validPlayerOptions.contains(input) => input
-      case _ => getValidatedInput()
-    }
+    println(text)
   }
 }

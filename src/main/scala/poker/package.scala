@@ -1,12 +1,15 @@
-import main.scala.poker.model.{Card, Player, Table}
+import poker.model.{Card, Player, Table}
 
 import scala.collection.immutable.HashMap
 import scala.util.Try
 
 package object poker {
-
-  val cardSymbols = List('h', 's', 'd', 'c')
-  val cardValues = HashMap(
+  val names = List("Amy", "Bob", "Mia", "Zoe", "Emi", "You")
+  val players = names.map(name => Player(name, 200))
+  val sb = 1
+  val bb = 2
+  val cardSymbols = List('♥', '♠', '♦', '♣')
+  val cardValues: HashMap[Char, Set[Int]] = HashMap(
     ('2', Set(2)),
     ('3', Set(3)),
     ('4', Set(4)),
@@ -21,9 +24,104 @@ package object poker {
     ('K', Set(13)),
     ('A', Set(1, 14))
   )
+  val syntaxValidOptions = Set("fold", "call")
 
-  val sb = 1
-  val bb = 2
+  def getDeck: List[Card] = {
+    (for {
+      v <- cardValues
+      s <- cardSymbols
+    } yield Card(v._1, s)).toList
+  }
+
+  implicit class TableDSL(table: Table) {
+
+    def getCurrentPlayer: Player = {
+      table.players(table.currentPlayer)
+    }
+
+    def getHighestOverallBet: Int = {
+      table.players.map(player => player.currentBet).max
+    }
+
+    def isOnlyOnePlayerInRound: Boolean = {
+      table.players.count(p => p.isInRound) == 1
+    }
+
+    def isSB(player: Player): Boolean = table.players(1) == player
+
+    def isBB(player: Player): Boolean = table.players(2) == player
+
+    def isPreFlop: Boolean = table.currentBettingRound == 0
+
+    def shouldPlayNextRound: Boolean = {
+      table.players.count(p => p.isInGame()) > 1
+    }
+
+    def shouldPlayNextBettingRound: Boolean = {
+      table.currentBettingRound < 4 && !table.isOnlyOnePlayerInRound
+    }
+
+    def shouldPlayNextMove: Boolean = {
+      val maxCurrentBet = table.players.map(p => p.currentBet).max
+      table.players.exists(player => player.currentBet != maxCurrentBet && player.isInRound)
+    }
+
+    def getPrintableTable: String = {
+      def getPot = {
+        " " * (42 - (table.pot.toString.length / 2)) + s"Pot ${table.pot}"
+      }
+
+      def getBoard = {
+        " " * (44 - (table.board.size * 4) / 2) +
+          table.board.map(card => s"[${card.value}${card.symbol}]").mkString
+      }
+
+      def getCurrentBets = {
+        table.players.map(player => {
+          val spacesAfterCurrentBet = 16 - player.currentBet.toString.length
+          s"${player.currentBet}" + " " * spacesAfterCurrentBet
+        }).mkString
+      }
+
+      def getBettingLine = {
+        "_" * 88
+      }
+
+      def getHoleCards = {
+        table.players.map(player => {
+          s"${player.getHoleCardsString()}" + " " * 8
+        }).mkString
+      }
+
+      def getNames = {
+        table.players.head.name + " (D) " + " " * 8 +
+          table.players.tail.map(player => {
+            s"${player.name} " + " " * 12
+          }).mkString
+      }
+
+      def getStacks = {
+        table.players.map(player => {
+          val spacesAfterStack = 16 - player.stack.toString.length
+          s"${player.stack}" + " " * spacesAfterStack
+        }).mkString
+      }
+
+      def getCurrentPlayerUnderline = {
+        s"${" " * 16 * table.currentPlayer}" + "_" * 8
+      }
+
+      "\n" +
+        getPot + "\n" +
+        getBoard + "\n\n" +
+        getCurrentBets + "\n" +
+        getBettingLine + "\n" +
+        getHoleCards + "\n" +
+        getNames + "\n" +
+        getStacks + "\n" +
+        getCurrentPlayerUnderline + "\n"
+    }
+  }
 
   implicit class PlayerDSL(player: Player) {
     def is(stack: Int): PlayerDSL = PlayerDSL(player = player.copy(stack = stack))
@@ -40,11 +138,11 @@ package object poker {
 
     def post(blind: Int): Try[Player] = posts(blind)
 
-    def isInRound(): Boolean = {
+    def isInRound: Boolean = {
       player.holeCards.isDefined
     }
 
-    def areInRound() = isInRound()
+    def areInRound() = isInRound
 
     def isInGame(): Boolean = {
       player.stack > 0 || player.currentBet > 0
@@ -56,10 +154,8 @@ package object poker {
     // TODO: handle failure case if shove is called with stack == 0
     def shoves(unit: Unit): Player = player.raise(player.stack, 0).get
 
-    def isHumanPlayer(): Boolean = {
+    def isHumanPlayer: Boolean = {
       player.name == "You"
     }
-
   }
-
 }

@@ -1,6 +1,5 @@
 package poker.model
 
-import main.scala.poker.model.{Card}
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 

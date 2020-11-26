@@ -1,6 +1,5 @@
 package poker.model
 
-import main.scala.poker.model.Player
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
@@ -27,7 +26,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
       }
     }
     "is human player is called" in {
-      player.isHumanPlayer() should be (true)
+      player.isHumanPlayer should be(true)
     }
   }
   "Given a Player with name 'You', and no hole cards" when {
@@ -71,15 +70,15 @@ class PlayerSpec extends AnyWordSpec with Matchers {
       }
     }
     "is human player is called" in {
-      ali.isHumanPlayer() should be (false)
+      ali.isHumanPlayer should be(false)
     }
   }
 
   "Given a Player with name 'Ali' and no hole cards" when {
     val ali = (Player("Ali") is 200 deep)
     "getHoleCardsAsString is called" should {
-      "return --------" in {
-        ali.getHoleCardsString() should be("--------")
+      "return whitespaces" in {
+        ali.getHoleCardsString() should be("        ")
       }
     }
   }
@@ -88,7 +87,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     val ali = (Player("Ali") is 200 deep).hasCards("Ah As")
     "actAsBot is called" should {
       "call, if a 5BB raise is smaller than double the highestOverallBet" in {
-        ali.actAsBot(8, cardValues).currentBet should be(8)
+        ali.actAsBot(8).currentBet should be(8)
       }
     }
   }
@@ -97,7 +96,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     val ali = (Player("Ali") is 200 deep).hasCards("Qh 9s")
     "actAsBot is called" should {
       "call, if a 3BB raise is smaller than double the highestOverallBet" in {
-        ali.actAsBot(4, cardValues).currentBet should be(4)
+        ali.actAsBot(4).currentBet should be(4)
       }
     }
   }
@@ -148,7 +147,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
 
     "act as bot with aces" should {
       "raise 5 bb" in {
-        val newBob = bob.actAsBot(4, cardValues)
+        val newBob = bob.actAsBot(4)
         newBob.currentBet should be(10)
       }
     }
@@ -173,7 +172,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     val bob = (Player("Bob") is 200 deep) hasCards "Qh 9s"
     "act as bot" should {
       "raise 3 BB" in {
-        bob.actAsBot(0, cardValues).currentBet should be(6)
+        bob.actAsBot(0).currentBet should be(6)
       }
     }
   }
@@ -182,7 +181,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     val bob = (Player("Bob") is 200 deep) hasCards "3h 7s"
     "act as bot" should {
       "call" in {
-        bob.actAsBot(4, cardValues).currentBet should be(4)
+        bob.actAsBot(4).currentBet should be(4)
       }
     }
   }
@@ -191,7 +190,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     val bob = (Player("Bob") is 16 deep) hasCards "3h 7s"
     "act as bot" should {
       "all-in" in {
-        bob.actAsBot(4, cardValues).currentBet should be(16)
+        bob.actAsBot(4).currentBet should be(16)
       }
     }
   }
@@ -200,7 +199,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     val bob = (Player("Bob") is 16 deep) hasCards "3h 7s"
     "act as bot with 37o is called" should {
       "all-in" in {
-        bob.actAsBot(4, cardValues).currentBet should be(16)
+        bob.actAsBot(4).currentBet should be(16)
       }
     }
   }
@@ -209,7 +208,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     val bob = (Player("Bob") is 200 deep) hasCards "4h 6s"
     "act as bot is called" should {
       "fold" in {
-        val newBob = bob.actAsBot(20, cardValues)
+        val newBob = bob.actAsBot(20)
         newBob.currentBet should be(0)
         newBob.stack should be(200)
       }
@@ -219,16 +218,16 @@ class PlayerSpec extends AnyWordSpec with Matchers {
   "Given players with different hole cards" when {
     "hand value is calculated" should {
       "return 36" in {
-        (Player("Jim") hasCards "Ah As").getHandValue(cardValues) should be(36)
+        (Player("Jim") hasCards "Ah As").getHandValue() should be(36)
       }
       "return 39" in {
-        (Player("Jim") hasCards "Ah Kh").getHandValue(cardValues) should be(39)
+        (Player("Jim") hasCards "Ah Kh").getHandValue() should be(39)
       }
       "return 30" in {
-        (Player("Jim") hasCards "Ah Qs").getHandValue(cardValues) should be(30)
+        (Player("Jim") hasCards "Ah Qs").getHandValue() should be(30)
       }
       "return 0 when jim has no cards" in {
-        Player("Jim").getHandValue(cardValues) should be(0)
+        Player("Jim").getHandValue() should be(0)
       }
     }
   }
