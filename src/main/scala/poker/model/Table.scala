@@ -118,7 +118,7 @@ case class Table(players: List[Player],
     }
   }
 
-  def setCurrentPlayerToPlayerWithWorstPosition(): Table = {
+  def setCurrentPlayerToPlayerWithWorstPosition: Table = {
     val activePlayersExceptDealer = players.filter(player => player.isInRound).tail
     val worstPosition = if (activePlayersExceptDealer.nonEmpty) {
       players.indexWhere(player => player.name == activePlayersExceptDealer.head.name)

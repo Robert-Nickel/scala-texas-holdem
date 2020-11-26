@@ -179,7 +179,7 @@ class TableSpec extends AnyWordSpec with Matchers {
     }
     "set the current player to SB" should {
       "set current player = 1" in {
-        table.setCurrentPlayerToPlayerWithWorstPosition().currentPlayer should be(1)
+        table.setCurrentPlayerToPlayerWithWorstPosition.currentPlayer should be(1)
       }
     }
   }
@@ -223,11 +223,21 @@ class TableSpec extends AnyWordSpec with Matchers {
   "Given table where all players have acted " should {
     val table = Table(players = List(
       Player("Bernard", hasActedThisBettingRound = true).hasCards("2♠ 7♥"),
-      Player("Arnold", hasActedThisBettingRound =  true)))
+      Player("Arnold", hasActedThisBettingRound = true)))
 
     "reset the hasActedThisBettingRoundFlag" in {
       val newTable = table.resetPlayerActedThisBettingRound()
-      newTable.players.exists( player => player.hasActedThisBettingRound) should be(false)
+      newTable.players.exists(player => player.hasActedThisBettingRound) should be(false)
+    }
+  }
+
+  "Given table everyone except the dealer have folded" should {
+    val table = Table(List(
+      Player("Amy").hasCards("Ah As"),
+      Player("Bob the SB"),
+      Player("Jim the BB")), currentPlayer = 0)
+    "set the dealer as current player" in {
+      table.setCurrentPlayerToPlayerWithWorstPosition.currentPlayer should be(0)
     }
   }
 }
