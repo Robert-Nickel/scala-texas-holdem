@@ -86,7 +86,7 @@ object Main extends App {
 
   def printText(text: String): Unit = {
     new PrintWriter(new FileWriter("poker.txt", true)) {
-      write(text);
+      write(text + "\n")
       close()
     }
     println(text)
