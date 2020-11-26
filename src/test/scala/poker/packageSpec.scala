@@ -25,21 +25,17 @@ class packageSpec extends AnyWordSpec {
     val table = Table(
       players = List(
         Player("Amy", holeCards = Some(Card('7','♣'), Card('J','♥')), stack=176),
-        Player("Bob", holeCards = Some(Card('9','♠'), Card('6','♣')), stack=176),
-        Player("Mia", holeCards = Some(Card('3','♠'), Card('4','♦')), stack=176),
-        Player("Zoe", holeCards = Some(Card('2','♣'), Card('5','♠')), stack=176),
-        Player("Emi", holeCards = Some(Card('7','♦'), Card('J','♦')), stack=176),
-        Player("You", holeCards = Some(Card('4','♥'), Card('6','♥')), stack=176)
+        Player("Bob", holeCards = Some(Card('9','♠'), Card('6','♣')), stack=176)
       ),
       deck = getDeck,
       currentPlayer = 4,
       currentBettingRound = 3,
-      pot = 144,
+      pot = 100,
       board = List(Card('9', '♥'), Card('9', '♣'), Card('K', '♦'), Card('Q', '♠'), Card('8', '♣')),
 
     )
     "get a printable winning" in {
-      table.getPrintableWinning should be("                                         Pot 144\n                                  [9♥][9♣][K♦][Q♠][8♣]\n\n0               0               0               0               0               0               \n________________________________________________________________________________________\n[7♣][J♥]        [9♠][6♣]        [3♠][4♦]        [2♣][5♠]        [7♦][J♦]        [4♥][6♥]        \nAmy (D)         Bob             Mia             Zoe             Emi             You             \n176             176             176             176             176             176             \n                                                                ________\n\nBob wins 144 with three of a kind")
+      table.getPrintableWinning should be("\n                                         Pot 100\n                                  [9♥][9♣][K♦][Q♠][8♣]\n\n0               0               \n________________________________________________________________________________________\n[7♣][J♥]        [9♠][6♣]        \nAmy (D)         Bob             \n176             176             \n                                                                ________\n\nBob wins 100 with three of a kind")
     }
   }
 
