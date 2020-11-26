@@ -17,7 +17,7 @@ class packageSpec extends AnyWordSpec {
 
     )
     "get a printable table" in {
-      table.getPrintableTable should be("\n                                       Pot 1000000\n                                  [A♥][K♥][Q♥][J♥][T♥]\n\n0               0               0               \n________________________________________________________________________________________\n--------        --------        --------        \nGin (D)         Tonic             Ice             \n0               0               0               \n                                ________\n")
+      table.getPrintableTable should be("\n                                       Pot 1000000\n                                  [A♥][K♥][Q♥][J♥][T♥]\n\n0               0               0               \n________________________________________________________________________________________\n                                                \nGin (D)         Tonic             Ice             \n0               0               0               \n                                ________\n")
     }
   }
 

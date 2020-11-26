@@ -77,8 +77,8 @@ class PlayerSpec extends AnyWordSpec with Matchers {
   "Given a Player with name 'Ali' and no hole cards" when {
     val ali = (Player("Ali") is 200 deep)
     "getHoleCardsAsString is called" should {
-      "return --------" in {
-        ali.getHoleCardsString() should be("--------")
+      "return whitespaces" in {
+        ali.getHoleCardsString() should be("        ")
       }
     }
   }
