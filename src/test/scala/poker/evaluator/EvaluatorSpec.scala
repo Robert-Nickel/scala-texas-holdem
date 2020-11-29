@@ -29,6 +29,10 @@ class EvaluatorSpec extends AnyWordSpec{
     }
   }
 
+  "Given Ah Kh and Board: As 3d 4c" should {
+    val handAndBoard = List(Card('A', '♥'), Card('K', '♥'),Card('A', '♠'), Card('3', '♦'), Card('4', '♣'))
+  }
+
   "Given a heart straight flush " should {
     val straightFlush = List(
       Card('9', '♥'), Card('K','♥'), Card('Q','♥'), Card('J', '♥'), Card('T', '♥'), Card('3', '♥'), Card('5', '♥'));

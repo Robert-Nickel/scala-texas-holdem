@@ -1,7 +1,14 @@
 package poker.model
 
+import akka.actor.Props
+import akka.pattern.ask
+import akka.util.Timeout
+import poker.actor.FlopActor
+import poker.actor.PostflopEvaluator.{Start, system}
 import poker.{bb, cardValues}
 
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success, Try}
 
 case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] = None, currentBet: Int = 0, hasActedThisBettingRound: Boolean = false) {
@@ -44,7 +51,8 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
   }
 
   // TODO: maybe consider extracting this
-  def actAsBot(highestOverallBet: Int): Player = {
+  def actAsBot(highestOverallBet: Int /* , handAndBoard: List[Card] */): Player = {
+
     val handValue = getHandValue()
 
     handValue match {
