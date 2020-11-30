@@ -6,7 +6,6 @@ import poker.getDeck
 import poker.model.Card
 
 case class TurnActor(handAndBoard: List[Card]) extends Actor {
-  var waitingFor = Set.empty[ActorRef]
   var value = 0
   var count = 0
 
@@ -16,21 +15,11 @@ case class TurnActor(handAndBoard: List[Card]) extends Actor {
       remainingDeck.foreach(card => {
         val riverActorRef = context.actorOf(Props(RiverActor(handAndBoard :+ card)), s"riverActor${card.toLetterNotation}")
         riverActorRef ! Evaluate()
-        waitingFor += riverActorRef
       })
     }
 
-    case evalAndActor: (Evaluation, ActorRef) => {
-      waitingFor -= evalAndActor._2
-      value += evalAndActor._1.value
-      count += 1
-      if (waitingFor.isEmpty) {
-        val result = if (count != 0) {
-          value / count
-        }
-        else -1
-        context.parent ! result
-      }
+    case evaluation: Evaluation => {
+      context.parent ! evaluation
     }
   }
 }
