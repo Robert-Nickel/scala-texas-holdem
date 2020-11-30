@@ -9,8 +9,7 @@ case class Evaluate()
 case class RiverActor(handAndBoard: List[Card]) extends Actor {
   override def receive: Receive = {
     case Evaluate() => {
-      context.sender() ! Evaluator.eval(handAndBoard)
-      context.sender() ! RemoveAnActor(self)
+      context.parent ! (Evaluator.eval(handAndBoard), self)
     }
   }
 }
