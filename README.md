@@ -7,10 +7,10 @@ A CLI version of Texas Holdem using Scala for the course "Reactive Programming" 
 All typical cash game rules of no limit texas holdem poker should be covered.
 One human player can play against 5 bot players by using the following commands:
 - [x] fold
-- [ ] check
+- [x] check
 - [x] call
-- [ ] raise 20 (or any other number)
-- [ ] all-in
+- [x] raise 20 (or any other number)
+- [x] all-in
 
 Since it is a running project, not all features are implemented yet.
 A lot of different aspects of the Scala Programming Language are covered, therefore some focus is put onto the technology rather than the game itself.
@@ -18,7 +18,7 @@ To evaluate hands, we borrowed the solution from the TwoPlusTwo hand ranks evalu
 To get the implementation of the evaluation done, we looked [here](https://github.com/chenosaurus/poker-evaluator), [here](https://github.com/LativDeveloper/PokerGym) and [here](https://github.com/tommy-a/zetebot/blob/master/src/tools/TwoPlusTwo.java).
 
 Features to cover in the near future:
-- [ ] Bots using actors to make smarter decisions
-- [ ] raise & all-in command
-- [ ] check
-- [ ] Adjust game speed so that it is viable for human players to follow up with what happens
+- [ ] Players don't get cards, if they don't have chips
+- [ ] Players don't act, if they are all-in
+- [x] Bots using actors to make smarter decisions
+- [x] Adjust game speed so that it is viable for human players to follow up with what happens

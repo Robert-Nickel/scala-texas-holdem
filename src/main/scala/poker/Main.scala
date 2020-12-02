@@ -73,9 +73,9 @@ object Main extends App {
 
   @tailrec
   def getValidatedInput: String = {
-    printText(s"Your options are: $syntaxValidOptions")
+    printText(s"Your options are:\nfold\ncheck\ncall\nraise 123 (with any number)\nall-in")
     StdIn.readLine() match {
-      case input if syntaxValidOptions.contains(input.toLowerCase) => input
+      case input if isValidSyntax(input) => input
       case _ => getValidatedInput
     }
   }
@@ -97,5 +97,9 @@ object Main extends App {
       close()
     }
     println(text)
+  }
+
+  def isValidSyntax(input: String) = {
+    """fold|check|call|raise \d+|all-in""".r.matches(input)
   }
 }

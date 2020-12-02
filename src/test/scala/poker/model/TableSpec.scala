@@ -63,6 +63,25 @@ class TableSpec extends AnyWordSpec with Matchers {
         table.tryCurrentPlayerAct(Some("call")).get.players(1).stack should be < 200
       }
     }
+    "tryCurrentPlayerAct with input 'raise 120'" should {
+      "return a table where active player has stack = 120" in {
+        val player = table.tryCurrentPlayerAct(Some("raise 120")).get.players(1)
+        player.stack should be(80)
+        player.currentBet should be(120)
+      }
+    }
+    "tryCurrentPlayerAct with input 'all-in'" should {
+      "return a table where active player has stack = 0" in {
+        val player = table.tryCurrentPlayerAct(Some("all-in")).get.players(1)
+        player.stack should be(0)
+        player.currentBet should be(200)
+      }
+    }
+    "tryCurrentPlayerAct with input 'check', but the first player's current bet is 10" should {
+      "return a Failure" in {
+        table.tryCurrentPlayerAct(Some("check")) shouldBe a[Failure[_]]
+      }
+    }
     "tryCurrentPlayerAct with no input" should {
       "return a table where the active player raises 5 bb" in {
         table.tryCurrentPlayerAct(None).get.players(1).currentBet should be(10)
@@ -85,6 +104,17 @@ class TableSpec extends AnyWordSpec with Matchers {
     "tryCurrentPlayerAct with input" should {
       "post sb and ignore input" in {
         table.tryCurrentPlayerAct(None).get.players(1).currentBet should be(sb)
+      }
+    }
+  }
+
+  "Given table with highestOverallBet = 0" when {
+    val table = Table(threePlayers, currentPlayer = 1, currentBettingRound = 1)
+    "tryCurrentPlayerAct with input 'check'" should {
+      "return a table where active player has checked" in {
+        val player = table.tryCurrentPlayerAct(Some("check")).get.players(1)
+        player.stack should be(100)
+        player.currentBet should be(0)
       }
     }
   }

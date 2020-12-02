@@ -1,14 +1,7 @@
 package poker.model
 
-import akka.actor.Props
-import akka.pattern.ask
-import akka.util.Timeout
-import poker.actor.FlopActor
-import poker.actor.PostflopEvaluator.{Start, system}
 import poker.{bb, cardValues}
 
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success, Try}
 
 case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] = None, currentBet: Int = 0, hasActedThisBettingRound: Boolean = false) {
@@ -27,6 +20,16 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
 
   def fold(): Player = {
     this.copy(holeCards = None)
+  }
+
+  def check(highestOverallBet: Int): Try[Player] = {
+    println(s"highestOverallBet: $highestOverallBet")
+    println(s"currentBet: $currentBet")
+    if (highestOverallBet == currentBet) {
+      Success(this.copy(hasActedThisBettingRound = true))
+    } else {
+      Failure(new Throwable(s"You cannot check, the current bet is $highestOverallBet"))
+    }
   }
 
   def call(highestOverallBet: Int): Player = {
@@ -72,7 +75,7 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
         }
       case _ if stack < 10 * bb =>
         raise(stack, highestOverallBet).get
-        // TODO: What if no prior bet has been made? Technically its a check then.
+      // TODO: What if no prior bet has been made? Technically its a check then.
       case _ if highestOverallBet <= 3 * bb => call(highestOverallBet)
       case _ => fold()
     }

@@ -25,7 +25,6 @@ package object poker {
     ('K', Set(13)),
     ('A', Set(1, 14))
   )
-  val syntaxValidOptions = Set("fold", "call")
 
   def getDeck: List[Card] = {
     (for {
