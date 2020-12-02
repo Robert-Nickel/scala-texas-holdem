@@ -2,42 +2,30 @@ package poker.actor
 
 import java.util.UUID.randomUUID
 
-import akka.actor.{Actor, ActorRef, Props}
+import akka.actor.Props
 import poker.evaluator.Evaluation
 import poker.getDeck
 import poker.model.Card
 
-// TODO: random order of deck to increase statistical significance for incomplete evaluations
+case class FlopActor(handAndBoard: List[Card]) extends PokerActor {
 
-case class Start()
+  override def receive: Receive = {
+    case StartCommand => handleStartCommand
+    case evaluation: Evaluation => handleEvaluation(evaluation)
+    case GetResultCommand => handleGetResultCommand
+  }
 
-case class Result()
+  override def handleEvaluation(evaluation: Evaluation) = {
+    value += evaluation.value
+    count += 1
+  }
 
-
-case class FlopActor(handAndBoard: List[Card]) extends Actor {
-  var value = 0
-  var count = 0
-
-  override def receive: PartialFunction[Any, Unit] = {
-    case Start =>
-      getDeck
-        .filter(card => !handAndBoard.contains(card))
-        .foreach(card => {
-          val turnActorRef = context.actorOf(Props(TurnActor(handAndBoard :+ card)), s"turnActor${card.toLetterNotation}" + randomUUID().toString)
-          turnActorRef ! Start
-        })
-
-    case evaluation: Evaluation => {
-      value += evaluation.value
-      count += 1
-    }
-
-    case Result => {
-      val result = if (count != 0)
-        value / count
-      else
-        -1
-      context.sender() ! result
-    }
+  private def handleStartCommand = {
+    getDeck
+      .filter(card => !handAndBoard.contains(card))
+      .foreach(card => {
+        val turnActorRef = context.actorOf(Props(TurnActor(handAndBoard :+ card)), s"turnActor${card.toLetterNotation}" + randomUUID().toString)
+        turnActorRef ! StartCommand
+      })
   }
 }

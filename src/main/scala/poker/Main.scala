@@ -14,6 +14,7 @@ object Main extends App {
   val table = Table(players, getDeck).handOutCards(Random.shuffle(getDeck))
   printText(playRounds(table).getPrintableTable())
   printText("Game over!")
+  actorSystem.terminate()
 
   def playRounds(table: Table): Table = {
     printText("------------- ROUND STARTS -------------")
@@ -60,9 +61,6 @@ object Main extends App {
   def playMove(table: Table): Table = {
     printText(table.getPrintableTable())
     val maybeInput = getMaybeInput(table)
-    if (maybeInput.isEmpty) {
-      Thread.sleep(Random.nextInt(2000) + 500)
-    }
     val newTryTable = table.tryCurrentPlayerAct(maybeInput)
     if (newTryTable.isFailure) {
       playMove(table)

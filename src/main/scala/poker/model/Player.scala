@@ -1,8 +1,17 @@
 package poker.model
 
-import poker.{bb, cardValues}
+import java.util.UUID.randomUUID
 
-import scala.util.{Failure, Success, Try}
+import akka.actor.{ActorRef, Props}
+import akka.pattern.ask
+import akka.util.Timeout
+import poker.actor.{FlopActor, GetResultCommand, RiverActor, StartCommand, TurnActor}
+import poker.{actorSystem, bb, cardValues}
+
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
+import scala.language.postfixOps
+import scala.util.{Failure, Random, Success, Try}
 
 case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] = None, currentBet: Int = 0, hasActedThisBettingRound: Boolean = false) {
 
@@ -23,8 +32,6 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
   }
 
   def check(highestOverallBet: Int): Try[Player] = {
-    println(s"highestOverallBet: $highestOverallBet")
-    println(s"currentBet: $currentBet")
     if (highestOverallBet == currentBet) {
       Success(this.copy(hasActedThisBettingRound = true))
     } else {
@@ -40,6 +47,10 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
     this.copy(stack = newStack, currentBet = newCurrentBet, hasActedThisBettingRound = true)
   }
 
+  def allIn(highestOverallBet: Int): Player = {
+    raise(stack + currentBet, highestOverallBet).get
+  }
+
   def raise(amount: Int, highestOverallBet: Int): Try[Player] = {
     amount match {
       case _ if stack == 0 =>
@@ -53,11 +64,55 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
     }
   }
 
-  // TODO: maybe consider extracting this
-  def actAsBot(highestOverallBet: Int /* , handAndBoard: List[Card] */): Player = {
+  def actAsBot(highestOverallBet: Int, board: List[Card] = List()): Player = {
+    if (board.isEmpty) {
+      val handValue = getHoleCardsValue()
+      actPreflop(handValue, highestOverallBet)
+    } else {
+      val flopValue = getPostFlopValue(board)
+      actPostFlop(flopValue, highestOverallBet)
+    }
+  }
 
-    val handValue = getHandValue()
+  def getPostFlopValue(board: List[Card]): Int = {
+    val handAndBoard = holeCards.get._1 :: holeCards.get._2 :: board
+    implicit val timeout: Timeout = Timeout(1 milliseconds)
+    val actor: ActorRef = if (handAndBoard.size == 5) {
+      val flopActor = actorSystem.actorOf(Props(FlopActor(handAndBoard)), "FlopActor" + randomUUID())
+      flopActor ! StartCommand
+      flopActor
+    } else if (handAndBoard.size == 6) {
+      val turnActor = actorSystem.actorOf(Props(TurnActor(handAndBoard)), "TurnActor")
+      turnActor ! StartCommand
+      turnActor
+    } else {
+      val riverActor = actorSystem.actorOf(Props(RiverActor(handAndBoard)), "RiverActor")
+      riverActor ! StartCommand
+      riverActor
+    }
+    Thread.sleep(Random.nextInt(3_000) + 500)
+    Await.result(actor ? GetResultCommand, timeout.duration).asInstanceOf[Int]
+  }
 
+  private def actPostFlop(handValue: Int, highestOverallBet: Int): Player = {
+    handValue match {
+      case handValue if handValue > 24_000 => {
+        allIn(highestOverallBet)
+      }
+      case handValue if handValue > 12_000 => {
+        val tryRaise = raise(highestOverallBet * 3, highestOverallBet)
+        if (tryRaise.isFailure) {
+          call(highestOverallBet)
+        } else {
+          tryRaise.get
+        }
+      }
+      case handValue if handValue > 8_000 => call(highestOverallBet)
+      case _ => fold()
+    }
+  }
+
+  private def actPreflop(handValue: Int, highestOverallBet: Int): Player = {
     handValue match {
       case handValue if handValue > 30 =>
         val tryRaise = raise(5 * bb, highestOverallBet)
@@ -81,7 +136,7 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
     }
   }
 
-  def getHandValue(): Int = {
+  def getHoleCardsValue(): Int = {
     if (holeCards.isDefined) {
       val card1 = holeCards.get._1
       val card2 = holeCards.get._2

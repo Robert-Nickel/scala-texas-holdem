@@ -1,4 +1,4 @@
-import poker.Main.printText
+import akka.actor.ActorSystem
 import poker.model.{Card, Player, Table}
 
 import scala.collection.immutable.HashMap
@@ -25,6 +25,8 @@ package object poker {
     ('K', Set(13)),
     ('A', Set(1, 14))
   )
+  val actorSystem = ActorSystem("PostFlopEvaluator")
+
 
   def getDeck: List[Card] = {
     (for {

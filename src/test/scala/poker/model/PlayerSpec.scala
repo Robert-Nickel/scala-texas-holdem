@@ -1,6 +1,8 @@
 package poker.model
 
 import org.scalatest.matchers.must.Matchers
+import org.scalatest.matchers.must.Matchers.be
+import org.scalatest.matchers.should
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 import poker._
@@ -88,6 +90,21 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     "actAsBot is called" should {
       "call, if a 5BB raise is smaller than double the highestOverallBet" in {
         ali.actAsBot(8).currentBet should be(8)
+      }
+    }
+  }
+
+  "Given a Player with flopped quads" when {
+    val player = (Player("Timon") is 200 deep).hasCards("A♥ A♠")
+    val board = List(Card('A', '♣'), Card('A', '♦'), Card('2', '♦'))
+    "getFlopValue is called" should {
+      "return 32_920" in {
+        player.getPostFlopValue(board) should be(32_920)
+      }
+    }
+    "actAsBot is called" should {
+      "shove all-in" in {
+        player.actAsBot(20, board).currentBet should be(200)
       }
     }
   }
@@ -218,16 +235,16 @@ class PlayerSpec extends AnyWordSpec with Matchers {
   "Given players with different hole cards" when {
     "hand value is calculated" should {
       "return 36" in {
-        (Player("Jim") hasCards "Ah As").getHandValue() should be(36)
+        (Player("Jim") hasCards "Ah As").getHoleCardsValue() should be(36)
       }
       "return 39" in {
-        (Player("Jim") hasCards "Ah Kh").getHandValue() should be(39)
+        (Player("Jim") hasCards "Ah Kh").getHoleCardsValue() should be(39)
       }
       "return 30" in {
-        (Player("Jim") hasCards "Ah Qs").getHandValue() should be(30)
+        (Player("Jim") hasCards "Ah Qs").getHoleCardsValue() should be(30)
       }
       "return 0 when jim has no cards" in {
-        Player("Jim").getHandValue() should be(0)
+        Player("Jim").getHoleCardsValue() should be(0)
       }
     }
   }

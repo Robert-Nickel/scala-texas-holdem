@@ -30,13 +30,13 @@ case class Table(players: List[Player],
       case (activePlayer, Some("fold")) => Success(activePlayer.fold())
       case (activePlayer, Some("check")) => activePlayer.check(this.getHighestOverallBet)
       case (activePlayer, Some("call")) => Success(activePlayer.call(this.getHighestOverallBet))
-      case (activePlayer, Some("all-in")) => activePlayer.raise(activePlayer.stack + activePlayer.currentBet, this.getHighestOverallBet)
+      case (activePlayer, Some("all-in")) => Success(activePlayer.allIn(this.getHighestOverallBet))
       case (activePlayer, Some(_)) if maybeInput.get.startsWith("raise ") => {
         val raiseAmount = maybeInput.get.split(" ")(1)
         activePlayer.raise(raiseAmount.toInt, this.getHighestOverallBet)
       }
       // bot player
-      case (activePlayer, None) => Success(activePlayer.actAsBot(this.getHighestOverallBet))
+      case (activePlayer, None) => Success(activePlayer.actAsBot(this.getHighestOverallBet, board))
       case _ => Failure(new Throwable("invalid move by player"))
     }
     newActivePlayerTry match {

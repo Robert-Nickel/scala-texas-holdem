@@ -1,15 +1,18 @@
 package poker.actor
 
-import akka.actor.Actor
-import poker.evaluator.Evaluator
+import poker.evaluator.{Evaluation, Evaluator}
 import poker.model.Card
 
 case class Evaluate()
 
-case class RiverActor(handAndBoard: List[Card]) extends Actor {
+case class RiverActor(handAndBoard: List[Card]) extends PokerActor {
+
   override def receive: Receive = {
-    case Evaluate() => {
-      context.parent ! Evaluator.eval(handAndBoard)
-    }
+    case Evaluate() => handleEvaluateCommand
+    case GetResultCommand => handleGetResultCommand
+  }
+
+  private def handleEvaluateCommand = {
+    handleEvaluation(Evaluator.eval(handAndBoard))
   }
 }
