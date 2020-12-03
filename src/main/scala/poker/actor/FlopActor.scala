@@ -11,20 +11,15 @@ case class FlopActor(handAndBoard: List[Card]) extends PokerActor {
 
   override def receive: Receive = {
     case StartCommand => handleStartCommand
-    case evaluation: Evaluation => handleEvaluation(evaluation)
+    case evaluation: Evaluation => handleEvaluation(evaluation, shouldEmit = false)
     case GetResultCommand => handleGetResultCommand
-  }
-
-  override def handleEvaluation(evaluation: Evaluation) = {
-    value += evaluation.value
-    count += 1
   }
 
   private def handleStartCommand = {
     getDeck
       .filter(card => !handAndBoard.contains(card))
       .foreach(card => {
-        val turnActorRef = context.actorOf(Props(TurnActor(handAndBoard :+ card)), s"turnActor${card.toLetterNotation}" + randomUUID().toString)
+        val turnActorRef = context.actorOf(Props(TurnActor(handAndBoard :+ card, shouldEmit=true)), s"turnActor${card.toLetterNotation}" + randomUUID().toString)
         turnActorRef ! StartCommand
       })
   }

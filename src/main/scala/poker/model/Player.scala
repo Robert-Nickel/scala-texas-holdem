@@ -5,7 +5,7 @@ import java.util.UUID.randomUUID
 import akka.actor.{ActorRef, Props}
 import akka.pattern.ask
 import akka.util.Timeout
-import poker.actor.{FlopActor, GetResultCommand, RiverActor, StartCommand, TurnActor}
+import poker.actor.{Evaluate, FlopActor, GetResultCommand, RiverActor, StartCommand, TurnActor}
 import poker.{actorSystem, bb, cardValues}
 
 import scala.concurrent.Await
@@ -82,19 +82,23 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
       flopActor ! StartCommand
       flopActor
     } else if (handAndBoard.size == 6) {
-      val turnActor = actorSystem.actorOf(Props(TurnActor(handAndBoard)), "TurnActor")
+      val turnActor = actorSystem.actorOf(Props(TurnActor(handAndBoard)), "TurnActor" + randomUUID())
       turnActor ! StartCommand
       turnActor
     } else {
-      val riverActor = actorSystem.actorOf(Props(RiverActor(handAndBoard)), "RiverActor")
-      riverActor ! StartCommand
+      val riverActor = actorSystem.actorOf(Props(RiverActor(handAndBoard)), "RiverActor" + randomUUID())
+      riverActor ! Evaluate
       riverActor
     }
-    Thread.sleep(Random.nextInt(3_000) + 500)
+    think
     Await.result(actor ? GetResultCommand, timeout.duration).asInstanceOf[Int]
   }
 
-  private def actPostFlop(handValue: Int, highestOverallBet: Int): Player = {
+  private def think = {
+    Thread.sleep(Random.nextInt(3_000) + 500)
+  }
+
+  def actPostFlop(handValue: Int, highestOverallBet: Int): Player = {
     handValue match {
       case handValue if handValue > 24_000 => {
         allIn(highestOverallBet)
@@ -102,7 +106,7 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
       case handValue if handValue > 12_000 => {
         val tryRaise = raise(highestOverallBet * 3, highestOverallBet)
         if (tryRaise.isFailure) {
-          call(highestOverallBet)
+          fold()
         } else {
           tryRaise.get
         }
@@ -113,6 +117,7 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
   }
 
   private def actPreflop(handValue: Int, highestOverallBet: Int): Player = {
+    think
     handValue match {
       case handValue if handValue > 30 =>
         val tryRaise = raise(5 * bb, highestOverallBet)

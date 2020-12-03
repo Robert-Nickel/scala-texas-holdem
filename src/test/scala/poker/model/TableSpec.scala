@@ -14,9 +14,9 @@ class TableSpec extends AnyWordSpec with Matchers {
     Player("Jon", 200, Some(Card('K', 'h'), Card('K', 's'))))
 
   val threePlayers = List(
-    Player("Alice").is(10).deep().hasCards("7h 2s"),
-    Player("Bob").is(100).deep().hasCards("7c 2d"),
-    Player("Charles").is(50).deep().hasCards("7s 2h"))
+    Player("Alice").is(10).deep.hasCards("7h 2s"),
+    Player("Bob").is(100).deep.hasCards("7c 2d"),
+    Player("Charles").is(50).deep.hasCards("7s 2h"))
 
   "Given a Table with no specified current player" when {
     val table = Table(twoPlayers)
@@ -41,6 +41,11 @@ class TableSpec extends AnyWordSpec with Matchers {
     "next player" should {
       "return a table with current player = 0" in {
         table.nextPlayer should be(table.copy(currentPlayer = 0))
+      }
+    }
+    "collectHoleCards" should {
+      "return a table with players without cards" in {
+        table.collectHoleCards.players.exists(p => p.holeCards.isDefined) should be(false)
       }
     }
     "get current player" should {
@@ -215,7 +220,7 @@ class TableSpec extends AnyWordSpec with Matchers {
   }
 
   "Given table with players without cards" should {
-    val table = Table(List(Player("Bernard"), Player("Arnold")))
+    val table = Table(List(Player("Bernard") is 200 deep, Player("Arnold") is 50 deep))
     "give cards to the players" in {
       val newTable = table.handOutCards(getDeck)
       newTable.players.head.holeCards.isDefined shouldBe true
@@ -261,13 +266,34 @@ class TableSpec extends AnyWordSpec with Matchers {
     }
   }
 
-  "Given table everyone except the dealer have folded" should {
+  "Given table where everyone except the dealer have folded" should {
     val table = Table(List(
       Player("Amy").hasCards("Ah As"),
       Player("Bob the SB"),
       Player("Jim the BB")), currentPlayer = 0)
     "set the dealer as current player" in {
       table.setCurrentPlayerToPlayerWithWorstPosition.currentPlayer should be(0)
+    }
+  }
+
+  "Given table where Jim is not in game" should {
+    val table = Table(List(
+      Player("Amy") is 200 deep,
+      Player("Jim") is 0 deep)
+    )
+    "handout cards to Amy but not to Jim" in {
+      val players = table.handOutCards(getDeck).players
+      players(0).holeCards.isDefined should be(true)
+      players(1).holeCards.isDefined should be(false)
+    }
+  }
+
+  "Given table where Bob is all-in" should {
+    val table = Table(List(
+      Player("Bob", currentBet = 50) hasCards("Ah Ac") is 0 deep
+    ))
+    "skip Bob" in {
+      table.tryCurrentPlayerAct(None).get.players.head.hasActedThisBettingRound should be(true)
     }
   }
 }

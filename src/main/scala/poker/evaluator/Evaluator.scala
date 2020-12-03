@@ -87,7 +87,7 @@ object Evaluator {
   inputStream.read(handRanks)
   inputStream.close()
 
-  private def evalCard(value: Int) = {
+  def evalCard(value: Int) = {
     val offset = value * 4
     ByteBuffer.wrap(handRanks, offset, handRanks.length - offset).order(ByteOrder.LITTLE_ENDIAN).getInt
   }
@@ -96,7 +96,10 @@ object Evaluator {
     val intCards = cards.map(card => cardIntMap(card.value.toLower.toString + symbolsMap(card.symbol)))
     var p = 53
     intCards.foreach(card => p = evalCard(p + card))
+    if(cards.size == 5 || cards.size == 6) {
+      p = evalCard(p)
+    }
     val handAddress = p >> 12
-    Evaluation(handAddress, p & 0x00000fff, p, handTypes(if (handAddress <= 9) handAddress else 0))
+    Evaluation(handAddress, p & 0x00000fff, p, handTypes(handAddress))
   }
 }

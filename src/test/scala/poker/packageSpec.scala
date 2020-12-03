@@ -35,7 +35,7 @@ class packageSpec extends AnyWordSpec {
 
     )
     "get a printable winning" in {
-      table.getPrintableWinning should be("\n                                         Pot 100\n                                  [9♥][9♣][K♦][Q♠][8♣]\n\n0               0               \n________________________________________________________________________________________\n[7♣][J♥]        [9♠][6♣]        \nAmy (D)         Bob             \n176             176             \n                                                                ________\n\nBob wins 100 with three of a kind")
+      table.getPrintableWinning should be("\n                                         Pot 100\n                                  [9♥][9♣][K♦][Q♠][8♣]\n\n0               0               \n________________________________________________________________________________________\n[7♣][J♥]        [9♠][6♣]        \nAmy (D)         Bob             \n176             176             \n                                                                ________\n\nBob wins 100 with three of a kind\n\n")
     }
   }
 

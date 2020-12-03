@@ -20,13 +20,14 @@ object Main extends App {
     printText("------------- ROUND STARTS -------------")
     val newTable = playBettingRounds(table)
     printText(newTable.getPrintableWinning)
-    Thread.sleep(3_000)
+    Thread.sleep(10_000)
     printText("------------- ROUND ENDS -------------")
 
     val newNewTable = newTable
       .payTheWinner
       .rotateButton
       .resetBoard
+      .collectHoleCards
       .handOutCards(Random.shuffle(getDeck))
     if (newNewTable.shouldPlayNextRound) {
       playRounds(newNewTable)
@@ -39,6 +40,7 @@ object Main extends App {
     printText("------------- BETTING ROUND STARTS -------------")
     val newTable = playMoves(table.setCurrentPlayerToPlayerWithWorstPosition.resetPlayerActedThisBettingRound())
       .collectCurrentBets
+    Thread.sleep(4_500)
     printText("------------- BETTING ROUND ENDS -------------")
     if (newTable.shouldPlayNextBettingRound) {
       playBettingRounds(newTable.copy(currentBettingRound = table.currentBettingRound + 1).showBoardIfRequired)
@@ -82,6 +84,7 @@ object Main extends App {
     val currentPlayer = table.getCurrentPlayer
     if (currentPlayer.isHumanPlayer &&
       currentPlayer.isInRound &&
+      !currentPlayer.isAllIn &&
       !(table.isSB(currentPlayer) || table.isBB(currentPlayer))) {
       Some(getValidatedInput)
     } else {

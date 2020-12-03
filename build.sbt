@@ -1,8 +1,12 @@
+import scala.languageFeature.postfixOps
+
 name := "scala-texas-holdem"
 
 version := "0.1"
 
 scalaVersion := "2.13.3"
+
+scalacOptions ++= Seq("-language:postfixOps")
 
 libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.2.2"

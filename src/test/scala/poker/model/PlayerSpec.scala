@@ -249,4 +249,65 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     }
   }
 
+  "Given a player (bot) with Ah Ks and flopped Top Pair" should {
+    val bob = (Player("Bob") is 200 deep) hasCards "K♥ A♠"
+    val board = List(Card('A', '♥'), Card('2', '♦'), Card('5', '♣'))
+    "return postflop value" in {
+      bob.getPostFlopValue(board) should be(12_815)
+    }
+  }
+
+  "Given a player (bot) with Ah Ks and turned Top Pair" should {
+    val bob = (Player("Bob") is 200 deep) hasCards "K♥ A♠"
+    val board = List(Card('8', '♥'), Card('2', '♦'), Card('5', '♣'), Card('A', '♣'))
+    "return postflop value" in {
+      bob.getPostFlopValue(board) should be(11_832)
+    }
+  }
+
+  "Given a player (bot) with Ah Ks and rivered two pairs" should {
+    val bob = (Player("Bob") is 200 deep) hasCards "K♥ A♠"
+    val board = List(Card('8', '♥'), Card('2', '♦'), Card('5', '♣'), Card('A', '♣'), Card('2', '♣'))
+    "return postflop value" in {
+      bob.getPostFlopValue(board) should be(13_025)
+    }
+  }
+
+  "Given a player (bot) with hand value 12001" should {
+    val handValue = 12_001
+    val highestOverallBet = 50
+    val bob = (Player("Bob") is 200 deep)
+    "raise 3 times the highestOverallBet" in {
+      bob.actPostFlop(handValue, highestOverallBet).currentBet should be(3 * highestOverallBet)
+    }
+  }
+
+  "Given a player (bot) with hand value 9001" should {
+    val handValue = 9_001
+    val highestOverallBet = 50
+    val bob = (Player("Bob") is 200 deep)
+    "call" in {
+      bob.actPostFlop(handValue, highestOverallBet).currentBet should be(highestOverallBet)
+    }
+  }
+
+  "Given a player (bot) with hand value 1000" should {
+    val handValue = 1_000
+    val highestOverallBet = 50
+    val bob = (Player("Bob") is 200 deep)
+    "fold" in {
+      bob.actPostFlop(handValue, highestOverallBet).currentBet should be(0)
+    }
+  }
+
+  "Given a player (bot) with hand value 12001" should {
+    val handValue = 12_001
+    val highestOverallBet = 50
+    val bob = (Player("Bob") is 0 deep)
+    "fold if invalid raise" in {
+      bob.actPostFlop(handValue, highestOverallBet).isInRound should be(false)
+    }
+  }
+
+
 }

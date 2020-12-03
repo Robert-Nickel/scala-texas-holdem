@@ -137,8 +137,8 @@ class EvaluatorSpec extends AnyWordSpec{
     val highCard = List(
       Card('2', '♦'), Card('5', '♣'), Card('8', '♥'), Card('T', '♠'), Card('A', '♠'))
     "evaluate" in {
-      Evaluator.eval(highCard).value should be(6_445_701)
-      Evaluator.eval(highCard).handRank should be(2_693)
+      Evaluator.eval(highCard).value should be(4_973)
+      Evaluator.eval(highCard).handRank should be(877)
     }
   }
 
@@ -146,25 +146,52 @@ class EvaluatorSpec extends AnyWordSpec{
     val highCard = List(
       Card('2', '♦'), Card('5', '♣'), Card('8', '♥'), Card('T', '♠'), Card('K', '♠'))
     "evaluate" in {
-      Evaluator.eval(highCard).value should be(6_445_648)
-      Evaluator.eval(highCard).handName should be("invalid hand")
+      Evaluator.eval(highCard).value should be(4_645)
+      Evaluator.eval(highCard).handName should be("high card")
     }
   }
 
   "Given a full house with 5 cards" should {
-    val highCard = List(
+    val fullHouse = List(
       Card('K', '♦'), Card('K', '♣'), Card('A', '♥'), Card('A', '♠'), Card('K', '♠'))
     "evaluate" in {
-      Evaluator.eval(highCard).value should be(13_808_196)
+      Evaluator.eval(fullHouse).value should be(28_816)
     }
   }
 
   "Given a full house with 6 cards" should {
-    val highCard = List(
+    val fullHouse = List(
       Card('K', '♦'), Card('K', '♣'), Card('A', '♥'), Card('A', '♠'), Card('K', '♠'), Card('3', '♠'))
     "evaluate" in {
-      Evaluator.eval(highCard).value should be(23_100_792)
-      Evaluator.eval(highCard).handName should be("invalid hand")
+      val evaluation = Evaluator.eval(fullHouse)
+      evaluation.value should be(28_816)
+      evaluation.handName should be("full house")
+      evaluation.handType should be(7)
+    }
+  }
+  "Given a full house with Queens And Aces" should {
+    val fullHouse = List(
+      Card('Q', '♦'), Card('Q', '♣'), Card('A', '♥'), Card('A', '♠'), Card('Q', '♠'), Card('3', '♠'))
+    "evaluate Queens of Aces" in {
+      val evaluation = Evaluator.eval(fullHouse)
+      evaluation.handType should be(7)
+    }
+  }
+  "Given a high card Q" should {
+    val highCard = List(
+      Card('Q', '♦'), Card('J', '♣'), Card('2', '♥'), Card('3', '♠'), Card('5', '♠'), Card('7', '♠'))
+    "evaluate Queens of Aces" in {
+      val evaluation = Evaluator.eval(highCard)
+      evaluation.handType should be(1)
+    }
+  }
+
+  "Given a pair" should {
+    val pair = List(
+      Card('K', '♦'), Card('K', '♣'), Card('2', '♥'), Card('3', '♠'), Card('5', '♠'), Card('7', '♠'))
+    "evaluate Queens of Aces" in {
+      val evaluation = Evaluator.eval(pair)
+      evaluation.handName should be("one pair")
     }
   }
 

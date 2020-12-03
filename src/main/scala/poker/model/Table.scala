@@ -3,7 +3,7 @@ package poker.model
 import poker.evaluator.{Evaluation, Evaluator}
 import poker.{bb, sb}
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Random, Success, Try}
 
 case class Table(players: List[Player],
                  deck: List[Card] = List(),
@@ -13,6 +13,8 @@ case class Table(players: List[Player],
                  board: List[Card] = List()
                 ) {
 
+  def collectHoleCards = copy(players = players.map(player => player.copy(holeCards = None)))
+
   def resetPlayerActedThisBettingRound(): Table = {
     this.copy(players = players.map(player => player.copy(hasActedThisBettingRound = false)))
   }
@@ -21,11 +23,14 @@ case class Table(players: List[Player],
     val newActivePlayerTry = (players(currentPlayer), maybeInput) match {
       // skip
       case (activePlayer, _) if !activePlayer.isInRound => Success(activePlayer)
+      case (activePlayer, _) if activePlayer.isAllIn => Success(activePlayer.copy(hasActedThisBettingRound = true))
       // small blind
       case (activePlayer, _) if this.isPreFlop && this.isSB(activePlayer) && activePlayer.currentBet < sb =>
+        Thread.sleep(750)
         activePlayer.post(sb)
       // big blind
       case (activePlayer, _) if this.isPreFlop && this.isBB(activePlayer) && activePlayer.currentBet < bb =>
+        Thread.sleep(750)
         activePlayer.post(bb)
       case (activePlayer, Some("fold")) => Success(activePlayer.fold())
       case (activePlayer, Some("check")) => activePlayer.check(this.getHighestOverallBet)
@@ -113,14 +118,18 @@ case class Table(players: List[Player],
   }
 
   def handOutCards(deck: List[Card]): Table = {
-    handOutCardsToAllPlayers(players, deck)
+    handOutCardsToPlayers(players, deck)
   }
 
-  private def handOutCardsToAllPlayers(oldPlayers: List[Player], deck: List[Card], newPlayers: List[Player] = List()): Table = {
+  private def handOutCardsToPlayers(oldPlayers: List[Player], deck: List[Card], newPlayers: List[Player] = List()): Table = {
     (oldPlayers.size, deck.size) match {
       case (oldPlayerSize, _) if oldPlayerSize == 0 => Table(newPlayers, deck)
       case _ =>
-        handOutCardsToAllPlayers(oldPlayers.tail, deck.tail.tail, newPlayers :+ oldPlayers.head.copy(holeCards = Some(deck.head, deck.tail.head)))
+        if(oldPlayers.head.isInGame) {
+          handOutCardsToPlayers(oldPlayers.tail, deck.tail.tail, newPlayers :+ oldPlayers.head.copy(holeCards = Some(deck.head, deck.tail.head)))
+        } else {
+          handOutCardsToPlayers(oldPlayers.tail, deck, newPlayers :+ oldPlayers.head)
+        }
     }
   }
 

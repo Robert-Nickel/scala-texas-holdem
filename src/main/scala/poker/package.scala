@@ -5,7 +5,7 @@ import scala.collection.immutable.HashMap
 import scala.util.Try
 
 package object poker {
-  val names = List("Amy", "Bob", "Mia", "Zoe", "Emi", "You")
+  val names = List("Amy", "Bob", "Dev", "Fox", "Udo", "You")
   val players = names.map(name => Player(name, 200))
   val sb = 1
   val bb = 2
@@ -56,7 +56,7 @@ package object poker {
     def isPreFlop: Boolean = table.currentBettingRound == 0
 
     def shouldPlayNextRound: Boolean = {
-      table.players.count(p => p.isInGame()) > 1
+      table.players.count(p => p.isInGame) > 1
     }
 
     def shouldPlayNextBettingRound: Boolean = {
@@ -73,7 +73,7 @@ package object poker {
       val winner = table.getTheWinner
       val evaluation = table.evaluate(winner)
       table.getPrintableTable(showCards = true) + "\n" +
-        s"${winner.name} wins ${table.pot} with ${evaluation.handName}"
+        s"${winner.name} wins ${table.pot} with ${evaluation.handName}\n\n"
     }
 
     def getPrintableTable(showCards: Boolean = false): String = {
@@ -138,7 +138,7 @@ package object poker {
 
     def are(stack: Int): PlayerDSL = is(stack)
 
-    def deep(): Player = player
+    def deep: Player = player
 
     def hasCards(cards: String): Player = player.copy(holeCards = Some((Card(cards(0), cards(1)), Card(cards(3), cards(4)))))
 
@@ -152,13 +152,17 @@ package object poker {
       player.holeCards.isDefined
     }
 
-    def areInRound() = isInRound
+    def areInRound = isInRound
 
-    def isInGame(): Boolean = {
+    def isInGame: Boolean = {
       player.stack > 0 || player.currentBet > 0
     }
 
-    def areInGame(): Boolean = isInGame()
+    def isAllIn: Boolean = {
+      player.stack == 0 && isInRound
+    }
+
+    def areInGame: Boolean = isInGame
 
     // highest overall bet is not necessary when going all-in
     // TODO: handle failure case if shove is called with stack == 0

@@ -11,10 +11,12 @@ trait PokerActor extends Actor {
   var value = 0
   var count = 0
 
-  def handleEvaluation(evaluation: Evaluation) = {
+  def handleEvaluation(evaluation: Evaluation, shouldEmit: Boolean) = {
     value += evaluation.value
     count += 1
-    context.parent ! evaluation
+    if(shouldEmit) {
+      context.parent ! evaluation
+    }
   }
 
   def handleGetResultCommand = {

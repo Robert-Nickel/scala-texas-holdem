@@ -18,7 +18,8 @@ To evaluate hands, we borrowed the solution from the TwoPlusTwo hand ranks evalu
 To get the implementation of the evaluation done, we looked [here](https://github.com/chenosaurus/poker-evaluator), [here](https://github.com/LativDeveloper/PokerGym) and [here](https://github.com/tommy-a/zetebot/blob/master/src/tools/TwoPlusTwo.java).
 
 Features to cover in the near future:
-- [ ] Players don't get cards, if they don't have chips
-- [ ] Players don't act, if they are all-in
+- [ ] if all-in and highestOverallbet > investment only return partial amount 
+- [x] Players don't get cards, if they don't have chips
+- [x] Players don't act, if they are all-in
 - [x] Bots using actors to make smarter decisions
 - [x] Adjust game speed so that it is viable for human players to follow up with what happens

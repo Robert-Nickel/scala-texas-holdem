@@ -5,14 +5,14 @@ import poker.model.Card
 
 case class Evaluate()
 
-case class RiverActor(handAndBoard: List[Card]) extends PokerActor {
+case class RiverActor(handAndBoard: List[Card], shouldEmit: Boolean = false) extends PokerActor {
 
   override def receive: Receive = {
-    case Evaluate() => handleEvaluateCommand
+    case Evaluate => handleEvaluateCommand
     case GetResultCommand => handleGetResultCommand
   }
 
   private def handleEvaluateCommand = {
-    handleEvaluation(Evaluator.eval(handAndBoard))
+    handleEvaluation(Evaluator.eval(handAndBoard), shouldEmit)
   }
 }
