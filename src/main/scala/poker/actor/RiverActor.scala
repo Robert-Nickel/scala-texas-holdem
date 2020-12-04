@@ -1,18 +1,19 @@
 package poker.actor
 
-import poker.evaluator.{Evaluation, Evaluator}
+import poker.evaluator.Evaluator
 import poker.model.Card
 
-case class Evaluate()
 
-case class RiverActor(handAndBoard: List[Card], shouldEmit: Boolean = false) extends PokerActor {
+case class RiverActor(handAndBoard: List[Card],
+                      shouldEmitEvaluation: Boolean = false,
+                      shouldEmitResult: Boolean = false) extends PokerActor {
 
   override def receive: Receive = {
-    case Evaluate => handleEvaluateCommand
-    case GetResultCommand => handleGetResultCommand
+    case Start => start
   }
 
-  private def handleEvaluateCommand = {
-    handleEvaluation(Evaluator.eval(handAndBoard), shouldEmit)
+  private def start = {
+    askActor = Some(context.sender())
+    handleEvaluation(Evaluator.eval(handAndBoard), shouldEmitEvaluation, shouldEmitResult, None)
   }
 }

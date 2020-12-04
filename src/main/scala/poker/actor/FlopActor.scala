@@ -10,17 +10,19 @@ import poker.model.Card
 case class FlopActor(handAndBoard: List[Card]) extends PokerActor {
 
   override def receive: Receive = {
-    case StartCommand => handleStartCommand
-    case evaluation: Evaluation => handleEvaluation(evaluation, shouldEmit = false)
-    case GetResultCommand => handleGetResultCommand
+    case Start => start
+    case evaluation: Evaluation => handleEvaluation(evaluation, shouldEmitEvaluation = false, shouldEmitResult = true, Some(context.sender()))
   }
 
-  private def handleStartCommand = {
+  private def start = {
+    askActor = Some(context.sender())
     getDeck
       .filter(card => !handAndBoard.contains(card))
       .foreach(card => {
-        val turnActorRef = context.actorOf(Props(TurnActor(handAndBoard :+ card, shouldEmit=true)), s"turnActor${card.toLetterNotation}" + randomUUID().toString)
-        turnActorRef ! StartCommand
+        val turnActorRef = context.actorOf(Props(TurnActor(handAndBoard :+ card, shouldEmitEvaluation = true)),
+          s"turnActor" + randomUUID().toString)
+        workingChildren = workingChildren :+ turnActorRef
+        turnActorRef ! Start
       })
   }
 }

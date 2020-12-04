@@ -88,6 +88,7 @@ object Main extends App {
       !(table.isSB(currentPlayer) || table.isBB(currentPlayer))) {
       Some(getValidatedInput)
     } else {
+      Thread.sleep(Random.nextInt(3_000) + 1_000)
       None
     }
   }

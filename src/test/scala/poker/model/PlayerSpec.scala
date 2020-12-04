@@ -1,16 +1,17 @@
 package poker.model
 
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.matchers.must.Matchers.be
-import org.scalatest.matchers.should
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.must.Matchers.between
+import org.scalatest.matchers.should.Matchers.{between, _}
 import org.scalatest.wordspec.AnyWordSpec
 import poker._
 
 import scala.language.postfixOps
 import scala.util.Failure
 
-class PlayerSpec extends AnyWordSpec with Matchers {
+class PlayerSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll {
+
 
   "Given a Player with name 'You', Stack is 200 and cards are Ah As" when {
     val player = (Player("You") are 200 deep) haveCards "Ah As"
@@ -252,15 +253,15 @@ class PlayerSpec extends AnyWordSpec with Matchers {
   "Given a player (bot) with Ah Ks and flopped Top Pair" should {
     val bob = (Player("Bob") is 200 deep) hasCards "K♥ A♠"
     val board = List(Card('A', '♥'), Card('2', '♦'), Card('5', '♣'))
-    "return postflop value" in {
-      bob.getPostFlopValue(board) should be(12_815)
+    "return post flop value" in {
+      bob.getPostFlopValue(board) should be(12_815 +- 100)
     }
   }
 
   "Given a player (bot) with Ah Ks and turned Top Pair" should {
     val bob = (Player("Bob") is 200 deep) hasCards "K♥ A♠"
     val board = List(Card('8', '♥'), Card('2', '♦'), Card('5', '♣'), Card('A', '♣'))
-    "return postflop value" in {
+    "return post flop value" in {
       bob.getPostFlopValue(board) should be(11_832)
     }
   }
@@ -268,7 +269,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
   "Given a player (bot) with Ah Ks and rivered two pairs" should {
     val bob = (Player("Bob") is 200 deep) hasCards "K♥ A♠"
     val board = List(Card('8', '♥'), Card('2', '♦'), Card('5', '♣'), Card('A', '♣'), Card('2', '♣'))
-    "return postflop value" in {
+    "return post flop value" in {
       bob.getPostFlopValue(board) should be(13_025)
     }
   }
@@ -308,6 +309,4 @@ class PlayerSpec extends AnyWordSpec with Matchers {
       bob.actPostFlop(handValue, highestOverallBet).isInRound should be(false)
     }
   }
-
-
 }

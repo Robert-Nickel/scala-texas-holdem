@@ -4,12 +4,11 @@ import java.util.UUID.randomUUID
 
 import akka.actor.{ActorRef, Props}
 import akka.pattern.ask
-import akka.util.Timeout
-import poker.actor.{Evaluate, FlopActor, GetResultCommand, RiverActor, StartCommand, TurnActor}
+import poker.actor.{FlopActor, RiverActor, Start, TurnActor}
 import poker.{actorSystem, bb, cardValues}
 
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
+import scala.concurrent.duration.{Duration, DurationInt}
+import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 import scala.util.{Failure, Random, Success, Try}
 
@@ -76,26 +75,16 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
 
   def getPostFlopValue(board: List[Card]): Int = {
     val handAndBoard = holeCards.get._1 :: holeCards.get._2 :: board
-    implicit val timeout: Timeout = Timeout(1 milliseconds)
-    val actor: ActorRef = if (handAndBoard.size == 5) {
-      val flopActor = actorSystem.actorOf(Props(FlopActor(handAndBoard)), "FlopActor" + randomUUID())
-      flopActor ! StartCommand
-      flopActor
-    } else if (handAndBoard.size == 6) {
-      val turnActor = actorSystem.actorOf(Props(TurnActor(handAndBoard)), "TurnActor" + randomUUID())
-      turnActor ! StartCommand
-      turnActor
-    } else {
-      val riverActor = actorSystem.actorOf(Props(RiverActor(handAndBoard)), "RiverActor" + randomUUID())
-      riverActor ! Evaluate
-      riverActor
-    }
-    think
-    Await.result(actor ? GetResultCommand, timeout.duration).asInstanceOf[Int]
-  }
 
-  private def think = {
-    Thread.sleep(Random.nextInt(3_000) + 500)
+    val actor: ActorRef = if (handAndBoard.size == 5) {
+      actorSystem.actorOf(Props(FlopActor(handAndBoard)), "FlopActor" + randomUUID())
+    } else if (handAndBoard.size == 6) {
+      actorSystem.actorOf(Props(TurnActor(handAndBoard, shouldEmitResult = true)), "TurnActor" + randomUUID())
+    } else {
+      actorSystem.actorOf(Props(RiverActor(handAndBoard, shouldEmitResult = true)), "RiverActor" + randomUUID())
+    }
+    val result: Future[Any] = actor.ask(Start)(3.seconds)
+    Await.result(result, Duration.Inf).asInstanceOf[java.lang.Integer]
   }
 
   def actPostFlop(handValue: Int, highestOverallBet: Int): Player = {
@@ -117,7 +106,6 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
   }
 
   private def actPreflop(handValue: Int, highestOverallBet: Int): Player = {
-    think
     handValue match {
       case handValue if handValue > 30 =>
         val tryRaise = raise(5 * bb, highestOverallBet)
