@@ -1,12 +1,9 @@
 package poker.actor
 
-import poker.evaluator.Evaluator
+import poker.evaluator.{Evaluation, Evaluator}
 import poker.model.Card
 
-
-case class RiverActor(handAndBoard: List[Card],
-                      shouldEmitEvaluation: Boolean = false,
-                      shouldEmitResult: Boolean = false) extends PokerActor {
+case class RiverActor(handAndBoard: List[Card]) extends PokerActor {
 
   override def receive: Receive = {
     case Start => start
@@ -14,6 +11,10 @@ case class RiverActor(handAndBoard: List[Card],
 
   private def start = {
     askActor = Some(context.sender())
-    handleEvaluation(Evaluator.eval(handAndBoard), shouldEmitEvaluation, shouldEmitResult, None)
+    handleEvaluation(Evaluator.eval(handAndBoard))
+  }
+
+  def handleEvaluation(evaluation: Evaluation): Unit = {
+    askActor.get ! evaluation.value
   }
 }

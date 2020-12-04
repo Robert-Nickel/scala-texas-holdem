@@ -79,9 +79,9 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
     val actor: ActorRef = if (handAndBoard.size == 5) {
       actorSystem.actorOf(Props(FlopActor(handAndBoard)), "FlopActor" + randomUUID())
     } else if (handAndBoard.size == 6) {
-      actorSystem.actorOf(Props(TurnActor(handAndBoard, shouldEmitResult = true)), "TurnActor" + randomUUID())
+      actorSystem.actorOf(Props(TurnActor(handAndBoard)), "TurnActor" + randomUUID())
     } else {
-      actorSystem.actorOf(Props(RiverActor(handAndBoard, shouldEmitResult = true)), "RiverActor" + randomUUID())
+      actorSystem.actorOf(Props(RiverActor(handAndBoard)), "RiverActor" + randomUUID())
     }
     val result: Future[Any] = actor.ask(Start)(3.seconds)
     Await.result(result, Duration.Inf).asInstanceOf[java.lang.Integer]
