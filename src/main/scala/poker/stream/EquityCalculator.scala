@@ -1,5 +1,6 @@
 package poker.stream
 
+import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import poker.evaluator.Evaluator
@@ -17,7 +18,7 @@ case class EquityCalculator() {
     val filteredDeck = getFilteredDeck(holeCards)
     implicit val system = ActorSystem()
     import system.dispatcher // "thread pool"
-
+    //def boardList = List("abc", "def", "ijk", "l", "m", "n", "o", "p", "q")
     def boardStream: LazyList[List[Card]] = {
       val shuffledDeck = Random.shuffle(filteredDeck)
       List(
@@ -29,31 +30,25 @@ case class EquityCalculator() {
       ) #:: boardStream
     }
 
-    // a source element that "emits" integers
-    val source = Source(boardStream)
-    val flow = Flow[List[Card]].map(board => {
-      println(board.toString())
-      println(holeCards)
+    val indexSource = Source.fromIterator(() => (0 until 9).iterator)
+    val boardFlow = Flow[Int].map(index => boardStream(index))
+    val evalFlow = Flow[List[Card]].map(board => {
       holeCards.map(holeCardTuple => {
+        println(holeCardTuple)
         if (holeCardTuple.isDefined) {
-          // FIXME: why is map not evaluated multiple times?
-          println("returning eval..")
           Evaluator.eval(board :+ holeCardTuple.get._1 :+ holeCardTuple.get._2).value
         } else {
           0
         }
       }).zipWithIndex.maxBy(_._1)._2
     })
+    val sink = Sink.foreach[Int](println);
 
-    val sink = Sink.foreach[Int](println); // a sink that receives integers and prints each to the console
-    val graph = source.via(flow).to(sink) // combine all components together in a static graph
-    graph.run() // start the graph = "materialize" it
+    indexSource.via(boardFlow).via(evalFlow).to(sink).run()
   }
 
   def getFilteredDeck(holeCards: List[Option[(Card, Card)]]): List[Card] = {
     val holeCardsList = holeCards.filter(_.isDefined).flatMap((cardTuple) => Seq(cardTuple.get._1, cardTuple.get._2))
     getDeck.filter(card => !holeCardsList.contains(card))
   }
-
-
 }
