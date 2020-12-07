@@ -1,8 +1,12 @@
 package poker.stream
 
+import akka.stream.scaladsl.Keep
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 import poker.model.Card
+
+import scala.concurrent.duration.DurationInt
+import scala.concurrent.Await
 
 class EquityCalculatorSpec extends AnyWordSpec {
 
@@ -24,7 +28,13 @@ class EquityCalculatorSpec extends AnyWordSpec {
   "Given hands with Aces" should {
     "return flop equity" in {
       val equityCalculator = EquityCalculator()
-      equityCalculator.calculateFlopEquity(hands)
+      val eventualDone = equityCalculator.calculateFlopEquity(hands)
+
+      val result = Await.result(eventualDone, 5 seconds)
+      // println(result.head)
+      println(result)
+      // println(result.leftSideValue)
+
     }
   }
 }

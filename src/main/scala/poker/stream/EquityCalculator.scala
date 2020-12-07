@@ -1,20 +1,23 @@
 package poker.stream
 
-import akka.NotUsed
+import akka.{Done, NotUsed}
 import akka.actor.ActorSystem
-import akka.stream.scaladsl.{Flow, Sink, Source}
+import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
 import poker.evaluator.Evaluator
 import poker.getDeck
 import poker.model.Card
 
 import scala.::
+import scala.collection.mutable.ListBuffer
+import scala.concurrent.duration.DurationInt
+import scala.concurrent.{Await, Future}
 import scala.util.Random
 
 // Preflop Equity
 case class EquityCalculator() {
   // shuffle deck, Build stream with
 
-  def calculateFlopEquity(holeCards: List[Option[(Card, Card)]]): Unit = {
+  def calculateFlopEquity(holeCards: List[Option[(Card, Card)]]): Future[List[Int]] = {
     val filteredDeck = getFilteredDeck(holeCards)
     implicit val system = ActorSystem()
     val evaluator = Evaluator
@@ -45,8 +48,16 @@ case class EquityCalculator() {
       }).zipWithIndex.maxBy(_._1)._2
     })
 
-    val sink = Sink.foreach[Int](println);
-    Source(boardStream take 2 toList).via(evalFlow).to(sink).run()
+    // val sink = Sink.foreach[Int](println);
+    val sink = Sink.collection
+//    val sink = Sink.fold(ListBuffer(0,0,0,0,0,0))((acc: ListBuffer[Int], winnerIndex: Int) =>  winnerIndex match {
+//      case 0 => player0Wins += 1
+//    })
+    // Source(boardStream).via(evalFlow).to(sink).run()
+
+    // Source(boardStream).via(evalFlow).runWith(sink)
+    val sum: Future[List[Int]] = Source(boardStream).via(evalFlow).toMat(sink)(Keep.right).run()
+    sum
   }
 
   def getFilteredDeck(holeCards: List[Option[(Card, Card)]]): List[Card] = {
