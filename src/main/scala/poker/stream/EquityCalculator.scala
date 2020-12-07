@@ -17,8 +17,9 @@ case class EquityCalculator() {
   def calculateFlopEquity(holeCards: List[Option[(Card, Card)]]): Unit = {
     val filteredDeck = getFilteredDeck(holeCards)
     implicit val system = ActorSystem()
+    val evaluator = Evaluator
     import system.dispatcher // "thread pool"
-    //def boardList = List("abc", "def", "ijk", "l", "m", "n", "o", "p", "q")
+
     def boardStream: LazyList[List[Card]] = {
       val shuffledDeck = Random.shuffle(filteredDeck)
       List(
@@ -30,21 +31,22 @@ case class EquityCalculator() {
       ) #:: boardStream
     }
 
-    val indexSource = Source.fromIterator(() => (0 until 9).iterator)
-    val boardFlow = Flow[Int].map(index => boardStream(index))
     val evalFlow = Flow[List[Card]].map(board => {
-      holeCards.map(holeCardTuple => {
-        println(holeCardTuple)
-        if (holeCardTuple.isDefined) {
-          Evaluator.eval(board :+ holeCardTuple.get._1 :+ holeCardTuple.get._2).value
+      println("Board: ")
+      println(board)
+      holeCards.map(cardTuple => {
+        if(cardTuple.isDefined) {
+          val result = evaluator.eval(board :+ cardTuple.get._1 :+ cardTuple.get._2 ).value
+          println(result)
+          result
         } else {
           0
         }
       }).zipWithIndex.maxBy(_._1)._2
     })
-    val sink = Sink.foreach[Int](println);
 
-    indexSource.via(boardFlow).via(evalFlow).to(sink).run()
+    val sink = Sink.foreach[Int](println);
+    Source(boardStream take 2 toList).via(evalFlow).to(sink).run()
   }
 
   def getFilteredDeck(holeCards: List[Option[(Card, Card)]]): List[Card] = {
