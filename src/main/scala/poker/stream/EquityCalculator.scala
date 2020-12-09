@@ -1,16 +1,12 @@
 package poker.stream
 
-import akka.{Done, NotUsed}
 import akka.actor.ActorSystem
-import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
+import akka.stream.scaladsl.{Flow, Sink, Source}
 import poker.evaluator.Evaluator
 import poker.getDeck
 import poker.model.Card
 
-import scala.::
-import scala.collection.mutable.ListBuffer
-import scala.concurrent.duration.DurationInt
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 import scala.util.Random
 
 // Preflop Equity
@@ -20,8 +16,7 @@ case class EquityCalculator() {
   def calculateFlopEquity(holeCards: List[Option[(Card, Card)]]): Future[List[Int]] = {
     val filteredDeck = getFilteredDeck(holeCards)
     implicit val system = ActorSystem()
-    val evaluator = Evaluator
-    import system.dispatcher // "thread pool"
+    val evaluator = Evaluator // "thread pool"
 
     def boardStream: LazyList[List[Card]] = {
       val shuffledDeck = Random.shuffle(filteredDeck)
@@ -35,12 +30,9 @@ case class EquityCalculator() {
     }
 
     val evalFlow = Flow[List[Card]].map(board => {
-      println("Board: ")
-      println(board)
       holeCards.map(cardTuple => {
         if(cardTuple.isDefined) {
           val result = evaluator.eval(board :+ cardTuple.get._1 :+ cardTuple.get._2 ).value
-          println(result)
           result
         } else {
           0
@@ -48,16 +40,10 @@ case class EquityCalculator() {
       }).zipWithIndex.maxBy(_._1)._2
     })
 
-    // val sink = Sink.foreach[Int](println);
-    val sink = Sink.collection
-//    val sink = Sink.fold(ListBuffer(0,0,0,0,0,0))((acc: ListBuffer[Int], winnerIndex: Int) =>  winnerIndex match {
-//      case 0 => player0Wins += 1
-//    })
-    // Source(boardStream).via(evalFlow).to(sink).run()
-
-    // Source(boardStream).via(evalFlow).runWith(sink)
-    val sum: Future[List[Int]] = Source(boardStream).via(evalFlow).toMat(sink)(Keep.right).run()
-    sum
+    Source(boardStream)
+      .take(100)
+      .via(evalFlow)
+      .runWith(Sink.fold(List(0,0,0,0,0,0))((accList: List[Int], elementIdx: Int) => accList.updated(elementIdx, accList(elementIdx) + 1)))
   }
 
   def getFilteredDeck(holeCards: List[Option[(Card, Card)]]): List[Card] = {
