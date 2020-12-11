@@ -21,4 +21,6 @@ libraryDependencies ++=Seq(
   "ch.qos.logback" % "logback-classic" % "1.2.3",
 )
 
+libraryDependencies += "org.apache.kafka" %% "kafka" % "2.6.0"
+
 coverageExcludedPackages := ".*Main.*"
