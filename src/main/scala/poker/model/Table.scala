@@ -82,12 +82,15 @@ case class Table(players: List[Player],
   def collectCurrentBets: Table = {
     this.copy(
       pot = pot + this.players.map(player => player.currentBet).sum,
-      players = this.players.map(player => player.copy(currentBet = 0)))
+      players = this.players.map(player => player.copy(
+        roundInvestment = player.roundInvestment + player.currentBet,
+        currentBet = 0)))
   }
 
   def payTheWinner: Table = {
     val winner = getTheWinner
     val index = players.indexWhere(_.name == winner.name)
+    // TODO: use roundInvestment to pay the winner AND reset it
     val newPlayers = players.updated(index, players(index).copy(stack = winner.stack + pot))
     copy(pot = 0, players = newPlayers)
   }

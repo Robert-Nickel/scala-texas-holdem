@@ -11,7 +11,7 @@ case class Player(name: String,
                   holeCards: Option[(Card, Card)] = None,
                   currentBet: Int = 0,
                   hasActedThisBettingRound: Boolean = false,
-                  roundInvestment: Int = 0) { // TODO ..
+                  roundInvestment: Int = 0) {
 
   def getHoleCardsString(showCards: Boolean = false): String = {
     if (holeCards.isDefined) {
