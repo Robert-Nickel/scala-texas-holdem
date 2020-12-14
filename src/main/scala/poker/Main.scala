@@ -38,7 +38,7 @@ object Main extends App {
   @tailrec
   def playBettingRounds(table: Table): Table = {
     printText("------------- BETTING ROUND STARTS -------------")
-    val newTable = playMoves(table.setCurrentPlayerToPlayerWithWorstPosition.resetPlayerActedThisBettingRound())
+    val newTable = playMoves(table.setFirstPlayerForBettingRound.resetPlayerActedThisBettingRound())
       .collectCurrentBets
     Thread.sleep(4_500)
     printText("------------- BETTING ROUND ENDS -------------")

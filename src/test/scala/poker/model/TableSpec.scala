@@ -214,7 +214,7 @@ class TableSpec extends AnyWordSpec with Matchers {
     }
     "set the current player to SB" should {
       "set current player = 1" in {
-        table.setCurrentPlayerToPlayerWithWorstPosition.currentPlayer should be(1)
+        table.setFirstPlayerForBettingRound.currentPlayer should be(1)
       }
     }
   }
@@ -231,13 +231,17 @@ class TableSpec extends AnyWordSpec with Matchers {
 
   "Given table after the river with 2 players in the round" should {
     val table = Table(players = List(
+      Player("1"),
+      Player("2"),
       Player("Bernard").hasCards("A♠ K♠"),
-      Player("Arnold").hasCards("Q♦ Q♥")),
+      Player("Arnold").hasCards("Q♦ Q♥"),
+      Player("5"),
+      Player("6")),
       board = List(Card('Q', '♠'), Card('J', '♠'), Card('T', '♠'), Card('Q', '♣'), Card('2', '♣')),
       pot = 1_000_000)
     "pay Bernard as the winner" in {
       val newTable = table.payTheWinner
-      newTable.players.head.stack should be(1_000_000)
+      newTable.players(2).stack should be(1_000_000)
       newTable.pot should be(0)
     }
   }
@@ -272,7 +276,7 @@ class TableSpec extends AnyWordSpec with Matchers {
       Player("Bob the SB"),
       Player("Jim the BB")), currentPlayer = 0)
     "set the dealer as current player" in {
-      table.setCurrentPlayerToPlayerWithWorstPosition.currentPlayer should be(0)
+      table.setFirstPlayerForBettingRound.currentPlayer should be(0)
     }
   }
 
@@ -290,7 +294,7 @@ class TableSpec extends AnyWordSpec with Matchers {
 
   "Given table where Bob is all-in" should {
     val table = Table(List(
-      Player("Bob", currentBet = 50) hasCards("Ah Ac") is 0 deep
+      Player("Bob", currentBet = 50) hasCards ("Ah Ac") is 0 deep
     ))
     "skip Bob" in {
       table.tryCurrentPlayerAct(None).get.players.head.hasActedThisBettingRound should be(true)

@@ -99,11 +99,6 @@ class PlayerSpec extends AnyWordSpec
   "Given a Player with flopped quads" when {
     val player = (Player("Timon") is 200 deep).hasCards("A♥ A♠")
     val board = List(Card('A', '♣'), Card('A', '♦'), Card('2', '♦'))
-    "getFlopValue is called" should {
-      "return 32_920" in {
-        player.getPostFlopValue(board) should be(32_920)
-      }
-    }
     "actAsBot is called" should {
       "shove all-in" in {
         player.actAsBot(20, board).currentBet should be(200)
@@ -124,14 +119,14 @@ class PlayerSpec extends AnyWordSpec
     val bob = (Player("Bob") is 200 deep) hasCards "Ah As"
     "calls 50" should {
       "return bob with stack = 150 and currentBet = 50" in {
-        val newPlayer = bob.call(50)
+        val newPlayer = bob.call(50).get
         newPlayer.stack should be(150)
         newPlayer.currentBet should be(50)
       }
     }
     "calls where the highest overall bet is 300" should {
       "return bob with stack = 0 and currentBet = 200" in {
-        val newBob = bob.call(300)
+        val newBob = bob.call(300).get
         newBob.stack should be(0)
         newBob.currentBet should be(200)
       }
@@ -248,31 +243,6 @@ class PlayerSpec extends AnyWordSpec
       "return 0 when jim has no cards" in {
         Player("Jim").getHoleCardsValue() should be(0)
       }
-    }
-  }
-
-  "Given a player (bot) with Ah Ks and flopped Top Pair" should {
-    val bob = (Player("Bob") is 200 deep) hasCards "K♥ A♠"
-    val board = List(Card('A', '♥'), Card('2', '♦'), Card('5', '♣'))
-    "return post flop value" in {
-      // is actually always precise, just a reference for between/ranges
-      bob.getPostFlopValue(board) should be(12_815 +- 5)
-    }
-  }
-
-  "Given a player (bot) with Ah Ks and turned Top Pair" should {
-    val bob = (Player("Bob") is 200 deep) hasCards "K♥ A♠"
-    val board = List(Card('8', '♥'), Card('2', '♦'), Card('5', '♣'), Card('A', '♣'))
-    "return post flop value" in {
-      bob.getPostFlopValue(board) should be(11_832)
-    }
-  }
-
-  "Given a player (bot) with Ah Ks and rivered two pairs" should {
-    val bob = (Player("Bob") is 200 deep) hasCards "K♥ A♠"
-    val board = List(Card('8', '♥'), Card('2', '♦'), Card('5', '♣'), Card('A', '♣'), Card('2', '♣'))
-    "return post flop value" in {
-      bob.getPostFlopValue(board) should be(13_025)
     }
   }
 

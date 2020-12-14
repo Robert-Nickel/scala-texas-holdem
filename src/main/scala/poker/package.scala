@@ -71,9 +71,14 @@ package object poker {
 
     def getPrintableWinning: String = {
       val winner = table.getTheWinner
-      val evaluation = table.evaluate(winner)
-      table.getPrintableTable(showCards = true) + "\n" +
-        s"${winner.name} wins ${table.pot} with ${evaluation.handName}\n\n"
+      if (table.currentBettingRound == 0) {
+        table.getPrintableTable(showCards = true) + "\n" +
+          s"${winner.name} wins ${table.pot}\n\n"
+      } else {
+        val evaluation = table.evaluate(winner)
+        table.getPrintableTable(showCards = true) + "\n" +
+          s"${winner.name} wins ${table.pot} with ${evaluation.handName}\n\n"
+      }
     }
 
     def getPrintableTable(showCards: Boolean = false): String = {

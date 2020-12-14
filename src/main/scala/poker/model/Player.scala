@@ -1,18 +1,17 @@
 package poker.model
 
-import java.util.UUID.randomUUID
+import poker.evaluator.FastPostFlopEvaluator.getPostFlopEvaluation
+import poker.{bb, cardValues}
 
-import akka.actor.{ActorRef, Props}
-import akka.pattern.ask
-import poker.actor.{FlopActor, RiverActor, Start, TurnActor}
-import poker.{actorSystem, bb, cardValues}
-
-import scala.concurrent.duration.{Duration, DurationInt}
-import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
-import scala.util.{Failure, Random, Success, Try}
+import scala.util.{Failure, Success, Try}
 
-case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] = None, currentBet: Int = 0, hasActedThisBettingRound: Boolean = false) {
+case class Player(name: String,
+                  stack: Int = 0,
+                  holeCards: Option[(Card, Card)] = None,
+                  currentBet: Int = 0,
+                  hasActedThisBettingRound: Boolean = false,
+                  roundInvestment: Int = 0) { // TODO ..
 
   def getHoleCardsString(showCards: Boolean = false): String = {
     if (holeCards.isDefined) {
@@ -38,12 +37,14 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
     }
   }
 
-  def call(highestOverallBet: Int): Player = {
-    val (newStack, newCurrentBet) = stack - highestOverallBet match {
-      case x if x < 0 => (0, stack + currentBet) // All-in
-      case _ => (stack - (highestOverallBet - currentBet), highestOverallBet)
+  def call(highestOverallBet: Int): Try[Player] = {
+    stack match {
+      case 0 => Failure(new Throwable(s"You cannot call, your stack is 0"))
+      case stack if stack - highestOverallBet < 0 =>
+        Success(this.copy(stack = 0, currentBet = stack + currentBet, hasActedThisBettingRound = true)) // All-in
+      case _ =>
+        Success(this.copy(stack = stack - (highestOverallBet - currentBet), currentBet = highestOverallBet, hasActedThisBettingRound = true))
     }
-    this.copy(stack = newStack, currentBet = newCurrentBet, hasActedThisBettingRound = true)
   }
 
   def allIn(highestOverallBet: Int): Player = {
@@ -68,23 +69,9 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
       val handValue = getHoleCardsValue()
       actPreflop(handValue, highestOverallBet)
     } else {
-      val flopValue = getPostFlopValue(board)
+      val flopValue = getPostFlopEvaluation(board :+ holeCards.get._1 :+ holeCards.get._2)
       actPostFlop(flopValue, highestOverallBet)
     }
-  }
-
-  def getPostFlopValue(board: List[Card]): Int = {
-    val handAndBoard = holeCards.get._1 :: holeCards.get._2 :: board
-
-    val actor: ActorRef = if (handAndBoard.size == 5) {
-      actorSystem.actorOf(Props(FlopActor(handAndBoard)), "FlopActor" + randomUUID())
-    } else if (handAndBoard.size == 6) {
-      actorSystem.actorOf(Props(TurnActor(handAndBoard)), "TurnActor" + randomUUID())
-    } else {
-      actorSystem.actorOf(Props(RiverActor(handAndBoard)), "RiverActor" + randomUUID())
-    }
-    val result: Future[Any] = actor.ask(Start)(3.seconds)
-    Await.result(result, Duration.Inf).asInstanceOf[java.lang.Integer]
   }
 
   def actPostFlop(handValue: Int, highestOverallBet: Int): Player = {
@@ -100,7 +87,8 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
           tryRaise.get
         }
       }
-      case handValue if handValue > 8_000 => call(highestOverallBet)
+      // TODO: try to call first
+      //case handValue if handValue > 8_000 => call(highestOverallBet)
       case _ => fold()
     }
   }
@@ -110,21 +98,27 @@ case class Player(name: String, stack: Int = 0, holeCards: Option[(Card, Card)] 
       case handValue if handValue > 30 =>
         val tryRaise = raise(5 * bb, highestOverallBet)
         if (tryRaise.isFailure) {
-          call(highestOverallBet)
+          fold() // TODO: call first. if it fails, then fold.
         } else {
           tryRaise.get
         }
       case x if x > 20 =>
         val tryRaise = raise(3 * bb, highestOverallBet)
         if (tryRaise.isFailure) {
-          call(highestOverallBet)
+          fold() // TODO: call first. if it fails, then fold.
         } else {
           tryRaise.get
         }
       case _ if stack < 10 * bb =>
         raise(stack, highestOverallBet).get
       // TODO: What if no prior bet has been made? Technically its a check then.
-      case _ if highestOverallBet <= 3 * bb => call(highestOverallBet)
+      case _ if highestOverallBet <= 3 * bb => {
+        if (call(highestOverallBet).isFailure) {
+          fold()
+        } else {
+          call(highestOverallBet).get
+        }
+      }
       case _ => fold()
     }
   }

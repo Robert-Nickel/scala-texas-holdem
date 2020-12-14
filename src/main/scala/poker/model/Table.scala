@@ -34,7 +34,7 @@ case class Table(players: List[Player],
         activePlayer.post(bb)
       case (activePlayer, Some("fold")) => Success(activePlayer.fold())
       case (activePlayer, Some("check")) => activePlayer.check(this.getHighestOverallBet)
-      case (activePlayer, Some("call")) => Success(activePlayer.call(this.getHighestOverallBet))
+      case (activePlayer, Some("call")) => activePlayer.call(this.getHighestOverallBet)
       case (activePlayer, Some("all-in")) => Success(activePlayer.allIn(this.getHighestOverallBet))
       case (activePlayer, Some(_)) if maybeInput.get.startsWith("raise ") => {
         val raiseAmount = maybeInput.get.split(" ")(1)
@@ -87,10 +87,9 @@ case class Table(players: List[Player],
 
   def payTheWinner: Table = {
     val winner = getTheWinner
-    copy(
-      players = players.patch(players.indexOf(), Seq(winner.copy(stack = winner.stack + pot)), 1),
-      pot = 0
-    )
+    val index = players.indexWhere(_.name == winner.name)
+    val newPlayers = players.updated(index, players(index).copy(stack = winner.stack + pot))
+    copy(pot = 0, players = newPlayers)
   }
 
   def evaluate(player: Player): Evaluation = {
@@ -125,7 +124,7 @@ case class Table(players: List[Player],
     (oldPlayers.size, deck.size) match {
       case (oldPlayerSize, _) if oldPlayerSize == 0 => Table(newPlayers, deck)
       case _ =>
-        if(oldPlayers.head.isInGame) {
+        if (oldPlayers.head.isInGame) {
           handOutCardsToPlayers(oldPlayers.tail, deck.tail.tail, newPlayers :+ oldPlayers.head.copy(holeCards = Some(deck.head, deck.tail.head)))
         } else {
           handOutCardsToPlayers(oldPlayers.tail, deck, newPlayers :+ oldPlayers.head)
@@ -133,12 +132,17 @@ case class Table(players: List[Player],
     }
   }
 
-  def setCurrentPlayerToPlayerWithWorstPosition: Table = {
-    val activePlayersExceptDealer = players.filter(player => player.isInRound).tail
-    val worstPosition = if (activePlayersExceptDealer.nonEmpty) {
-      players.indexWhere(player => player.name == activePlayersExceptDealer.head.name)
-    } else 0
-    this.copy(currentPlayer = worstPosition)
+  def setFirstPlayerForBettingRound: Table = {
+    val firstPlayerForBettingRound = if (players.count(player => player.isInRound) == 1) {
+      players.indexWhere(player => player.isInRound)
+    } else {
+      players.zipWithIndex
+        .filter(playerAndIndex => playerAndIndex._1.isInRound) // filter out everyone who is not in round
+        .filter(playerAndIndex => playerAndIndex._2 != 0) // filter out the dealer
+        .head
+        ._2
+    }
+    this.copy(currentPlayer = firstPlayerForBettingRound)
   }
 
   def nextPlayer: Table = {
