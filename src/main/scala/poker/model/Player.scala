@@ -87,8 +87,10 @@ case class Player(name: String,
           tryRaise.get
         }
       }
-      // TODO: try to call first
-      //case handValue if handValue > 8_000 => call(highestOverallBet)
+
+      case handValue if handValue > 8_000 =>
+        val tryCall = call(highestOverallBet)
+        if (tryCall.isSuccess) tryCall.get else fold()
       case _ => fold()
     }
   }
@@ -98,14 +100,16 @@ case class Player(name: String,
       case handValue if handValue > 30 =>
         val tryRaise = raise(5 * bb, highestOverallBet)
         if (tryRaise.isFailure) {
-          fold() // TODO: call first. if it fails, then fold.
+          val tryCall = call(highestOverallBet)
+          if (tryCall.isSuccess) tryCall.get else fold()
         } else {
           tryRaise.get
         }
       case x if x > 20 =>
         val tryRaise = raise(3 * bb, highestOverallBet)
         if (tryRaise.isFailure) {
-          fold() // TODO: call first. if it fails, then fold.
+          val tryCall = call(highestOverallBet)
+          if (tryCall.isSuccess) tryCall.get else fold()
         } else {
           tryRaise.get
         }
