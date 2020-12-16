@@ -21,9 +21,9 @@ class ActorSpec extends TestKit(ActorSystem("PokerActors"))
     val flopActor = system.actorOf(
       Props(FlopActor(List(Card('A', '♦'), Card('K', '♦'), Card('Q', '♦'), Card('J', '♦'), Card('T', '♦')))),
       "FlopActor")
-    "return result = 36_874" in {
+    "return result = 36874" in {
       val result: Future[Any] = flopActor.ask(Start)(10.seconds)
-      Await.result(result, Duration.Inf).asInstanceOf[Int] should be(36_874)
+      Await.result(result, Duration.Inf).asInstanceOf[Int] should be(36874)
     }
   }
 
@@ -31,9 +31,9 @@ class ActorSpec extends TestKit(ActorSystem("PokerActors"))
     val turnActor = system.actorOf(
       Props(TurnActor(List(Card('A', '♦'), Card('K', '♦'), Card('Q', '♦'), Card('A', '♥'), Card('T', '♦'), Card('T', '♥')))),
       "TurnActor")
-    "return result = 17_692" in {
+    "return result = 17692" in {
       val result: Future[Any] = turnActor.ask(Start)(10.seconds)
-      Await.result(result, Duration.Inf).asInstanceOf[Int] should be(17_692)
+      Await.result(result, Duration.Inf).asInstanceOf[Int] should be(17692)
     }
   }
 
@@ -41,9 +41,9 @@ class ActorSpec extends TestKit(ActorSystem("PokerActors"))
     val riverActor = system.actorOf(
       Props(RiverActor(List(Card('2', '♦'), Card('4', '♦'), Card('6', '♦'), Card('8', '♥'), Card('T', '♦'), Card('Q', '♥'), Card('A', '♥')))),
       "RiverActor")
-    "return result = 5_165" in {
+    "return result = 5165" in {
       val result: Future[Any] = riverActor.ask(Start)(10.seconds)
-      Await.result(result, Duration.Inf).asInstanceOf[Int] should be(5_165)
+      Await.result(result, Duration.Inf).asInstanceOf[Int] should be(5165)
     }
   }
 

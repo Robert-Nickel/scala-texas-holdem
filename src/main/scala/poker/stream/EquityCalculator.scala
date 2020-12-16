@@ -44,13 +44,13 @@ object EquityCalculator {
       }).zipWithIndex.maxBy(_._1)._2
     })
 
-    Source(randomCommunityCards(board, getFilteredDeck(holeCardsList appendedAll board)))
-      .take(20_000)
+    Source(randomCommunityCards(board, getFilteredDeck(holeCardsList ::: board)))
+      .take(20000)
       .via(evalFlow)
       .runWith(Sink.fold(List(0, 0, 0, 0, 0, 0))((accList: List[Int], elementIdx: Int) => accList.updated(elementIdx, accList(elementIdx) + 1)))
   }
 
-  def randomCommunityCards(board: List[Card], deck: List[Card]): LazyList[List[Card]] = { // 5, 2 or 1
+  def randomCommunityCards(board: List[Card], deck: List[Card]): Stream[List[Card]] = { // 5, 2 or 1
     val shuffledDeck = Random.shuffle(deck)
 
     val amount = 5 - board.size
@@ -64,8 +64,8 @@ object EquityCalculator {
       )
       case 2 => List(
         shuffledDeck.head,
-        shuffledDeck.tail.head) appendedAll board
-      case 1 => List(shuffledDeck.head) appendedAll board
+        shuffledDeck.tail.head) ::: board
+      case 1 => List(shuffledDeck.head) ::: board
       case _ => board
     }
     result #:: randomCommunityCards(board, deck)

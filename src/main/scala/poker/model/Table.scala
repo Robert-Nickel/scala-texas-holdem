@@ -97,8 +97,7 @@ case class Table(players: List[Player],
 
   def evaluate(player: Player): Evaluation = {
     Evaluator.eval(
-      List(player.holeCards.get._1, player.holeCards.get._2)
-        .appendedAll(board))
+      List(player.holeCards.get._1, player.holeCards.get._2) ::: board)
   }
 
   def getTheWinner: Player = {

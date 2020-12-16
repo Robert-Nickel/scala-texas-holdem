@@ -247,7 +247,7 @@ class PlayerSpec extends AnyWordSpec
   }
 
   "Given a player (bot) with hand value 12001" should {
-    val handValue = 12_001
+    val handValue = 12001
     val highestOverallBet = 50
     val bob = (Player("Bob") is 200 deep)
     "raise 3 times the highestOverallBet" in {
@@ -256,7 +256,7 @@ class PlayerSpec extends AnyWordSpec
   }
 
   "Given a player (bot) with hand value 9001" should {
-    val handValue = 9_001
+    val handValue = 9001
     val highestOverallBet = 50
     val bob = (Player("Bob") is 200 deep)
     "call" in {
@@ -265,7 +265,7 @@ class PlayerSpec extends AnyWordSpec
   }
 
   "Given a player (bot) with hand value 1000" should {
-    val handValue = 1_000
+    val handValue = 1000
     val highestOverallBet = 50
     val bob = (Player("Bob") is 200 deep)
     "fold" in {
@@ -274,7 +274,7 @@ class PlayerSpec extends AnyWordSpec
   }
 
   "Given a player (bot) with hand value 12001" should {
-    val handValue = 12_001
+    val handValue = 12001
     val highestOverallBet = 50
     val bob = (Player("Bob") is 0 deep)
     "fold if invalid raise" in {

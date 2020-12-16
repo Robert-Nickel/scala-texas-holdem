@@ -33,14 +33,14 @@ class EquityCalculatorSpec extends AnyWordSpec {
   "Given hands for different players" should {
     "return the win count for each player" in {
       val eventualDone = countWins(hands)
-      val tolerance = 1_000 // 1_000 appears to be safe, can be in- or decreased based on required precision
+      val tolerance = 1000 // 1_000 appears to be safe, can be in- or decreased based on required precision
       val result = Await.result(eventualDone, 30 seconds)
-      result(0) should be(10_680 +- tolerance)
+      result(0) should be(10680 +- tolerance)
       result(1) should be(0 +- tolerance)
-      result(2) should be(2_164 +- tolerance)
-      result(3) should be(3_255 +- tolerance)
-      result(4) should be(2_366 +- tolerance)
-      result(5) should be(2_182 +- tolerance)
+      result(2) should be(2164 +- tolerance)
+      result(3) should be(3255 +- tolerance)
+      result(4) should be(2366 +- tolerance)
+      result(5) should be(2182 +- tolerance)
     }
 
     "calculate preflop equity" in {

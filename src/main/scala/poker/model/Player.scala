@@ -76,10 +76,10 @@ case class Player(name: String,
 
   def actPostFlop(handValue: Int, highestOverallBet: Int): Player = {
     handValue match {
-      case handValue if handValue > 24_000 => {
+      case handValue if handValue > 24000 => {
         allIn(highestOverallBet)
       }
-      case handValue if handValue > 12_000 => {
+      case handValue if handValue > 12000 => {
         val tryRaise = raise(highestOverallBet * 3, highestOverallBet)
         if (tryRaise.isFailure) {
           fold()
@@ -88,7 +88,7 @@ case class Player(name: String,
         }
       }
 
-      case handValue if handValue > 8_000 =>
+      case handValue if handValue > 8000 =>
         val tryCall = call(highestOverallBet)
         if (tryCall.isSuccess) tryCall.get else fold()
       case _ => fold()

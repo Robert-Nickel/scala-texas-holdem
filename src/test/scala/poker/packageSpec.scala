@@ -12,7 +12,7 @@ class packageSpec extends AnyWordSpec {
       deck = getDeck,
       currentPlayer = 2,
       currentBettingRound = 2,
-      pot = 1_000_000,
+      pot = 1000000,
       board = List(Card('A', '♥'), Card('K', '♥'), Card('Q', '♥'), Card('J', '♥'), Card('T', '♥')),
 
     )

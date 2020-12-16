@@ -20,7 +20,7 @@ object Main extends App {
     printText("------------- ROUND STARTS -------------")
     val newTable = playBettingRounds(table)
     printText(newTable.getPrintableWinning)
-    Thread.sleep(10_000)
+    Thread.sleep(10000)
     printText("------------- ROUND ENDS -------------")
 
     val newNewTable = newTable
@@ -40,7 +40,7 @@ object Main extends App {
     printText("------------- BETTING ROUND STARTS -------------")
     val newTable = playMoves(table.setFirstPlayerForBettingRound.resetPlayerActedThisBettingRound())
       .collectCurrentBets
-    Thread.sleep(4_500)
+    Thread.sleep(4500)
     printText("------------- BETTING ROUND ENDS -------------")
     if (newTable.shouldPlayNextBettingRound) {
       playBettingRounds(newTable.copy(currentBettingRound = table.currentBettingRound + 1).showBoardIfRequired)
@@ -88,7 +88,7 @@ object Main extends App {
       !(table.isSB(currentPlayer) || table.isBB(currentPlayer))) {
       Some(getValidatedInput)
     } else {
-      Thread.sleep(Random.nextInt(3_000) + 1_000)
+      Thread.sleep(Random.nextInt(3000) + 1000)
       None
     }
   }
@@ -102,6 +102,6 @@ object Main extends App {
   }
 
   def isValidSyntax(input: String) = {
-    """fold|check|call|raise \d+|all-in""".r.matches(input)
+    """fold|check|call|raise \d+|all-in""".matches(input)
   }
 }

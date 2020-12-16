@@ -238,10 +238,10 @@ class TableSpec extends AnyWordSpec with Matchers {
       Player("5"),
       Player("6")),
       board = List(Card('Q', '♠'), Card('J', '♠'), Card('T', '♠'), Card('Q', '♣'), Card('2', '♣')),
-      pot = 1_000_000)
+      pot = 1000000)
     "pay Bernard as the winner" in {
       val newTable = table.payTheWinner
-      newTable.players(2).stack should be(1_000_000)
+      newTable.players(2).stack should be(1000000)
       newTable.pot should be(0)
     }
   }
@@ -251,10 +251,10 @@ class TableSpec extends AnyWordSpec with Matchers {
       Player("Bernard").hasCards("2♠ 7♥"),
       Player("Arnold")),
       board = List(Card('Q', '♠'), Card('J', '♠'), Card('T', '♠'), Card('Q', '♣'), Card('2', '♣')),
-      pot = 300_000)
+      pot = 300000)
     "pay Bernard as the winner" in {
       val newTable = table.payTheWinner
-      newTable.players.head.stack should be(300_000)
+      newTable.players.head.stack should be(300000)
       newTable.pot should be(0)
     }
   }
