@@ -12,8 +12,9 @@ libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % 
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.2.2"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.2" % "test"
 
+libraryDependencies += "org.apache.kafka" %% "kafka" % "2.6.0"
 libraryDependencies += "org.apache.spark" % "spark-core_2.12" % "3.0.1"
-libraryDependencies += "org.apache.spark" % "spark-streaming_2.12" % "3.0.1" % "provided"
+libraryDependencies += "org.apache.spark" % "spark-streaming_2.12" % "3.0.1"
 libraryDependencies += "org.apache.spark" % "spark-streaming-kafka-0-10_2.12" % "3.0.1"
 libraryDependencies += "org.apache.spark" % "spark-sql_2.12" % "3.0.1"
 
@@ -25,7 +26,5 @@ libraryDependencies ++=Seq(
   "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion,
   "ch.qos.logback" % "logback-classic" % "1.2.3",
 )
-
-libraryDependencies += "org.apache.kafka" %% "kafka" % "2.6.0"
 
 coverageExcludedPackages := ".*Main.*"
