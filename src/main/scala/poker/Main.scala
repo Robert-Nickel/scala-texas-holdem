@@ -2,7 +2,9 @@ package poker
 
 import java.io.{File, FileWriter, PrintWriter}
 
+import poker.expected_value.ExpectedValueCalculator
 import poker.model.Table
+import poker.stream.EquityCalculator
 
 import scala.annotation.tailrec
 import scala.io.StdIn
@@ -102,6 +104,16 @@ object Main extends App {
   }
 
   def isValidSyntax(input: String) = {
-    """fold|check|call|raise \d+|all-in""".matches(input)
+    input.matches("""fold|check|call|raise \d+|all-in""")
+  }
+
+  def printCallingExpectedValue() = {
+    val equities = if (table.currentBettingRound == 0) {
+      EquityCalculator.calculatePreflopEquity(table.players.map(player => player.holeCards))
+    } else {
+      EquityCalculator.calculatePostflopEquity(table.players.map(player => player.holeCards), table.board)
+    }
+    val callEV = ExpectedValueCalculator.calculateCallingEV(table, equities)
+    printText(s"Expected value for calling: $callEV")
   }
 }
