@@ -14,14 +14,14 @@ object Consumer extends App {
   props.put("group.id", "something")
 
   val consumer = new KafkaConsumer[String, String](props)
-  val TOPIC = "equity"
+  val TOPIC = "You"
 
   consumer.subscribe(util.Collections.singletonList(TOPIC))
 
   while (true) {
     val records = consumer.poll(500)
     for (record <- records.asScala) {
-      println(record)
+      println("Your equity is: " + record.value())
     }
   }
 }

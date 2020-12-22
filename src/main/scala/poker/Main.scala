@@ -1,8 +1,8 @@
 package poker
 
 import java.io.{File, FileWriter, PrintWriter}
-
 import poker.expected_value.ExpectedValueCalculator
+import poker.kafka.EquityProducer
 import poker.model.Table
 import poker.stream.EquityCalculator
 
@@ -40,6 +40,14 @@ object Main extends App {
   @tailrec
   def playBettingRounds(table: Table): Table = {
     printText("------------- BETTING ROUND STARTS -------------")
+    val equities = if(table.currentBettingRound == 0) {
+      EquityCalculator.calculatePreflopEquity(table.players.map(player => player.holeCards))
+    } else {
+      EquityCalculator.calculatePostflopEquity(table.players.map(player => player.holeCards), table.board)
+    }
+
+    (table.players,equities).zipped.foreach((player,equity) => EquityProducer.produceEquity(player.name, equity))
+
     val newTable = playMoves(table.setFirstPlayerForBettingRound.resetPlayerActedThisBettingRound())
       .collectCurrentBets
     Thread.sleep(4500)
