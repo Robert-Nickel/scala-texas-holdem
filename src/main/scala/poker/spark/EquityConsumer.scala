@@ -1,23 +1,22 @@
 package poker.spark
 
 import org.apache.kafka.clients.consumer.ConsumerRecord
-import org.apache.kafka.common.TopicPartition
 import org.apache.kafka.common.serialization.StringDeserializer
-import org.apache.spark.SparkConf
+import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.streaming.dstream.InputDStream
 import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
 import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
 import org.apache.spark.streaming.kafka010._
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import poker.names
 
-import scala.collection.JavaConverters.{asJavaCollection, _}
-import scala.math.random
 object EquityConsumer {
-  def main(args: Array[String]): Unit = {
 
-    val spark = SparkSession.builder.appName("Spark with Kafka").config("spark.master", "local").getOrCreate()
+  def main(args: Array[String]): Unit = {
+    val spark =
+      SparkSession.builder
+        .appName("Spark with Kafka")
+        .config("spark.master", "local").getOrCreate()
     spark.sparkContext.setLogLevel("ERROR")
     val streamingContext = new StreamingContext(spark.sparkContext, Seconds(1))
     val kafkaParams = Map[String, Object](
@@ -34,23 +33,21 @@ object EquityConsumer {
       Subscribe[String, String](topics, kafkaParams)
     )
 
-    println("Start polling")
-    println()
-
-     // stream.foreachRDD(rdd => rdd.foreach(playerRecord => println("Your Equity: " + playerRecord.value)))  // Prints results
-
     stream.foreachRDD(rdd => {
       if (!rdd.isEmpty) {
-        println(s"Total: ${rdd.count()}")
-        val equityResult = rdd
-          .filter( player => player.topic() == "You")
-          .map( playerRecord => playerRecord.value().toDouble)
-          .reduce((_+_)) / rdd.count()
-        println("Your average Equity: " + equityResult)
+        calculateAverageEquity(rdd, "You")
+        // This does not work yet:
+        rdd.saveAsTextFile("rddTextFile")
       }
-    }) // Prints result count
-
+    })
     streamingContext.start
     streamingContext.awaitTermination
+  }
+
+  def calculateAverageEquity(rdd: RDD[ConsumerRecord[String, String]], name: String) = {
+    rdd
+      .filter(player => player.topic() == name)
+      .map(playerRecord => playerRecord.value().toDouble)
+      .reduce(_ + _) / rdd.count()
   }
 }
