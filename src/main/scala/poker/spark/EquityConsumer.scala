@@ -37,7 +37,7 @@ object EquityConsumer {
       if (!rdd.isEmpty) {
         calculateAverageEquity(rdd, "You")
         // This does not work yet:
-        rdd.saveAsTextFile("rddTextFile")
+        rdd.saveAsTextFile("rdd")
       }
     })
     streamingContext.start
