@@ -1,8 +1,12 @@
 package poker
 
 import java.io.{File, FileWriter, PrintWriter}
+import java.util.UUID
+import java.util.UUID.randomUUID
+
 import poker.expected_value.ExpectedValueCalculator
-import poker.kafka.EquityProducer
+import poker.kafka.PlayerDataProducer
+import poker.kafka.PlayerDataProducer.{publishFlopEquity, publishPreflopEquity, publishRiverEquity, publishTurnEquity}
 import poker.model.Table
 import poker.stream.EquityCalculator
 
@@ -20,7 +24,8 @@ object Main extends App {
 
   def playRounds(table: Table): Table = {
     printText("------------- ROUND STARTS -------------")
-    val newTable = playBettingRounds(table)
+    val roundId = randomUUID()
+    val newTable = playBettingRounds(table, roundId)
     printText(newTable.getPrintableWinning)
     Thread.sleep(10000)
     printText("------------- ROUND ENDS -------------")
@@ -31,6 +36,9 @@ object Main extends App {
       .resetBoard
       .collectHoleCards
       .handOutCards(Random.shuffle(getDeck))
+
+    publishWinLosses(table, newNewTable, roundId)
+
     if (newNewTable.shouldPlayNextRound) {
       playRounds(newNewTable)
     }
@@ -38,17 +46,12 @@ object Main extends App {
   }
 
   @tailrec
-  def playBettingRounds(table: Table): Table = {
+  def playBettingRounds(table: Table, roundId: UUID = randomUUID()): Table = {
     printText("------------- BETTING ROUND STARTS -------------")
-    val equities = if(table.currentBettingRound == 0) {
-      EquityCalculator.calculatePreflopEquity(table.players.map(player => player.holeCards))
-    } else {
-      EquityCalculator.calculatePostflopEquity(table.players.map(player => player.holeCards), table.board)
-    }
-
-    (table.players,equities).zipped.foreach((player,equity) => EquityProducer.produceEquity(player.name, equity))
-
-    val newTable = playMoves(table.setFirstPlayerForBettingRound.resetPlayerActedThisBettingRound())
+    publishEquities(table, roundId)
+    val newTable = playMoves(
+      table.setFirstPlayerForBettingRound
+        .resetPlayerActedThisBettingRound())
       .collectCurrentBets
     Thread.sleep(4500)
     printText("------------- BETTING ROUND ENDS -------------")
@@ -123,5 +126,27 @@ object Main extends App {
     }
     val callEV = ExpectedValueCalculator.calculateCallingEV(table, equities)
     printText(s"Expected value for calling: $callEV")
+  }
+
+  private def publishEquities(table: Table, roundId: UUID) = {
+    val equities = if (table.currentBettingRound == 0) {
+      EquityCalculator.calculatePreflopEquity(table.players.map(player => player.holeCards))
+    } else {
+      EquityCalculator.calculatePostflopEquity(table.players.map(player => player.holeCards), table.board)
+    }
+    (table.players, equities).zipped.foreach((player, equity) =>
+      table.currentBettingRound match {
+        case 0 => publishPreflopEquity(player.name, equity, roundId)
+        case 1 => publishFlopEquity(player.name, equity, roundId)
+        case 2 => publishTurnEquity(player.name, equity, roundId)
+        case 3 => publishRiverEquity(player.name, equity, roundId)
+      }
+    )
+  }
+
+  def publishWinLosses(oldTable: Table, newTable: Table, roundId: UUID) = {
+    (newTable.players, oldTable.players)
+      .zipped.foreach((newPlayer, oldPlayer) =>
+      PlayerDataProducer.produceWinLoss(newPlayer.name, newPlayer.stack - oldPlayer.stack, roundId))
   }
 }

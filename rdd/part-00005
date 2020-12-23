@@ -1,0 +1,2 @@
+ConsumerRecord(topic = Bob, partition = 0, leaderEpoch = 0, offset = 35, CreateTime = 1608745400075, serialized key size = 7, serialized value size = 4, headers = RecordHeaders(headers = [], isReadOnly = false), key = winLoss, value = -200)
+ConsumerRecord(topic = Bob, partition = 0, leaderEpoch = 0, offset = 36, CreateTime = 1608745400246, serialized key size = 6, serialized value size = 3, headers = RecordHeaders(headers = [], isReadOnly = false), key = equity, value = 0.0)

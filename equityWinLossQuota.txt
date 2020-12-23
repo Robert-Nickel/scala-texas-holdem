@@ -1,0 +1,2 @@
+roundId | preflop equity | flop equity | turn equity | river equity | average equity| win/loss
+
