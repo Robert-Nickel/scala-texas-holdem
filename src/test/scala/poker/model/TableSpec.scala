@@ -1,5 +1,5 @@
 package poker.model
-
+/*
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
@@ -301,3 +301,4 @@ class TableSpec extends AnyWordSpec with Matchers {
     }
   }
 }
+*/

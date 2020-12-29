@@ -1,5 +1,5 @@
 package poker
-
+/*
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 import poker.model.{Card, Player, Table}
@@ -132,4 +132,4 @@ class packageSpec extends AnyWordSpec {
       table.shouldPlayNextMove shouldBe true
     }
   }
-}
+}*/

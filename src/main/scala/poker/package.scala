@@ -1,10 +1,9 @@
-import akka.actor.ActorSystem
 import poker.model.{Card, Player, Table}
 
 import scala.collection.immutable.HashMap
 import scala.util.Try
 
-package object poker {
+package object poker:
   val names = List("Amy", "Bob", "Dev", "Fox", "Udo", "You")
   val players = names.map(name => Player(name, 200))
   val sb = 1
@@ -25,8 +24,6 @@ package object poker {
     ('K', Set(13)),
     ('A', Set(1, 14))
   )
-  val actorSystem = ActorSystem("PostFlopEvaluator")
-
 
   def getDeck: List[Card] = {
     (for {
@@ -177,5 +174,3 @@ package object poker {
       player.name == "You"
     }
   }
-
-}

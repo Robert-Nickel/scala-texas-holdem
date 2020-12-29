@@ -1,5 +1,5 @@
 package poker.evaluator
-
+/*
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 import poker.model.Card
@@ -194,5 +194,5 @@ class EvaluatorSpec extends AnyWordSpec{
       evaluation.handName should be("one pair")
     }
   }
-
 }
+*/

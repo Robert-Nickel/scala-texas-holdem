@@ -8,31 +8,33 @@ import scala.annotation.tailrec
 import scala.io.StdIn
 import scala.util.Random
 
-object Main extends App {
-  new File("poker.txt").delete()
+object Main {
+  
+  @main def playGame() = {
+    new File("poker.txt").delete()
 
-  val table = Table(players, getDeck).handOutCards(Random.shuffle(getDeck))
-  printText(playRounds(table).getPrintableTable())
-  printText("Game over!")
-  actorSystem.terminate()
+      val table = Table(players, getDeck).handOutCards(Random.shuffle(getDeck))
+      printText(playRounds(table).getPrintableTable())
+      printText("Game over!")
 
-  def playRounds(table: Table): Table = {
-    printText("------------- ROUND STARTS -------------")
-    val newTable = playBettingRounds(table)
-    printText(newTable.getPrintableWinning)
-    Thread.sleep(10_000)
-    printText("------------- ROUND ENDS -------------")
+      def playRounds(table: Table): Table = {
+        printText("------------- ROUND STARTS -------------")
+        val newTable = playBettingRounds(table)
+        printText(newTable.getPrintableWinning)
+        Thread.sleep(10_000)
+        printText("------------- ROUND ENDS -------------")
 
-    val newNewTable = newTable
-      .payTheWinner
-      .rotateButton
-      .resetBoard
-      .collectHoleCards
-      .handOutCards(Random.shuffle(getDeck))
-    if (newNewTable.shouldPlayNextRound) {
-      playRounds(newNewTable)
-    }
-    newNewTable
+        val newNewTable = newTable
+          .payTheWinner
+          .rotateButton
+          .resetBoard
+          .collectHoleCards
+          .handOutCards(Random.shuffle(getDeck))
+        if (newNewTable.shouldPlayNextRound) {
+          playRounds(newNewTable)
+        }
+        newNewTable
+      } 
   }
 
   @tailrec

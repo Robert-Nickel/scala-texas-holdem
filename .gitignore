@@ -2,8 +2,15 @@
 /out
 scala-texas-holdem.iml
 /project/target
+/project/project/*
+/project/.bloop
 /project/project/target/config-classes
+/project/metals.sbt
 /target
 /.bsp
 .DS_Store
 poker.txt
+/.bloop
+/.metals
+/.vscode
+

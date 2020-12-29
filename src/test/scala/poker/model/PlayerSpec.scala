@@ -1,6 +1,5 @@
 package poker.model
-
-import akka.testkit.TestKit
+/*
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers._
@@ -286,3 +285,4 @@ class PlayerSpec extends AnyWordSpec
     TestKit.shutdownActorSystem(actorSystem)
   }
 }
+*/

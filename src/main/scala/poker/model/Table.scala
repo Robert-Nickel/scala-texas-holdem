@@ -2,6 +2,8 @@ package poker.model
 
 import poker.evaluator.{Evaluation, Evaluator}
 import poker.{bb, sb}
+import poker.PlayerDSL
+import poker.TableDSL
 
 import scala.util.{Failure, Random, Success, Try}
 

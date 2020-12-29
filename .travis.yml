@@ -1,6 +1,6 @@
 language: scala
 scala:
-  - 2.13.3
+  - 3.0.0-M3
 
 script:
   - sbt clean coverage test coverageReport
