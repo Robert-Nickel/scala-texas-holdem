@@ -18,7 +18,9 @@ To evaluate hands, we borrowed the solution from the TwoPlusTwo hand ranks evalu
 To get the implementation of the evaluation done, we looked [here](https://github.com/chenosaurus/poker-evaluator), [here](https://github.com/LativDeveloper/PokerGym) and [here](https://github.com/tommy-a/zetebot/blob/master/src/tools/TwoPlusTwo.java).
 
 Features to cover in the near future:
-- [ ] if all-in and highestOverallbet > investment only return partial amount 
+- [ ] if all-in and highestOverallbet > investment only return partial amount
+- [ ] if the next player has folded or is all-in, skip him sooner
+- [ ] if someone has called all-in, but still has chips behind, the betting round continues forever, because he is not considered "all-in", but everyone else has either folded or is all-in.
 - [x] Players don't get cards, if they don't have chips
 - [x] Players don't act, if they are all-in
 - [x] Bots using actors to make smarter decisions
