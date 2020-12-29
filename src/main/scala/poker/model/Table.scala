@@ -1,10 +1,9 @@
 package poker.model
 
 import poker.evaluator.{Evaluation, Evaluator}
-import poker.{bb, sb}
 import poker.PlayerDSL
 import poker.TableDSL
-
+import poker.{bb,sb}
 import scala.util.{Failure, Random, Success, Try}
 
 case class Table(players: List[Player],
@@ -55,15 +54,10 @@ case class Table(players: List[Player],
     }
 
   def showBoardIfRequired: Table = 
-    if (currentBettingRound == 1) {
-      flop
-    } else if (currentBettingRound == 2) {
-      turn
-    } else if (currentBettingRound == 3) {
-      river
-    } else {
-      this
-    }
+    if currentBettingRound == 1 then flop
+    else if currentBettingRound == 2 then turn
+    else if currentBettingRound == 3 then river
+    else this
 
   def flop: Table = 
     val newBoard = board :+ deck.head :+ deck.tail.head :+ deck.tail.tail.head
@@ -94,13 +88,12 @@ case class Table(players: List[Player],
         .appendedAll(board))
 
   def getTheWinner: Player = 
-    if (this.isOnlyOnePlayerInRound) {
+    if this.isOnlyOnePlayerInRound then
       players.find(player => player.isInRound).get
-    } else {
+    else
       players
         .filter(player => player.isInRound)
         .maxBy(player => evaluate(player).value)
-    }
 
   def rotateButton: Table = 
     copy(players = players.drop(1) ++ players.take(1))
@@ -115,23 +108,20 @@ case class Table(players: List[Player],
     (oldPlayers.size, deck.size) match {
       case (oldPlayerSize, _) if oldPlayerSize == 0 => Table(newPlayers, deck)
       case _ =>
-        if (oldPlayers.head.isInGame) {
+        if oldPlayers.head.isInGame then
           handOutCardsToPlayers(oldPlayers.tail, deck.tail.tail, newPlayers :+ oldPlayers.head.copy(holeCards = Some(deck.head, deck.tail.head)))
-        } else {
+        else
           handOutCardsToPlayers(oldPlayers.tail, deck, newPlayers :+ oldPlayers.head)
-        }
     }
 
   def setFirstPlayerForBettingRound: Table =
-    val firstPlayerForBettingRound = if (players.count(player => player.isInRound) == 1) {
+    val firstPlayerForBettingRound = if players.count(player => player.isInRound) == 1 then
       players.indexWhere(player => player.isInRound)
-    } else {
+    else
       players.zipWithIndex
         .filter(playerAndIndex => playerAndIndex._1.isInRound) // filter out everyone who is not in round
         .filter(playerAndIndex => playerAndIndex._2 != 0) // filter out the dealer
-        .head
-        ._2
-    }
+        .head._2
     this.copy(currentPlayer = firstPlayerForBettingRound)
 
   def nextPlayer: Table = this.copy(currentPlayer = (currentPlayer + 1) % players.length)

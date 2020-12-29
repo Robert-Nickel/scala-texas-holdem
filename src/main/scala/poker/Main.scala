@@ -30,9 +30,7 @@ object Main:
           .resetBoard
           .collectHoleCards
           .handOutCards(Random.shuffle(getDeck))
-        if (newNewTable.shouldPlayNextRound) {
-          playRounds(newNewTable)
-        }
+        if newNewTable.shouldPlayNextRound then playRounds(newNewTable)
         newNewTable
       } 
   
@@ -44,34 +42,28 @@ object Main:
       .collectCurrentBets
     Thread.sleep(4_500)
     printText("------------- BETTING ROUND ENDS -------------")
-    if (newTable.shouldPlayNextBettingRound) {
+    if newTable.shouldPlayNextBettingRound then
       playBettingRounds(newTable.copy(currentBettingRound = table.currentBettingRound + 1).showBoardIfRequired)
-    } else {
+    else 
       newTable
-    }
-  
 
   @tailrec
   def playMoves(table: Table): Table = 
     val newTable = playMove(table)
-    if (newTable.shouldPlayNextMove) {
+    if newTable.shouldPlayNextMove then
       playMoves(newTable)
-    } else {
+    else 
       newTable
-    }
-  
 
   @tailrec
   def playMove(table: Table): Table = 
     printText(table.getPrintableTable())
     val maybeInput = getMaybeInput(table)
     val newTryTable = table.tryCurrentPlayerAct(maybeInput)
-    if (newTryTable.isFailure) {
+    if newTryTable.isFailure then
       playMove(table)
-    } else {
+    else 
       newTryTable.get.nextPlayer
-    }
-  
 
   @tailrec
   def getValidatedInput: String = 
@@ -83,15 +75,14 @@ object Main:
 
   def getMaybeInput(table: Table): Option[String] =
     val currentPlayer = table.getCurrentPlayer
-    if (currentPlayer.isHumanPlayer &&
+    if currentPlayer.isHumanPlayer &&
       currentPlayer.isInRound &&
       !currentPlayer.isAllIn &&
-      !(table.isSB(currentPlayer) || table.isBB(currentPlayer))) {
+      !(table.isSB(currentPlayer) || table.isBB(currentPlayer)) then
       Some(getValidatedInput)
-    } else {
+    else
       Thread.sleep(Random.nextInt(3_000) + 1_000)
       None
-    }
 
   def printText(text: String): Unit = 
     new PrintWriter(new FileWriter("poker.txt", true)) {

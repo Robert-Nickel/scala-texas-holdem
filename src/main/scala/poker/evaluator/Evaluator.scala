@@ -5,6 +5,7 @@ import java.nio.{ByteBuffer, ByteOrder}
 
 import poker.model.Card
 import scala.collection.immutable.HashMap
+import poker.{bb, cardValues}
 
 object Evaluator {
   val inputStream = getClass.getResourceAsStream("/HandRanks.dat")
@@ -102,4 +103,15 @@ object Evaluator {
     val handAddress = p >> 12
     Evaluation(handAddress, p & 0x00000fff, p, handTypes(handAddress))
   }
+
+  def evalHoleCards(holeCards: Option[(Card, Card)]): Int = 
+    if holeCards.isDefined then
+      val card1 = holeCards.get._1
+      val card2 = holeCards.get._2
+      val sum = cardValues(card1.value).max + cardValues(card2.value).max
+      val suitedValue = if (card1.symbol == card2.symbol) 6 else 0
+      val delta = (cardValues(card1.value).max - cardValues(card2.value).max).abs
+      val connectorValue = Set(8 - delta * 2, 0).max
+      sum + suitedValue + connectorValue
+    else 0
 }
