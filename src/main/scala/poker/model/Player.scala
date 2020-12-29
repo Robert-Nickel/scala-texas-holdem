@@ -11,9 +11,9 @@ case class Player(name: String,
                   holeCards: Option[(Card, Card)] = None,
                   currentBet: Int = 0,
                   hasActedThisBettingRound: Boolean = false,
-                  roundInvestment: Int = 0) {
+                  roundInvestment: Int = 0) :
 
-  def getHoleCardsString(showCards: Boolean = false): String = {
+  def getHoleCardsString(showCards: Boolean = false): String = 
     if (holeCards.isDefined) {
       if (showCards || name.equals("You")) {
         s"${holeCards.get._1}${holeCards.get._2}"
@@ -23,21 +23,17 @@ case class Player(name: String,
     } else {
       " " * 8
     }
-  }
 
-  def fold(): Player = {
-    this.copy(holeCards = None)
-  }
+  def fold(): Player = this.copy(holeCards = None)
 
-  def check(highestOverallBet: Int): Try[Player] = {
+  def check(highestOverallBet: Int): Try[Player] = 
     if (highestOverallBet == currentBet) {
       Success(this.copy(hasActedThisBettingRound = true))
     } else {
       Failure(new Throwable(s"You cannot check, the current bet is $highestOverallBet"))
     }
-  }
 
-  def call(highestOverallBet: Int): Try[Player] = {
+  def call(highestOverallBet: Int): Try[Player] =
     stack match {
       case 0 => Failure(new Throwable(s"You cannot call, your stack is 0"))
       case stack if stack - highestOverallBet < 0 =>
@@ -45,13 +41,10 @@ case class Player(name: String,
       case _ =>
         Success(this.copy(stack = stack - (highestOverallBet - currentBet), currentBet = highestOverallBet, hasActedThisBettingRound = true))
     }
-  }
 
-  def allIn(highestOverallBet: Int): Player = {
-    raise(stack + currentBet, highestOverallBet).get
-  }
-
-  def raise(amount: Int, highestOverallBet: Int): Try[Player] = {
+  def allIn(highestOverallBet: Int): Player = raise(stack + currentBet, highestOverallBet).get
+  
+  def raise(amount: Int, highestOverallBet: Int): Try[Player] = 
     amount match {
       case _ if stack == 0 =>
         Failure(new Throwable("You have no more chips. You cannot raise."))
@@ -62,9 +55,8 @@ case class Player(name: String,
       case _ =>
         Success(this.copy(stack = stack - amount + currentBet, currentBet = amount, hasActedThisBettingRound = true))
     }
-  }
 
-  def actAsBot(highestOverallBet: Int, board: List[Card] = List()): Player = {
+  def actAsBot(highestOverallBet: Int, board: List[Card] = List()): Player = 
     if (board.isEmpty) {
       val handValue = getHoleCardsValue()
       actPreflop(handValue, highestOverallBet)
@@ -72,9 +64,8 @@ case class Player(name: String,
       val flopValue = getPostFlopEvaluation(board :+ holeCards.get._1 :+ holeCards.get._2)
       actPostFlop(flopValue, highestOverallBet)
     }
-  }
 
-  def actPostFlop(handValue: Int, highestOverallBet: Int): Player = {
+  def actPostFlop(handValue: Int, highestOverallBet: Int): Player = 
     handValue match {
       case handValue if handValue > 24_000 => {
         allIn(highestOverallBet)
@@ -93,9 +84,8 @@ case class Player(name: String,
         if (tryCall.isSuccess) tryCall.get else fold()
       case _ => fold()
     }
-  }
-
-  private def actPreflop(handValue: Int, highestOverallBet: Int): Player = {
+  
+  private def actPreflop(handValue: Int, highestOverallBet: Int): Player = 
     handValue match {
       case handValue if handValue > 30 =>
         val tryRaise = raise(5 * bb, highestOverallBet)
@@ -125,9 +115,8 @@ case class Player(name: String,
       }
       case _ => fold()
     }
-  }
 
-  def getHoleCardsValue(): Int = {
+  def getHoleCardsValue(): Int = 
     if (holeCards.isDefined) {
       val card1 = holeCards.get._1
       val card2 = holeCards.get._2
@@ -139,5 +128,3 @@ case class Player(name: String,
     } else {
       0
     }
-  }
-}

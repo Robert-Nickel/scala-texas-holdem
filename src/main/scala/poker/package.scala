@@ -34,17 +34,11 @@ package object poker:
 
   implicit class TableDSL(table: Table) {
 
-    def getCurrentPlayer: Player = {
-      table.players(table.currentPlayer)
-    }
+    def getCurrentPlayer: Player = table.players(table.currentPlayer)
 
-    def getHighestOverallBet: Int = {
-      table.players.map(player => player.currentBet).max
-    }
+    def getHighestOverallBet: Int = table.players.map(player => player.currentBet).max
 
-    def isOnlyOnePlayerInRound: Boolean = {
-      table.players.count(p => p.isInRound) == 1
-    }
+    def isOnlyOnePlayerInRound: Boolean = table.players.count(p => p.isInRound) == 1
 
     def isSB(player: Player): Boolean = table.players(1) == player
 
@@ -52,21 +46,16 @@ package object poker:
 
     def isPreFlop: Boolean = table.currentBettingRound == 0
 
-    def shouldPlayNextRound: Boolean = {
-      table.players.count(p => p.isInGame) > 1
-    }
-
-    def shouldPlayNextBettingRound: Boolean = {
-      table.currentBettingRound < 3 && !table.isOnlyOnePlayerInRound
-    }
-
-    def shouldPlayNextMove: Boolean = {
+    def shouldPlayNextRound: Boolean = table.players.count(p => p.isInGame) > 1
+    
+    def shouldPlayNextBettingRound: Boolean = table.currentBettingRound < 3 && !table.isOnlyOnePlayerInRound
+    
+    def shouldPlayNextMove: Boolean =
       val maxCurrentBet = table.players.map(p => p.currentBet).max
       table.players.exists(player =>
         player.isInRound && (player.currentBet != maxCurrentBet || !player.hasActedThisBettingRound))
-    }
 
-    def getPrintableWinning: String = {
+    def getPrintableWinning: String = 
       val winner = table.getTheWinner
       if (table.currentBettingRound == 0) {
         table.getPrintableTable(showCards = true) + "\n" +
@@ -76,53 +65,38 @@ package object poker:
         table.getPrintableTable(showCards = true) + "\n" +
           s"${winner.name} wins ${table.pot} with ${evaluation.handName}\n\n"
       }
-    }
 
-    def getPrintableTable(showCards: Boolean = false): String = {
-      def getPot = {
-        " " * (42 - (table.pot.toString.length / 2)) + s"Pot ${table.pot}"
-      }
+    def getPrintableTable(showCards: Boolean = false): String =
+      def getPot = " " * (42 - (table.pot.toString.length / 2)) + s"Pot ${table.pot}"
 
-      def getBoard = {
-        " " * (44 - (table.board.size * 4) / 2) +
-          table.board.map(card => s"[${card.value}${card.symbol}]").mkString
-      }
+      def getBoard = " " * (44 - (table.board.size * 4) / 2)
+        + table.board.map(card => s"[${card.value}${card.symbol}]").mkString
+      
 
-      def getCurrentBets = {
-        table.players.map(player => {
+      def getCurrentBets = table.players.map(player => {
           val spacesAfterCurrentBet = 16 - player.currentBet.toString.length
           s"${player.currentBet}" + " " * spacesAfterCurrentBet
         }).mkString
-      }
 
-      def getBettingLine = {
-        "_" * 88
-      }
+      def getBettingLine = "_" * 88
 
-      def getHoleCards(showCards: Boolean = false) = {
+      def getHoleCards(showCards: Boolean = false) =
         table.players.map(player => {
           s"${player.getHoleCardsString(showCards)}" + " " * 8
         }).mkString
-      }
 
-      def getNames = {
-        table.players.head.name + " (D) " + " " * 8 +
+      def getNames = table.players.head.name + " (D) " + " " * 8 +
           table.players.tail.map(player => {
             s"${player.name} " + " " * 12
           }).mkString
-      }
 
-      def getStacks = {
-        table.players.map(player => {
+      def getStacks = table.players.map(player => {
           val spacesAfterStack = 16 - player.stack.toString.length
           s"${player.stack}" + " " * spacesAfterStack
         }).mkString
-      }
 
-      def getCurrentPlayerUnderline = {
-        s"${" " * 16 * table.currentPlayer}" + "_" * 8
-      }
-
+      def getCurrentPlayerUnderline = s"${" " * 16 * table.currentPlayer}" + "_" * 8
+      
       "\n" +
         getPot + "\n" +
         getBoard + "\n\n" +
@@ -133,7 +107,6 @@ package object poker:
         getStacks + "\n" +
         getCurrentPlayerUnderline + "\n"
     }
-  }
 
   implicit class PlayerDSL(player: Player) {
     def is(stack: Int): PlayerDSL = PlayerDSL(player = player.copy(stack = stack))
@@ -150,19 +123,13 @@ package object poker:
 
     def post(blind: Int): Try[Player] = posts(blind)
 
-    def isInRound: Boolean = {
-      player.holeCards.isDefined
-    }
+    def isInRound: Boolean = player.holeCards.isDefined
 
     def areInRound = isInRound
 
-    def isInGame: Boolean = {
-      player.stack > 0 || player.currentBet > 0
-    }
+    def isInGame: Boolean = player.stack > 0 || player.currentBet > 0
 
-    def isAllIn: Boolean = {
-      player.stack == 0 && isInRound
-    }
+    def isAllIn: Boolean = player.stack == 0 && isInRound
 
     def areInGame: Boolean = isInGame
 
@@ -170,7 +137,5 @@ package object poker:
     // TODO: handle failure case if shove is called with stack == 0
     def shoves(unit: Unit): Player = player.raise(player.stack, 0).get
 
-    def isHumanPlayer: Boolean = {
-      player.name == "You"
-    }
+    def isHumanPlayer: Boolean = player.name == "You"
   }

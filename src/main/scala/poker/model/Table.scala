@@ -13,7 +13,7 @@ case class Table(players: List[Player],
                  currentBettingRound: Int = 0,
                  pot: Int = 0,
                  board: List[Card] = List()
-                ) {
+                ):
 
   def collectHoleCards = copy(players = players.map(player => player.copy(holeCards = None)))
 
@@ -21,7 +21,7 @@ case class Table(players: List[Player],
     this.copy(players = players.map(player => player.copy(hasActedThisBettingRound = false)))
   }
 
-  def tryCurrentPlayerAct(maybeInput: Option[String]): Try[Table] = {
+  def tryCurrentPlayerAct(maybeInput: Option[String]): Try[Table] =
     val newActivePlayerTry = (players(currentPlayer), maybeInput) match {
       // skip
       case (activePlayer, _) if !activePlayer.isInRound => Success(activePlayer)
@@ -53,9 +53,8 @@ case class Table(players: List[Player],
       }
       case _ => Failure(new Throwable("invalid move by player"))
     }
-  }
 
-  def showBoardIfRequired: Table = {
+  def showBoardIfRequired: Table = 
     if (currentBettingRound == 1) {
       flop
     } else if (currentBettingRound == 2) {
@@ -65,45 +64,36 @@ case class Table(players: List[Player],
     } else {
       this
     }
-  }
 
-  def flop: Table = {
+  def flop: Table = 
     val newBoard = board :+ deck.head :+ deck.tail.head :+ deck.tail.tail.head
     val newDeck = deck.tail.tail.tail
     copy(board = newBoard, deck = newDeck)
-  }
 
-  def turn: Table = {
-    copy(board = board :+ deck.head, deck = deck.tail)
-  }
+  def turn: Table = copy(board = board :+ deck.head, deck = deck.tail)
+  
+  def river: Table = turn
 
-  def river: Table = {
-    turn
-  }
-
-  def collectCurrentBets: Table = {
+  def collectCurrentBets: Table = 
     this.copy(
       pot = pot + this.players.map(player => player.currentBet).sum,
       players = this.players.map(player => player.copy(
         roundInvestment = player.roundInvestment + player.currentBet,
         currentBet = 0)))
-  }
 
-  def payTheWinner: Table = {
+  def payTheWinner: Table = 
     val winner = getTheWinner
     val index = players.indexWhere(_.name == winner.name)
     // TODO: use roundInvestment to pay the winner AND reset it
     val newPlayers = players.updated(index, players(index).copy(stack = winner.stack + pot))
     copy(pot = 0, players = newPlayers)
-  }
 
-  def evaluate(player: Player): Evaluation = {
+  def evaluate(player: Player): Evaluation = 
     Evaluator.eval(
       List(player.holeCards.get._1, player.holeCards.get._2)
         .appendedAll(board))
-  }
 
-  def getTheWinner: Player = {
+  def getTheWinner: Player = 
     if (this.isOnlyOnePlayerInRound) {
       players.find(player => player.isInRound).get
     } else {
@@ -111,21 +101,17 @@ case class Table(players: List[Player],
         .filter(player => player.isInRound)
         .maxBy(player => evaluate(player).value)
     }
-  }
 
-  def rotateButton: Table = {
+  def rotateButton: Table = 
     copy(players = players.drop(1) ++ players.take(1))
-  }
 
-  def resetBoard: Table = {
+  def resetBoard: Table = 
     copy(board = List())
-  }
 
-  def handOutCards(deck: List[Card]): Table = {
+  def handOutCards(deck: List[Card]): Table = 
     handOutCardsToPlayers(players, deck)
-  }
 
-  private def handOutCardsToPlayers(oldPlayers: List[Player], deck: List[Card], newPlayers: List[Player] = List()): Table = {
+  private def handOutCardsToPlayers(oldPlayers: List[Player], deck: List[Card], newPlayers: List[Player] = List()): Table =
     (oldPlayers.size, deck.size) match {
       case (oldPlayerSize, _) if oldPlayerSize == 0 => Table(newPlayers, deck)
       case _ =>
@@ -135,9 +121,8 @@ case class Table(players: List[Player],
           handOutCardsToPlayers(oldPlayers.tail, deck, newPlayers :+ oldPlayers.head)
         }
     }
-  }
 
-  def setFirstPlayerForBettingRound: Table = {
+  def setFirstPlayerForBettingRound: Table =
     val firstPlayerForBettingRound = if (players.count(player => player.isInRound) == 1) {
       players.indexWhere(player => player.isInRound)
     } else {
@@ -148,9 +133,5 @@ case class Table(players: List[Player],
         ._2
     }
     this.copy(currentPlayer = firstPlayerForBettingRound)
-  }
 
-  def nextPlayer: Table = {
-    this.copy(currentPlayer = (currentPlayer + 1) % players.length)
-  }
-}
+  def nextPlayer: Table = this.copy(currentPlayer = (currentPlayer + 1) % players.length)

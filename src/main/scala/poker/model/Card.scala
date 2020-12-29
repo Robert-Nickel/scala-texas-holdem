@@ -1,9 +1,9 @@
 package poker.model
 
-case class Card(value: Char, symbol: Char) {
+case class Card(value: Char, symbol: Char):
   override def toString: String = s"[$value$symbol]"
 
-  def toLetterNotation: String = {
+  def toLetterNotation: String = 
     val letter = symbol match {
       case '♥' => 'h'
       case '♦' => 'd'
@@ -11,5 +11,3 @@ case class Card(value: Char, symbol: Char) {
       case '♠' => 's'
     }
     s"$value$letter"
-  }
-}

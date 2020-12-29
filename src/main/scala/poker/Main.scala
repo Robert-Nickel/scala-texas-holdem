@@ -8,9 +8,9 @@ import scala.annotation.tailrec
 import scala.io.StdIn
 import scala.util.Random
 
-object Main {
+object Main:
   
-  @main def playGame() = {
+  @main def playGame() = 
     new File("poker.txt").delete()
 
       val table = Table(players, getDeck).handOutCards(Random.shuffle(getDeck))
@@ -35,10 +35,10 @@ object Main {
         }
         newNewTable
       } 
-  }
+  
 
   @tailrec
-  def playBettingRounds(table: Table): Table = {
+  def playBettingRounds(table: Table): Table = 
     printText("------------- BETTING ROUND STARTS -------------")
     val newTable = playMoves(table.setFirstPlayerForBettingRound.resetPlayerActedThisBettingRound())
       .collectCurrentBets
@@ -49,20 +49,20 @@ object Main {
     } else {
       newTable
     }
-  }
+  
 
   @tailrec
-  def playMoves(table: Table): Table = {
+  def playMoves(table: Table): Table = 
     val newTable = playMove(table)
     if (newTable.shouldPlayNextMove) {
       playMoves(newTable)
     } else {
       newTable
     }
-  }
+  
 
   @tailrec
-  def playMove(table: Table): Table = {
+  def playMove(table: Table): Table = 
     printText(table.getPrintableTable())
     val maybeInput = getMaybeInput(table)
     val newTryTable = table.tryCurrentPlayerAct(maybeInput)
@@ -71,18 +71,17 @@ object Main {
     } else {
       newTryTable.get.nextPlayer
     }
-  }
+  
 
   @tailrec
-  def getValidatedInput: String = {
+  def getValidatedInput: String = 
     printText(s"Your options are:\nfold\ncheck\ncall\nraise 123 (with any number)\nall-in")
     StdIn.readLine() match {
       case input if isValidSyntax(input) => input
       case _ => getValidatedInput
     }
-  }
 
-  def getMaybeInput(table: Table): Option[String] = {
+  def getMaybeInput(table: Table): Option[String] =
     val currentPlayer = table.getCurrentPlayer
     if (currentPlayer.isHumanPlayer &&
       currentPlayer.isInRound &&
@@ -93,17 +92,13 @@ object Main {
       Thread.sleep(Random.nextInt(3_000) + 1_000)
       None
     }
-  }
 
-  def printText(text: String): Unit = {
+  def printText(text: String): Unit = 
     new PrintWriter(new FileWriter("poker.txt", true)) {
       write(text + "\n")
       close()
     }
     println(text)
-  }
 
-  def isValidSyntax(input: String) = {
+  def isValidSyntax(input: String) = 
     """fold|check|call|raise \d+|all-in""".r.matches(input)
-  }
-}
