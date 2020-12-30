@@ -46,7 +46,7 @@ object Main extends App {
   }
 
   @tailrec
-  def playBettingRounds(table: Table, roundId: UUID = randomUUID()): Table = {
+  def playBettingRounds(table: Table, roundId: UUID): Table = {
     printText("------------- BETTING ROUND STARTS -------------")
     publishEquities(table, roundId)
     val newTable = playMoves(
@@ -56,7 +56,7 @@ object Main extends App {
     Thread.sleep(4500)
     printText("------------- BETTING ROUND ENDS -------------")
     if (newTable.shouldPlayNextBettingRound) {
-      playBettingRounds(newTable.copy(currentBettingRound = table.currentBettingRound + 1).showBoardIfRequired)
+      playBettingRounds(newTable.copy(currentBettingRound = table.currentBettingRound + 1).showBoardIfRequired, roundId)
     } else {
       newTable
     }
