@@ -49,7 +49,9 @@ object EquityConsumer {
     import org.apache.spark.sql.functions.{when, lower}
 
     var dfSchema = Array("topic", "key", "roundId", "equity", "winnings")
+    var resultDfSchema = Array("topic", "key", "winnings", "expectedPreflop")
     var dataFrame = Seq.empty[(String,String,String,Double,Double)].toDF(dfSchema:_*)
+    var resultDataFrame = Seq.empty[(String, String, Long, Long)].toDF(resultDfSchema:_*)
 
     kafkaStream.foreachRDD( rdd => {
       if(!rdd.isEmpty()) {
@@ -58,6 +60,49 @@ object EquityConsumer {
         // only add the row if it has not previously been added (no duplicates...)
         dataFrame = newRow.union(newRow)
         dataFrame = dataFrame.dropDuplicates()
+
+        val winlossRDDs = rdd.filter( data => data._2 == "win_loss")
+        if(!winlossRDDs.isEmpty()) {
+
+          // calculate preflop equity and actual winnings for each player
+          // FIXME: I think we receive a win_loss for every player? then just do everything for the player instead of iterating of every name.
+
+          names.foreach( name => {
+            val handCount = rdd
+              .filter(playerRecord => playerRecord._1 == name)
+              .filter(playerRecord => playerRecord._2.equals("equity_preflop"))
+              .count()
+
+            val winningsPerHand = rdd
+              .filter(playerRecord => playerRecord._1 == name)
+              .filter(playerRecord => playerRecord._2 == "win_loss")
+              .map(playerRecord => playerRecord._5.toInt)
+              .reduce(_ + _) / handCount
+
+            val allWinnings = rdd
+              .filter(playerRecord => playerRecord._2 == "win_loss")
+              .filter(playerRecord => playerRecord._5.toInt > 0)
+              .map(playerRecord => playerRecord._5.toInt)
+              .reduce(_+_)
+
+            val equitiesPreflop = rdd
+              .filter(playerRecord => playerRecord._1 == name)
+              .filter(playerRecord => playerRecord._2 == "equity_preflop")
+              .map(playerRecord => playerRecord._4.toDouble)
+              .reduce(_ + _)
+
+            val expectedWinningsWithPreflopEquity = ((equitiesPreflop / 100) / handCount) * allWinnings
+            val resultRow = Seq((
+              name,
+              "result-preflop",
+              winningsPerHand,
+              BigDecimal(expectedWinningsWithPreflopEquity).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble)
+            ).toDF(resultDfSchema:_*)
+
+            resultDataFrame = resultDataFrame.union(resultRow)
+          })
+          resultDataFrame.show()
+        }
         dataFrame.show()
       }
     })
