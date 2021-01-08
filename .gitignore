@@ -14,3 +14,12 @@ poker.txt
 /.metals
 /.vscode
 
+*.phd
+
+javacore*
+Snap.*
+
+### Metals ###
+.metals/
+.bloop/
+project/**/metals.sbt

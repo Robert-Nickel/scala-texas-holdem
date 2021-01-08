@@ -1,5 +1,5 @@
 package poker
-/*
+
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 import poker.model.{Card, Player, Table}
@@ -17,7 +17,7 @@ class packageSpec extends AnyWordSpec {
 
     )
     "get a printable table" in {
-      table.getPrintableTable() should be("\n                                       Pot 1000000\n                                  [A♥][K♥][Q♥][J♥][T♥]\n\n0               0               0               \n________________________________________________________________________________________\n                                                \nGin (D)         Tonic             Ice             \n0               0               0               \n                                ________\n")
+      table.getPrintableTable() shouldBe("\n                                       Pot 1000000\n                                  [A♥][K♥][Q♥][J♥][T♥]\n\n0               0               0               \n________________________________________________________________________________________\n                                                \nGin (D)         Tonic             Ice             \n0               0               0               \n                                ________\n")
     }
   }
 
@@ -35,7 +35,7 @@ class packageSpec extends AnyWordSpec {
 
     )
     "get a printable winning" in {
-      table.getPrintableWinning should be("\n                                         Pot 100\n                                  [9♥][9♣][K♦][Q♠][8♣]\n\n0               0               \n________________________________________________________________________________________\n[7♣][J♥]        [9♠][6♣]        \nAmy (D)         Bob             \n176             176             \n                                                                ________\n\nBob wins 100 with three of a kind\n\n")
+      table.getPrintableWinning shouldBe("\n                                         Pot 100\n                                  [9♥][9♣][K♦][Q♠][8♣]\n\n0               0               \n________________________________________________________________________________________\n[7♣][J♥]        [9♠][6♣]        \nAmy (D)         Bob             \n176             176             \n                                                                ________\n\nBob wins 100 with three of a kind\n\n")
     }
   }
 
@@ -132,4 +132,4 @@ class packageSpec extends AnyWordSpec {
       table.shouldPlayNextMove shouldBe true
     }
   }
-}*/
+}

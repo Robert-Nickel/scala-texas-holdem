@@ -22,10 +22,10 @@ class EvaluatorSpec extends AnyWordSpec{
     val straightFlush = List(
       Card('A', '♠'), Card('K','♠'), Card('Q','♠'), Card('J', '♠'), Card('T', '♠'), Card('3', '♦'), Card('5', '♥'));
     "evaluate" in {
-      Evaluator.eval(straightFlush).value should be(36_874)
-      Evaluator.eval(straightFlush).handType should be(9)
-      Evaluator.eval(straightFlush).handRank should be(10)
-      Evaluator.eval(straightFlush).handName should be("straight flush")
+      Evaluator.eval(straightFlush).value shouldBe(36_874)
+      Evaluator.eval(straightFlush).handType shouldBe(9)
+      Evaluator.eval(straightFlush).handRank shouldBe(10)
+      Evaluator.eval(straightFlush).handName shouldBe("straight flush")
     }
   }
 
@@ -37,10 +37,10 @@ class EvaluatorSpec extends AnyWordSpec{
     val straightFlush = List(
       Card('9', '♥'), Card('K','♥'), Card('Q','♥'), Card('J', '♥'), Card('T', '♥'), Card('3', '♥'), Card('5', '♥'));
     "evaluate" in {
-      Evaluator.eval(straightFlush).value should be(36_873)
-      Evaluator.eval(straightFlush).handType should be(9)
-      Evaluator.eval(straightFlush).handRank should be(9)
-      Evaluator.eval(straightFlush).handName should be("straight flush")
+      Evaluator.eval(straightFlush).value shouldBe(36_873)
+      Evaluator.eval(straightFlush).handType shouldBe(9)
+      Evaluator.eval(straightFlush).handRank shouldBe(9)
+      Evaluator.eval(straightFlush).handName shouldBe("straight flush")
     }
   }
 
@@ -48,10 +48,10 @@ class EvaluatorSpec extends AnyWordSpec{
     val quads = List(
       Card('K', '♥'), Card('K','♦'), Card('K','♣'), Card('K', '♠'), Card('T', '♥'), Card('3', '♥'), Card('5', '♥'));
     "evaluate" in {
-      Evaluator.eval(quads).value should be(32_909)
-      Evaluator.eval(quads).handType should be(8)
-      Evaluator.eval(quads).handRank should be(141)
-      Evaluator.eval(quads).handName should be("four of a kind")
+      Evaluator.eval(quads).value shouldBe(32_909)
+      Evaluator.eval(quads).handType shouldBe(8)
+      Evaluator.eval(quads).handRank shouldBe(141)
+      Evaluator.eval(quads).handName shouldBe("four of a kind")
     }
   }
 
@@ -59,10 +59,10 @@ class EvaluatorSpec extends AnyWordSpec{
     val fullhouse = List(
       Card('K', '♥'), Card('K','♦'), Card('K','♣'), Card('A', '♠'), Card('A', '♥'), Card('3', '♥'), Card('5', '♥'));
     "evaluate" in {
-      Evaluator.eval(fullhouse).value should be(28_816)
-      Evaluator.eval(fullhouse).handType should be(7)
-      Evaluator.eval(fullhouse).handRank should be(144)
-      Evaluator.eval(fullhouse).handName should be("full house")
+      Evaluator.eval(fullhouse).value shouldBe(28_816)
+      Evaluator.eval(fullhouse).handType shouldBe(7)
+      Evaluator.eval(fullhouse).handRank shouldBe(144)
+      Evaluator.eval(fullhouse).handName shouldBe("full house")
     }
   }
 
@@ -70,10 +70,10 @@ class EvaluatorSpec extends AnyWordSpec{
     val flush = List(
       Card('3', '♥'), Card('4', '♥'), Card('5', '♥'), Card('A', '♥'), Card('J', '♥'), Card('3', '♠'), Card('4', '♠'))
     "evaluate" in {
-      Evaluator.eval(flush).value should be(25_489)
-      Evaluator.eval(flush).handType should be(6)
-      Evaluator.eval(flush).handRank should be(913)
-      Evaluator.eval(flush).handName should be("flush")
+      Evaluator.eval(flush).value shouldBe(25_489)
+      Evaluator.eval(flush).handType shouldBe(6)
+      Evaluator.eval(flush).handRank shouldBe(913)
+      Evaluator.eval(flush).handName shouldBe("flush")
     }
   }
 
@@ -81,10 +81,10 @@ class EvaluatorSpec extends AnyWordSpec{
     val flush = List(
       Card('3', '♥'), Card('4', '♦'), Card('5', '♠'), Card('6', '♥'), Card('7', '♥'), Card('3', '♠'), Card('4', '♠'))
     "evaluate" in {
-      Evaluator.eval(flush).value should be(20_483)
-      Evaluator.eval(flush).handType should be(5)
-      Evaluator.eval(flush).handRank should be(3)
-      Evaluator.eval(flush).handName should be("straight")
+      Evaluator.eval(flush).value shouldBe(20_483)
+      Evaluator.eval(flush).handType shouldBe(5)
+      Evaluator.eval(flush).handRank shouldBe(3)
+      Evaluator.eval(flush).handName shouldBe("straight")
     }
   }
 
@@ -92,10 +92,10 @@ class EvaluatorSpec extends AnyWordSpec{
     val set = List(
       Card('3', '♥'), Card('3', '♦'), Card('3', '♠'), Card('6', '♥'), Card('8', '♥'), Card('T', '♠'), Card('A', '♠'))
     "evaluate" in {
-      Evaluator.eval(set).value should be(16_513)
-      Evaluator.eval(set).handType should be(4)
-      Evaluator.eval(set).handRank should be(129)
-      Evaluator.eval(set).handName should be("three of a kind")
+      Evaluator.eval(set).value shouldBe(16_513)
+      Evaluator.eval(set).handType shouldBe(4)
+      Evaluator.eval(set).handRank shouldBe(129)
+      Evaluator.eval(set).handName shouldBe("three of a kind")
     }
   }
 
@@ -104,10 +104,10 @@ class EvaluatorSpec extends AnyWordSpec{
     val twoPair = List(
       Card('3', '♥'), Card('3', '♦'), Card('K', '♠'), Card('K', '♥'), Card('8', '♥'), Card('T', '♠'), Card('A', '♠'))
     "evaluate" in {
-      Evaluator.eval(twoPair).value should be(12_915)
-      Evaluator.eval(twoPair).handType should be(3)
-      Evaluator.eval(twoPair).handRank should be(627)
-      Evaluator.eval(twoPair).handName should be("two pairs")
+      Evaluator.eval(twoPair).value shouldBe(12_915)
+      Evaluator.eval(twoPair).handType shouldBe(3)
+      Evaluator.eval(twoPair).handRank shouldBe(627)
+      Evaluator.eval(twoPair).handName shouldBe("two pairs")
     }
   }
 
@@ -115,10 +115,10 @@ class EvaluatorSpec extends AnyWordSpec{
     val pair = List(
       Card('3', '♥'), Card('3', '♦'), Card('7', '♠'), Card('K', '♥'), Card('8', '♥'), Card('T', '♠'), Card('A', '♠'))
     "evaluate" in {
-      Evaluator.eval(pair).value should be(8_630)
-      Evaluator.eval(pair).handType should be(2)
-      Evaluator.eval(pair).handRank should be(438)
-      Evaluator.eval(pair).handName should be("one pair")
+      Evaluator.eval(pair).value shouldBe(8_630)
+      Evaluator.eval(pair).handType shouldBe(2)
+      Evaluator.eval(pair).handRank shouldBe(438)
+      Evaluator.eval(pair).handName shouldBe("one pair")
     }
   }
 
@@ -126,10 +126,10 @@ class EvaluatorSpec extends AnyWordSpec{
     val highCard = List(
       Card('3', '♥'), Card('4', '♦'), Card('7', '♠'), Card('K', '♥'), Card('8', '♥'), Card('T', '♠'), Card('A', '♠'))
     "evaluate" in {
-      Evaluator.eval(highCard).value should be(5_286)
-      Evaluator.eval(highCard).handType should be(1)
-      Evaluator.eval(highCard).handRank should be(1_190)
-      Evaluator.eval(highCard).handName should be("high card")
+      Evaluator.eval(highCard).value shouldBe(5_286)
+      Evaluator.eval(highCard).handType shouldBe(1)
+      Evaluator.eval(highCard).handRank shouldBe(1_190)
+      Evaluator.eval(highCard).handName shouldBe("high card")
     }
   }
 
@@ -137,8 +137,8 @@ class EvaluatorSpec extends AnyWordSpec{
     val highCard = List(
       Card('2', '♦'), Card('5', '♣'), Card('8', '♥'), Card('T', '♠'), Card('A', '♠'))
     "evaluate" in {
-      Evaluator.eval(highCard).value should be(4_973)
-      Evaluator.eval(highCard).handRank should be(877)
+      Evaluator.eval(highCard).value shouldBe(4_973)
+      Evaluator.eval(highCard).handRank shouldBe(877)
     }
   }
 
@@ -146,8 +146,8 @@ class EvaluatorSpec extends AnyWordSpec{
     val highCard = List(
       Card('2', '♦'), Card('5', '♣'), Card('8', '♥'), Card('T', '♠'), Card('K', '♠'))
     "evaluate" in {
-      Evaluator.eval(highCard).value should be(4_645)
-      Evaluator.eval(highCard).handName should be("high card")
+      Evaluator.eval(highCard).value shouldBe(4_645)
+      Evaluator.eval(highCard).handName shouldBe("high card")
     }
   }
 
@@ -155,7 +155,7 @@ class EvaluatorSpec extends AnyWordSpec{
     val fullHouse = List(
       Card('K', '♦'), Card('K', '♣'), Card('A', '♥'), Card('A', '♠'), Card('K', '♠'))
     "evaluate" in {
-      Evaluator.eval(fullHouse).value should be(28_816)
+      Evaluator.eval(fullHouse).value shouldBe(28_816)
     }
   }
 
@@ -164,9 +164,9 @@ class EvaluatorSpec extends AnyWordSpec{
       Card('K', '♦'), Card('K', '♣'), Card('A', '♥'), Card('A', '♠'), Card('K', '♠'), Card('3', '♠'))
     "evaluate" in {
       val evaluation = Evaluator.eval(fullHouse)
-      evaluation.value should be(28_816)
-      evaluation.handName should be("full house")
-      evaluation.handType should be(7)
+      evaluation.value shouldBe(28_816)
+      evaluation.handName shouldBe("full house")
+      evaluation.handType shouldBe(7)
     }
   }
   "Given a full house with Queens And Aces" should {
@@ -174,7 +174,7 @@ class EvaluatorSpec extends AnyWordSpec{
       Card('Q', '♦'), Card('Q', '♣'), Card('A', '♥'), Card('A', '♠'), Card('Q', '♠'), Card('3', '♠'))
     "evaluate Queens of Aces" in {
       val evaluation = Evaluator.eval(fullHouse)
-      evaluation.handType should be(7)
+      evaluation.handType shouldBe(7)
     }
   }
   "Given a high card Q" should {
@@ -182,7 +182,7 @@ class EvaluatorSpec extends AnyWordSpec{
       Card('Q', '♦'), Card('J', '♣'), Card('2', '♥'), Card('3', '♠'), Card('5', '♠'), Card('7', '♠'))
     "evaluate Queens of Aces" in {
       val evaluation = Evaluator.eval(highCard)
-      evaluation.handType should be(1)
+      evaluation.handType shouldBe(1)
     }
   }
 
@@ -191,7 +191,7 @@ class EvaluatorSpec extends AnyWordSpec{
       Card('K', '♦'), Card('K', '♣'), Card('2', '♥'), Card('3', '♠'), Card('5', '♠'), Card('7', '♠'))
     "evaluate Queens of Aces" in {
       val evaluation = Evaluator.eval(pair)
-      evaluation.handName should be("one pair")
+      evaluation.handName shouldBe("one pair")
     }
   }
 }

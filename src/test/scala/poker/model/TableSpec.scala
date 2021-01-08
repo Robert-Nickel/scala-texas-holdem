@@ -1,9 +1,9 @@
 package poker.model
-/*
+
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
-import poker.{bb, getDeck, sb, PlayerDSL}
+import poker.{bb, getDeck, sb, PlayerDSL, TableDSL}
 
 import scala.util.Failure
 
@@ -22,7 +22,7 @@ class TableSpec extends AnyWordSpec with Matchers {
     val table = Table(twoPlayers)
     "next player is called" should {
       "default currentPlayer = 0 and return a table with current player = 1" in {
-        table.nextPlayer should be(table.copy(currentPlayer = 1))
+        table.nextPlayer shouldBe(table.copy(currentPlayer = 1))
       }
     }
   }
@@ -31,7 +31,7 @@ class TableSpec extends AnyWordSpec with Matchers {
     val table = Table(List(Player("Jack")))
     "tryCurrentPlayerAct" should {
       "skip" in {
-        table.tryCurrentPlayerAct(None).get should be(table)
+        table.tryCurrentPlayerAct(None).get shouldBe(table)
       }
     }
   }
@@ -40,46 +40,46 @@ class TableSpec extends AnyWordSpec with Matchers {
     val table = Table(twoPlayers, currentPlayer = 1, currentBettingRound = 1)
     "next player" should {
       "return a table with current player = 0" in {
-        table.nextPlayer should be(table.copy(currentPlayer = 0))
+        table.nextPlayer shouldBe(table.copy(currentPlayer = 0))
       }
     }
     "collectHoleCards" should {
       "return a table with players without cards" in {
-        table.collectHoleCards.players.exists(p => p.holeCards.isDefined) should be(false)
+        table.collectHoleCards.players.exists(p => p.holeCards.isDefined) shouldBe(false)
       }
     }
     "get current player" should {
       "return the current player" in {
-        table.getCurrentPlayer.name should be("Jon")
+        table.getCurrentPlayer.name shouldBe("Jon")
       }
     }
     "get highest overall bet" should {
       "return 10" in {
-        table.getHighestOverallBet should be(10)
+        table.getHighestOverallBet shouldBe(10)
       }
     }
     "tryCurrentPlayerAct with input 'fold'" should {
       "return a table with active player has no cards" in {
-        table.tryCurrentPlayerAct(Some("fold")).get.players(1).holeCards should be(None)
+        table.tryCurrentPlayerAct(Some("fold")).get.players(1).holeCards shouldBe(None)
       }
     }
     "tryCurrentPlayerAct with input 'call'" should {
       "return a table where active player has a reduced stack" in {
-        table.tryCurrentPlayerAct(Some("call")).get.players(1).stack should be < 200
+        table.tryCurrentPlayerAct(Some("call")).get.players(1).stack shouldBe(190)
       }
     }
     "tryCurrentPlayerAct with input 'raise 120'" should {
       "return a table where active player has stack = 120" in {
         val player = table.tryCurrentPlayerAct(Some("raise 120")).get.players(1)
-        player.stack should be(80)
-        player.currentBet should be(120)
+        player.stack shouldBe(80)
+        player.currentBet shouldBe(120)
       }
     }
     "tryCurrentPlayerAct with input 'all-in'" should {
       "return a table where active player has stack = 0" in {
         val player = table.tryCurrentPlayerAct(Some("all-in")).get.players(1)
-        player.stack should be(0)
-        player.currentBet should be(200)
+        player.stack shouldBe(0)
+        player.currentBet shouldBe(200)
       }
     }
     "tryCurrentPlayerAct with input 'check', but the first player's current bet is 10" should {
@@ -89,7 +89,7 @@ class TableSpec extends AnyWordSpec with Matchers {
     }
     "tryCurrentPlayerAct with no input" should {
       "return a table where the active player raises 5 bb" in {
-        table.tryCurrentPlayerAct(None).get.players(1).currentBet should be(10)
+        table.tryCurrentPlayerAct(None).get.players(1).currentBet shouldBe(10)
       }
     }
     "tryCurrentPlayerAct with 'abc'" should {
@@ -103,12 +103,12 @@ class TableSpec extends AnyWordSpec with Matchers {
     val table = Table(threePlayers, currentPlayer = 1, currentBettingRound = 0)
     "tryCurrentPlayerAct" should {
       "post sb" in {
-        table.tryCurrentPlayerAct(None).get.players(1).currentBet should be(sb)
+        table.tryCurrentPlayerAct(None).get.players(1).currentBet shouldBe(sb)
       }
     }
     "tryCurrentPlayerAct with input" should {
       "post sb and ignore input" in {
-        table.tryCurrentPlayerAct(None).get.players(1).currentBet should be(sb)
+        table.tryCurrentPlayerAct(None).get.players(1).currentBet shouldBe(sb)
       }
     }
   }
@@ -118,8 +118,8 @@ class TableSpec extends AnyWordSpec with Matchers {
     "tryCurrentPlayerAct with input 'check'" should {
       "return a table where active player has checked" in {
         val player = table.tryCurrentPlayerAct(Some("check")).get.players(1)
-        player.stack should be(100)
-        player.currentBet should be(0)
+        player.stack shouldBe(100)
+        player.currentBet shouldBe(0)
       }
     }
   }
@@ -128,12 +128,12 @@ class TableSpec extends AnyWordSpec with Matchers {
     val table = Table(threePlayers, currentPlayer = 2, currentBettingRound = 0)
     "tryCurrentPlayerAct" should {
       "post bb" in {
-        table.tryCurrentPlayerAct(None).get.players(2).currentBet should be(bb)
+        table.tryCurrentPlayerAct(None).get.players(2).currentBet shouldBe(bb)
       }
     }
     "tryCurrentPlayerAct with input" should {
       "post bb and ignore input" in {
-        table.tryCurrentPlayerAct(None).get.players(2).currentBet should be(bb)
+        table.tryCurrentPlayerAct(None).get.players(2).currentBet shouldBe(bb)
       }
     }
   }
@@ -144,22 +144,22 @@ class TableSpec extends AnyWordSpec with Matchers {
     "flop" should {
       "show 3 board cards and reduce the deck by three" in {
         val newTable = table.flop
-        newTable.deck.size should be(deck.size - 3)
-        newTable.board should be(List(Card('8', '♥'), Card('8', '♠'), Card('8', '♦')))
+        newTable.deck.size shouldBe(deck.size - 3)
+        newTable.board shouldBe(List(Card('8', '♥'), Card('8', '♠'), Card('8', '♦')))
       }
     }
     "turn" should {
       "show turn card and reduce the deck by one" in {
         val newTable = table.flop.turn
-        newTable.deck.size should be(deck.size - 4)
-        newTable.board should be(List(Card('8', '♥'), Card('8', '♠'), Card('8', '♦'), Card('8', '♣')))
+        newTable.deck.size shouldBe(deck.size - 4)
+        newTable.board shouldBe(List(Card('8', '♥'), Card('8', '♠'), Card('8', '♦'), Card('8', '♣')))
       }
     }
     "river" should {
       "show river card and reduce the deck by one" in {
         val newTable = table.flop.turn.river
-        newTable.deck.size should be(deck.size - 5)
-        newTable.board should be(List(Card('8', '♥'), Card('8', '♠'), Card('8', '♦'), Card('8', '♣'), Card('4', '♥')))
+        newTable.deck.size shouldBe(deck.size - 5)
+        newTable.board shouldBe(List(Card('8', '♥'), Card('8', '♠'), Card('8', '♦'), Card('8', '♣'), Card('4', '♥')))
       }
     }
   }
@@ -167,28 +167,28 @@ class TableSpec extends AnyWordSpec with Matchers {
   "Given a table and betting round = 0" should {
     val table = Table(threePlayers, getDeck, currentBettingRound = 0)
     "do nothing" in {
-      table.showBoardIfRequired.board.length should be(0)
+      table.showBoardIfRequired.board.length shouldBe(0)
     }
   }
 
   "Given a table and betting round = 1" should {
     val table = Table(threePlayers, getDeck, currentBettingRound = 1)
     "flop" in {
-      table.showBoardIfRequired.board.length should be(3)
+      table.showBoardIfRequired.board.length shouldBe(3)
     }
   }
 
   "Given a table and betting round = 2" should {
     val table = Table(threePlayers, getDeck, currentBettingRound = 2)
     "turn" in {
-      table.showBoardIfRequired.board.length should be(1)
+      table.showBoardIfRequired.board.length shouldBe(1)
     }
   }
 
   "Given a table and betting round = 3" should {
     val table = Table(threePlayers, getDeck, currentBettingRound = 3)
     "river" in {
-      table.showBoardIfRequired.board.length should be(1)
+      table.showBoardIfRequired.board.length shouldBe(1)
     }
   }
 
@@ -198,23 +198,23 @@ class TableSpec extends AnyWordSpec with Matchers {
     "collect current bets" should {
       "set current bets to 0 and push it to the pot" in {
         val newTable = table.collectCurrentBets
-        newTable.pot should be(10)
-        newTable.players.head.currentBet should be(0)
+        newTable.pot shouldBe(10)
+        newTable.players.head.currentBet shouldBe(0)
       }
     }
     "rotate button" should {
       "make Jon the new dealer" in {
-        table.rotateButton.players.head.name should be("Jon")
+        table.rotateButton.players.head.name shouldBe("Jon")
       }
     }
     "reset board" should {
       "leave an empty board" in {
-        table.resetBoard.board.length should be(0)
+        table.resetBoard.board.length shouldBe(0)
       }
     }
     "set the current player to SB" should {
       "set current player = 1" in {
-        table.setFirstPlayerForBettingRound.currentPlayer should be(1)
+        table.setFirstPlayerForBettingRound.currentPlayer shouldBe(1)
       }
     }
   }
@@ -225,7 +225,7 @@ class TableSpec extends AnyWordSpec with Matchers {
       val newTable = table.handOutCards(getDeck)
       newTable.players.head.holeCards.isDefined shouldBe true
       newTable.players(1).holeCards.isDefined shouldBe true
-      newTable.deck.length should be(48)
+      newTable.deck.length shouldBe(48)
     }
   }
 
@@ -241,8 +241,8 @@ class TableSpec extends AnyWordSpec with Matchers {
       pot = 1_000_000)
     "pay Bernard as the winner" in {
       val newTable = table.payTheWinner
-      newTable.players(2).stack should be(1_000_000)
-      newTable.pot should be(0)
+      newTable.players(2).stack shouldBe(1_000_000)
+      newTable.pot shouldBe(0)
     }
   }
 
@@ -254,8 +254,8 @@ class TableSpec extends AnyWordSpec with Matchers {
       pot = 300_000)
     "pay Bernard as the winner" in {
       val newTable = table.payTheWinner
-      newTable.players.head.stack should be(300_000)
-      newTable.pot should be(0)
+      newTable.players.head.stack shouldBe(300_000)
+      newTable.pot shouldBe(0)
     }
   }
 
@@ -266,7 +266,7 @@ class TableSpec extends AnyWordSpec with Matchers {
 
     "reset the hasActedThisBettingRoundFlag" in {
       val newTable = table.resetPlayerActedThisBettingRound()
-      newTable.players.exists(player => player.hasActedThisBettingRound) should be(false)
+      newTable.players.exists(player => player.hasActedThisBettingRound) shouldBe(false)
     }
   }
 
@@ -276,7 +276,7 @@ class TableSpec extends AnyWordSpec with Matchers {
       Player("Bob the SB"),
       Player("Jim the BB")), currentPlayer = 0)
     "set the dealer as current player" in {
-      table.setFirstPlayerForBettingRound.currentPlayer should be(0)
+      table.setFirstPlayerForBettingRound.currentPlayer shouldBe(0)
     }
   }
 
@@ -287,8 +287,8 @@ class TableSpec extends AnyWordSpec with Matchers {
     )
     "handout cards to Amy but not to Jim" in {
       val players = table.handOutCards(getDeck).players
-      players(0).holeCards.isDefined should be(true)
-      players(1).holeCards.isDefined should be(false)
+      players(0).holeCards.isDefined shouldBe(true)
+      players(1).holeCards.isDefined shouldBe(false)
     }
   }
 
@@ -297,8 +297,7 @@ class TableSpec extends AnyWordSpec with Matchers {
       Player("Bob", currentBet = 50) hasCards ("Ah Ac") is 0 deep
     ))
     "skip Bob" in {
-      table.tryCurrentPlayerAct(None).get.players.head.hasActedThisBettingRound should be(true)
+      table.tryCurrentPlayerAct(None).get.players.head.hasActedThisBettingRound shouldBe(true)
     }
   }
 }
-*/

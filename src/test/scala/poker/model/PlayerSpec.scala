@@ -1,42 +1,41 @@
 package poker.model
-/*
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 import poker._
+import poker.{PlayerDSL, TableDSL}
+import poker.evaluator.Evaluator.evalHoleCards
 
 import scala.language.postfixOps
 import scala.util.Failure
 
-class PlayerSpec extends AnyWordSpec
-  with BeforeAndAfterAll
-  with Matchers {
+class PlayerSpec extends AnyWordSpec with BeforeAndAfterAll with Matchers {
 
   "Given a Player with name 'You', Stack is 200 and cards are Ah As" when {
     val player = (Player("You") are 200 deep) haveCards "Ah As"
     "hole cards are Ah, As and getHoleCardsAsString is called" should {
       "return [Ah][As]" in {
-        player.getHoleCardsString() should be("[Ah][As]")
+        player.getHoleCardsString() shouldBe ("[Ah][As]")
       }
     }
     "holding hole cards" should {
       "return areInRound = true" in {
-        player.areInRound should be(true)
+        player.areInRound shouldBe (true)
       }
       "return isInGame = true" in {
-        player.isInGame should be(true)
+        player.isInGame shouldBe (true)
       }
     }
     "is human player is called" in {
-      player.isHumanPlayer should be(true)
+      player.isHumanPlayer shouldBe (true)
     }
   }
   "Given a Player with name 'You', and no hole cards" when {
     val you = Player("You")
     "areInRound is called" should {
       "return areInRound = false" in {
-        you.areInRound should be(false)
+        you.areInRound shouldBe (false)
       }
     }
   }
@@ -45,7 +44,7 @@ class PlayerSpec extends AnyWordSpec
     val you = (Player("You") are 0 deep)
     "areInGame is called" should {
       "return areInGame = false" in {
-        you.areInGame should be(false)
+        you.areInGame shouldBe (false)
       }
     }
     "raise is called" should {
@@ -59,21 +58,21 @@ class PlayerSpec extends AnyWordSpec
     val ali = (Player("Ali") is 200 deep) hasCards "Ah As"
     "hole cards are Ah, As and getHoleCardsAsString is called" should {
       "return [xx][xx]" in {
-        ali.getHoleCardsString() should be("[xx][xx]")
+        ali.getHoleCardsString() shouldBe ("[xx][xx]")
       }
     }
     "holding hole cards" should {
       "return isInRound = true" in {
-        ali.isInRound should be(true)
+        ali.isInRound shouldBe (true)
       }
     }
     "fold" should {
       "return isInRound = false" in {
-        ali.fold().isInRound should be(false)
+        ali.fold().isInRound shouldBe (false)
       }
     }
     "is human player is called" in {
-      ali.isHumanPlayer should be(false)
+      ali.isHumanPlayer shouldBe (false)
     }
   }
 
@@ -81,7 +80,7 @@ class PlayerSpec extends AnyWordSpec
     val ali = (Player("Ali") is 200 deep)
     "getHoleCardsAsString is called" should {
       "return whitespaces" in {
-        ali.getHoleCardsString() should be("        ")
+        ali.getHoleCardsString() shouldBe ("        ")
       }
     }
   }
@@ -90,7 +89,7 @@ class PlayerSpec extends AnyWordSpec
     val ali = (Player("Ali") is 200 deep).hasCards("Ah As")
     "actAsBot is called" should {
       "call, if a 5BB raise is smaller than double the highestOverallBet" in {
-        ali.actAsBot(8).currentBet should be(8)
+        ali.actAsBot(8).currentBet shouldBe (8)
       }
     }
   }
@@ -100,7 +99,7 @@ class PlayerSpec extends AnyWordSpec
     val board = List(Card('A', '♣'), Card('A', '♦'), Card('2', '♦'))
     "actAsBot is called" should {
       "shove all-in" in {
-        player.actAsBot(20, board).currentBet should be(200)
+        player.actAsBot(20, board).currentBet shouldBe (200)
       }
     }
   }
@@ -109,7 +108,7 @@ class PlayerSpec extends AnyWordSpec
     val ali = (Player("Ali") is 200 deep).hasCards("Qh 9s")
     "actAsBot is called" should {
       "call, if a 3BB raise is smaller than double the highestOverallBet" in {
-        ali.actAsBot(4).currentBet should be(4)
+        ali.actAsBot(4).currentBet shouldBe (4)
       }
     }
   }
@@ -119,29 +118,29 @@ class PlayerSpec extends AnyWordSpec
     "calls 50" should {
       "return bob with stack = 150 and currentBet = 50" in {
         val newPlayer = bob.call(50).get
-        newPlayer.stack should be(150)
-        newPlayer.currentBet should be(50)
+        newPlayer.stack shouldBe (150)
+        newPlayer.currentBet shouldBe (50)
       }
     }
     "calls where the highest overall bet is 300" should {
       "return bob with stack = 0 and currentBet = 200" in {
         val newBob = bob.call(300).get
-        newBob.stack should be(0)
-        newBob.currentBet should be(200)
+        newBob.stack shouldBe (0)
+        newBob.currentBet shouldBe (200)
       }
     }
     "raises 50 where highest overall bet is 20" should {
       "return bob with stack = 150 and currentBet = 50" in {
         val newBob = bob.raise(50, 20).get
-        newBob.stack should be(150)
-        newBob.currentBet should be(50)
+        newBob.stack shouldBe (150)
+        newBob.currentBet shouldBe (50)
       }
     }
     "raises 200 where highest overall bet is 150" should {
       "return bob with stack = 0 and currentBet = 200" in {
         val newBob = bob.raise(200, 150).get
-        newBob.stack should be(0)
-        newBob.currentBet should be(200)
+        newBob.stack shouldBe (0)
+        newBob.currentBet shouldBe (200)
       }
     }
     "raises 100 where highest overall bet is 80" should {
@@ -152,23 +151,23 @@ class PlayerSpec extends AnyWordSpec
     }
     "shoves all-in with 200" should {
       "return bob with stack = 0 and currentBet = 200" in {
-        val newBob = bob shoves()
-        newBob.stack should be(0)
-        newBob.currentBet should be(200)
+        val newBob = bob shoves ()
+        newBob.stack shouldBe (0)
+        newBob.currentBet shouldBe (200)
       }
     }
 
     "act as bot with aces" should {
       "raise 5 bb" in {
         val newBob = bob.actAsBot(4)
-        newBob.currentBet should be(10)
+        newBob.currentBet shouldBe (10)
       }
     }
 
     "player posts sb" should {
       "have reduced stack" in {
         val newBob = bob.posts(sb).get
-        newBob.stack should be(199)
+        newBob.stack shouldBe (199)
       }
     }
 
@@ -176,7 +175,7 @@ class PlayerSpec extends AnyWordSpec
       "have reduced stack" in {
         val you = (Player("You") are 200 deep) haveCards "Ah As"
         val newYou = you.post(bb).get
-        newYou.stack should be(198)
+        newYou.stack shouldBe (198)
       }
     }
   }
@@ -185,7 +184,7 @@ class PlayerSpec extends AnyWordSpec
     val bob = (Player("Bob") is 200 deep) hasCards "Qh 9s"
     "act as bot" should {
       "raise 3 BB" in {
-        bob.actAsBot(0).currentBet should be(6)
+        bob.actAsBot(0).currentBet shouldBe (6)
       }
     }
   }
@@ -194,7 +193,7 @@ class PlayerSpec extends AnyWordSpec
     val bob = (Player("Bob") is 200 deep) hasCards "3h 7s"
     "act as bot" should {
       "call" in {
-        bob.actAsBot(4).currentBet should be(4)
+        bob.actAsBot(4).currentBet shouldBe (4)
       }
     }
   }
@@ -203,7 +202,7 @@ class PlayerSpec extends AnyWordSpec
     val bob = (Player("Bob") is 16 deep) hasCards "3h 7s"
     "act as bot" should {
       "all-in" in {
-        bob.actAsBot(4).currentBet should be(16)
+        bob.actAsBot(4).currentBet shouldBe (16)
       }
     }
   }
@@ -212,7 +211,7 @@ class PlayerSpec extends AnyWordSpec
     val bob = (Player("Bob") is 16 deep) hasCards "3h 7s"
     "act as bot with 37o is called" should {
       "all-in" in {
-        bob.actAsBot(4).currentBet should be(16)
+        bob.actAsBot(4).currentBet shouldBe (16)
       }
     }
   }
@@ -222,25 +221,26 @@ class PlayerSpec extends AnyWordSpec
     "act as bot is called" should {
       "fold" in {
         val newBob = bob.actAsBot(20)
-        newBob.currentBet should be(0)
-        newBob.stack should be(200)
+        newBob.currentBet shouldBe (0)
+        newBob.stack shouldBe (200)
       }
     }
   }
 
+  // TODO: This does not belong to the PlayerSpec anymore
   "Given players with different hole cards" when {
     "hand value is calculated" should {
       "return 36" in {
-        (Player("Jim") hasCards "Ah As").getHoleCardsValue() should be(36)
+        evalHoleCards(Some((Card('A', 'h'), Card('A', 's')))) shouldBe (36)
       }
       "return 39" in {
-        (Player("Jim") hasCards "Ah Kh").getHoleCardsValue() should be(39)
+        evalHoleCards(Some((Card('A', 'h'), Card('K', 'h')))) shouldBe (39)
       }
       "return 30" in {
-        (Player("Jim") hasCards "Ah Qs").getHoleCardsValue() should be(30)
+        evalHoleCards(Some((Card('A', 'h'), Card('Q', 's')))) shouldBe (30)
       }
       "return 0 when jim has no cards" in {
-        Player("Jim").getHoleCardsValue() should be(0)
+        evalHoleCards(None) shouldBe (0)
       }
     }
   }
@@ -250,7 +250,9 @@ class PlayerSpec extends AnyWordSpec
     val highestOverallBet = 50
     val bob = (Player("Bob") is 200 deep)
     "raise 3 times the highestOverallBet" in {
-      bob.actPostFlop(handValue, highestOverallBet).currentBet should be(3 * highestOverallBet)
+      bob
+        .actPostFlop(handValue, highestOverallBet)
+        .currentBet shouldBe (3 * highestOverallBet)
     }
   }
 
@@ -259,7 +261,9 @@ class PlayerSpec extends AnyWordSpec
     val highestOverallBet = 50
     val bob = (Player("Bob") is 200 deep)
     "call" in {
-      bob.actPostFlop(handValue, highestOverallBet).currentBet should be(highestOverallBet)
+      bob
+        .actPostFlop(handValue, highestOverallBet)
+        .currentBet shouldBe (highestOverallBet)
     }
   }
 
@@ -268,7 +272,7 @@ class PlayerSpec extends AnyWordSpec
     val highestOverallBet = 50
     val bob = (Player("Bob") is 200 deep)
     "fold" in {
-      bob.actPostFlop(handValue, highestOverallBet).currentBet should be(0)
+      bob.actPostFlop(handValue, highestOverallBet).currentBet shouldBe (0)
     }
   }
 
@@ -277,12 +281,7 @@ class PlayerSpec extends AnyWordSpec
     val highestOverallBet = 50
     val bob = (Player("Bob") is 0 deep)
     "fold if invalid raise" in {
-      bob.actPostFlop(handValue, highestOverallBet).isInRound should be(false)
+      bob.actPostFlop(handValue, highestOverallBet).isInRound shouldBe (false)
     }
   }
-
-  override def afterAll(): Unit = {
-    TestKit.shutdownActorSystem(actorSystem)
-  }
 }
-*/

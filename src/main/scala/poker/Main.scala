@@ -34,7 +34,6 @@ object Main:
     newNewTable
   } 
   
-
   @tailrec
   def playBettingRounds(table: Table): Table = 
     printText("------------- BETTING ROUND STARTS -------------")
