@@ -13,4 +13,3 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.3.0-SNAP3" % Test,
   "org.scalactic" %% "scalactic" % "3.3.0-SNAP3"
 )
-coverageExcludedPackages := ".*Main.*"

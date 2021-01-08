@@ -1,9 +1,6 @@
 language: scala
 scala:
-  - 3.0.0-M3
+  - 3.0.0-M2
 
 script:
-  - sbt clean coverage test coverageReport
-
-after_success:
-  - sbt coverageReport coveralls
+  - sbt clean test
