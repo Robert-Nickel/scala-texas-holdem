@@ -65,8 +65,6 @@ object EquityConsumer {
         if(!winlossRDDs.isEmpty()) {
 
           // calculate preflop equity and actual winnings for each player
-          // FIXME: I think we receive a win_loss for every player? then just do everything for the player instead of iterating of every name.
-
           names.foreach( name => {
             val handCount = rdd
               .filter(playerRecord => playerRecord._1 == name)
