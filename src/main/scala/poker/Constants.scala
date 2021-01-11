@@ -29,7 +29,6 @@ package poker {
         } yield Card(v._1, s)).toList
     }
     implicit class TableDSL(table: Table) {
-
         def getCurrentPlayer: Player = table.players(table.currentPlayer)
 
         def getHighestOverallBet: Int = table.players.map(player => player.currentBet).max
