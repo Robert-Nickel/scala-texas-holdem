@@ -1,23 +1,9 @@
 package poker.dsl
 
 import poker.model.{Action, Player, Verb}
-
 import scala.util.parsing.combinator.RegexParsers
 
-/**
- * Aim is to get multiple tables in correct order so its possible to replay the
- * game by calling printText(Table)
- */
 class HandHistoryParser extends RegexParsers {
-  // first parse the Player Names and only show the first 3 characters
-  // read the table blind amounts
-  // get the player stack and convert it to bb
-  // get the player positions
-  // 1. Table: All players sitting no blinds are posted
-  // 2. Table: SB did post
-  // 3. Table BB did post
-  // 4. Table Hero gets Hand Card
-  // 5. Table Action
 
   def integer: Parser[Int] =  """\d+""".r ^^ (_.trim.toInt)
   def word: Parser[String] = "([^\\s]+)".r
