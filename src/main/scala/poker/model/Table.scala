@@ -83,9 +83,7 @@ case class Table(players: List[Player],
     copy(pot = 0, players = newPlayers)
 
   def evaluate(player: Player): Evaluation = 
-    Evaluator.eval(
-      List(player.holeCards.get._1, player.holeCards.get._2)
-        .appendedAll(board))
+    Evaluator.eval(List(player.holeCards.get._1, player.holeCards.get._2).appendedAll(board))
 
   def getTheWinner: Player = 
     if this.isOnlyOnePlayerInRound then

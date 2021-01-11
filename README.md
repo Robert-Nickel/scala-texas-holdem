@@ -34,6 +34,8 @@ To get the implementation of the evaluation done, we looked [here](https://githu
 ## Functional
 All typical [cash game rules](https://www.pokerlistings.com/poker-rules-texas-holdem) are covered.  
 
+// TODO: Add image of output with explanation
+
 ### Manual
 You can use these commands:
 ```
@@ -44,10 +46,13 @@ raise 42
 all-in
 ```
 
+### Bot logic
+// TODO
+
 ### Yet missing Features
 - [ ] if all-in and highestOverallbet > investment only return partial amount
 - [ ] if the next player has folded or is all-in, skip him faster
 
 ### Known Issues
-- The unicode characters ♥, ♠, ♦, ♣ are not supported well on the native Windows terminals. The IntelliJ terminal renders them well.
+- The unicode characters ♥, ♠, ♦, ♣ are not supported well on all Windows terminals. The IntelliJ terminal renders them well.
 - If someone has called all-in, but still has chips behind, the betting round continues forever, because he is not considered "all-in", but everyone else has either folded or is all-in.
