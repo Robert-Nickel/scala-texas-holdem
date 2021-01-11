@@ -47,4 +47,7 @@ all-in
 ### Yet missing Features
 - [ ] if all-in and highestOverallbet > investment only return partial amount
 - [ ] if the next player has folded or is all-in, skip him faster
-- [ ] BUG: if someone has called all-in, but still has chips behind, the betting round continues forever, because he is not considered "all-in", but everyone else has either folded or is all-in.
+
+### Known Issues
+- The unicode characters ♥, ♠, ♦, ♣ are not supported well on the native Windows terminals. The IntelliJ terminal renders them well.
+- If someone has called all-in, but still has chips behind, the betting round continues forever, because he is not considered "all-in", but everyone else has either folded or is all-in.
