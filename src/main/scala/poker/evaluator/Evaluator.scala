@@ -87,7 +87,7 @@ object Evaluator {
 
   inputStream.read(handRanks)
   inputStream.close()
-
+  
   def evalCard(value: Int) = {
     val offset = value * 4
     ByteBuffer.wrap(handRanks, offset, handRanks.length - offset).order(ByteOrder.LITTLE_ENDIAN).getInt
@@ -95,13 +95,29 @@ object Evaluator {
 
   def eval(cards: List[Card]): Evaluation = {
     val intCards = cards.map(card => cardIntMap(card.value.toLower.toString + symbolsMap(card.symbol)))
-    var p = 53
-    intCards.foreach(card => p = evalCard(p + card))
-    if(cards.size == 5 || cards.size == 6) {
-      p = evalCard(p)
-    }
-    val handAddress = p >> 12
-    Evaluation(handAddress, p & 0x00000fff, p, handTypes(handAddress))
+    val first = intCards(0)
+    val second = intCards(1)
+    val third = intCards(2)
+    val fourth = intCards(3)
+    val fifth = intCards(4)
+    val sixth = if intCards.length >=6 then intCards(5) else 0
+    val seventh = if intCards.length >=7 then intCards(6) else 0
+
+    val p = 53
+
+    val firstEval = evalCard(p + first)
+    val secondEval = evalCard(firstEval + second)
+    val thirdEval = evalCard(secondEval + third)
+    val fourthEval = evalCard(thirdEval + fourth)
+    val fifthEval = evalCard(fourthEval + fifth)
+    val sixthEval = if sixth != 0 then evalCard(fifthEval + sixth) else 0
+    val seventhEval = if seventh != 0 then evalCard(sixthEval + seventh) else 0
+
+    val intermediateEval = if seventhEval != 0 then seventhEval else if sixthEval != 0 then sixthEval else fifthEval
+    val finalEval = if (sixthEval == 0 || seventhEval == 0) then evalCard(intermediateEval) else intermediateEval
+
+    val handAddress = finalEval >> 12;
+    Evaluation(handAddress, finalEval & 0x00000fff, finalEval, handTypes(handAddress))
   }
 
   def evalHoleCards(holeCards: Option[(Card, Card)]): Int = 
