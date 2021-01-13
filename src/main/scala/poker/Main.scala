@@ -79,8 +79,11 @@ object Main:
       !currentPlayer.isAllIn &&
       !(table.isSB(currentPlayer) || table.isBB(currentPlayer)) then
       Some(getValidatedInput)
+    else if currentPlayer.isInRound &&
+      !currentPlayer.isAllIn then
+        Thread.sleep(Random.nextInt(3_000) + 1_000)
+        None
     else
-      Thread.sleep(Random.nextInt(3_000) + 1_000)
       None
 
   def printText(text: String): Unit = 
