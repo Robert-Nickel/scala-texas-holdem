@@ -39,29 +39,6 @@ class packageSpec extends AnyWordSpec {
     }
   }
 
-  "Given a table where only one player is in round" should {
-    val table = Table(players = List(Player("A", holeCards = Some(Card('A', '♥'), Card('K', '♥'))), Player("B")))
-    "return only one player is in round" in {
-      table.isOnlyOnePlayerInRound shouldBe true
-    }
-  }
-
-  "Given a table where two players are in round" should {
-    val table = Table(players = List(
-      Player("A", holeCards = Some(Card('A', '♥'), Card('K', '♥'))),
-      Player("B", holeCards = Some(Card('Q', '♥'), Card('J', '♥')))))
-    "return not only one player is in round" in {
-      table.isOnlyOnePlayerInRound shouldBe false
-    }
-  }
-
-  "Given a table where no player is in round" should {
-    val table = Table(players = List(Player("A"), Player("B")))
-    "return not one player is in round" in {
-      table.isOnlyOnePlayerInRound shouldBe false
-    }
-  }
-
   "Given a table where more than one player is in the game" should {
     val table = Table(players = List(Player("A", stack = 100), Player("B", currentBet = 100)))
     "play next round" in {

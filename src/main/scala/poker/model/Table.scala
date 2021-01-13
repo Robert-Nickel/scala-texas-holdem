@@ -86,7 +86,7 @@ case class Table(players: List[Player],
     Evaluator.eval(List(player.holeCards.get._1, player.holeCards.get._2).appendedAll(board))
 
   def getTheWinner: Player = 
-    if this.isOnlyOnePlayerInRound then
+    if players.count(p => p.isInRound) == 1 then
       players.find(player => player.isInRound).get
     else
       players

@@ -33,8 +33,6 @@ package poker {
 
         def getHighestOverallBet: Int = table.players.map(player => player.currentBet).max
 
-        def isOnlyOnePlayerInRound: Boolean = table.players.count(p => p.isInRound) == 1
-
         def isSB(player: Player): Boolean = table.players(1) == player
 
         def isBB(player: Player): Boolean = table.players(2) == player
@@ -43,12 +41,14 @@ package poker {
 
         def shouldPlayNextRound: Boolean = table.players.count(p => p.isInGame) > 1
         
-        def shouldPlayNextBettingRound: Boolean = table.currentBettingRound < 3 && !table.isOnlyOnePlayerInRound
+        def shouldPlayNextBettingRound: Boolean = table.currentBettingRound < 3 && table.players.count(p => p.isInRound) != 1
         
         def shouldPlayNextMove: Boolean =
             val maxCurrentBet = table.players.map(p => p.currentBet).max
             table.players.exists(player =>
-                player.isInRound && (player.currentBet != maxCurrentBet || !player.hasActedThisBettingRound))
+                player.isInRound
+                && (player.currentBet != maxCurrentBet || !player.hasActedThisBettingRound))
+            && table.players.count(player => player.isInRound) != 1
 
         def getPrintableWinning: String = 
             val winner = table.getTheWinner
