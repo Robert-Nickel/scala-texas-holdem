@@ -2,6 +2,7 @@
 package poker.evaluator
 
 import java.nio.{ByteBuffer, ByteOrder}
+import org.apache.commons.io.IOUtils
 
 import poker.model.Card
 import scala.collection.immutable.HashMap
@@ -9,7 +10,8 @@ import poker.{bb, cardValues}
 
 object Evaluator {
   val inputStream = getClass.getResourceAsStream("/HandRanks.dat")
-  val handRanks = new Array[Byte](inputStream.available)
+  val handRanks  = IOUtils.toByteArray(inputStream)
+  inputStream.close()
   val cardIntMap = HashMap(
     "2c" -> 1,
     "2d" -> 2,
@@ -84,9 +86,6 @@ object Evaluator {
     "four of a kind",
     "straight flush"
   )
-
-  inputStream.read(handRanks)
-  inputStream.close()
   
   def evalCard(value: Int) = {
     val offset = value * 4
