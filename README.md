@@ -48,7 +48,7 @@ sbt "run letters"
 The symbols are unicode characters that cannot be rendered by every console, use letters if you encounter rendering issues.
 
 #### Playing the Game
-You can use these commands:
+You can use these commands if it is your turn:
 ```
 fold
 check
@@ -56,6 +56,33 @@ call
 raise 42
 all-in
 ```
+for example:
+```
+                                          Pot 0
+                                            
+
+0               1               2               2               6               0               
+________________________________________________________________________________________
+[xx][xx]        [xx][xx]        [xx][xx]        [xx][xx]        [xx][xx]        [7♦][8♦]        
+Amy (D)         Bob             Dev             Fox             Udo             You             
+200             199             198             198             194             200             
+                                                                                ________
+
+call
+
+
+                                          Pot 0
+                                            
+
+0               1               2               2               6               6               
+________________________________________________________________________________________
+[xx][xx]        [xx][xx]        [xx][xx]        [xx][xx]        [xx][xx]        [7♦][8♦]        
+Amy (D)         Bob             Dev             Fox             Udo             You             
+200             199             198             198             194             194             
+________
+
+```
+Here you have called Udo's bet of 6 with `[7♦][8♦]`.
 
 ### Bot logic
 You are playing against our bots **Amy, Bob, Dev, Fox and Udo** that make their actions based on multiple parameters.

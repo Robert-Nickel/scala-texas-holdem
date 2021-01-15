@@ -38,9 +38,8 @@ implicit class TableDSL(table: Table) {
     def getPrintableTable(showCards: Boolean = false): String =
       def getPot = " " * (42 - (table.pot.toString.length / 2)) + s"Pot ${table.pot}"
 
-      def getBoard = " " * (44 - (table.board.size * 4) / 2)
-
-      table.board.map(card => s"[${card.value}${card.symbol}]").mkString
+      def getBoard = " " * (44 - (table.board.size * 4) / 2) + 
+        table.board.map(card => s"[${card.value}${card.symbol}]").mkString
 
 
       def getCurrentBets = table.players.map(player => {
