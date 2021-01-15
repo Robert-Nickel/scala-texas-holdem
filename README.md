@@ -4,6 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/Robert-Nickel/scala-texas-holdem/badge.svg?branch=master)](https://coveralls.io/github/Robert-Nickel/scala-texas-holdem?branch=master)
  
 *The coverage relates to the [Scala 2 version](https://github.com/Robert-Nickel/scala-texas-holdem/tree/scala2.13) of the project*
+
 ## Technological
 A CLI version of Texas Holdem using **Scala 3** for the course "Reactive Programming" at HTWG WS20/21. Many different aspects of the Scala Programming Language and surrounding libraries are covered, therefore some effort is put onto the technology rather than the game itself.
 
@@ -37,8 +38,18 @@ All typical [cash game rules](https://www.pokerlistings.com/poker-rules-texas-ho
 
 ### Manual
 #### Starting the Game
-If you want to use card symbols (♥,♦,♣,♠) (mostly working in unix environments) you can start the game like this: `sbt "run symbols"`
-else use card letters (h, d, c, s) for proper display of the cards with `sbt "run letters"`.
+You can play poker with one of two card deck. One has symbols on the cards (♥,♦,♣,♠), and one has letters (h,d,c,s).
+
+To play with the symbols run  
+```bash
+sbt "run symbols"
+```  
+to play with letters run  
+```bash
+sbt "run letters"
+```  
+*HINT: h = hearts = ♥, d = diamonds = ♦, c = clubs = ♣, s = spades = ♠*  
+The symbols are unicode characters that cannot be rendered by every console, use letters if you encounter rendering issues.
 
 #### Playing the Game
 You can use these commands:
@@ -51,11 +62,25 @@ all-in
 ```
 
 ### Bot logic
-// TODO
+You are playing against our bots **Amy, Bob, Dev, Fox and Udo** that make their actions based on multiple parameters.
+#### Preflop
+The bot evaluates his hand by
+- If the values are high
+- If the values are close to each other, which increases the chances to get a straight (cards are "connectors")
+- If the values have the same symbol (cards are "suited")
+If the evaluation of the hole cards is
+- good, the bot will play aggressively
+- mediocre, the bot will play passively
+- bad, the bot is likely to fold
+#### Postflop
+After the flop, the bot evaluates his own hand in combination with the board. This is a more complex process, since the evaluation is multidimensional:
+- The bot might have nothing
+- The bot might have something, e.g. a pair
+- The bot might have nothing yet, but a relatively high chance to get a flush or a straight (a "draw")
+All that is taken into consideration.  
+One thing that is not taken into consideration is a differentiation between the absolute and the relative hand value.
+If the board is a flush and the bot has no card of that suit, he will play aggressively, since he thinks he has a great hand, without taking into consideration, that EVERYONE has a flush.
+
 
 ### Yet missing Features
 - [ ] if all-in and highestOverallbet > investment only return partial amount
-- [ ] if the next player has folded or is all-in, skip him faster
-
-### Known Issues
-- If someone has called all-in, but still has chips behind, the betting round continues forever, because he is not considered "all-in", but everyone else has either folded or is all-in.
