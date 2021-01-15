@@ -82,7 +82,10 @@ Amy (D)         Bob             Dev             Fox             Udo             
 ________
 
 ```
-Here you have called Udo's bet of 6 with `[7♦][8♦]`.
+Here you have called Udo's bet of 6 with `[7♦][8♦]`.  
+
+**If you ever get confused on what is going on, have a look into poker.txt, where you can analyse your current match in detail.**
+
 
 ### Bot logic
 You are playing against our bots **Amy, Bob, Dev, Fox and Udo** that make their actions based on multiple parameters.
