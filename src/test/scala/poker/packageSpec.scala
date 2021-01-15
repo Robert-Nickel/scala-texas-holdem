@@ -85,8 +85,8 @@ class packageSpec extends AnyWordSpec {
 
   "Given a table where all players have the same current bet and has not acted before" should {
     val table = Table(players = List(
-      Player("A", currentBet = 10, holeCards = Some(Card('A', '♥'), Card('K', '♥')), hasActedThisBettingRound = true),
-      Player("B", currentBet = 10, holeCards = Some(Card('Q', '♥'), Card('J', '♥')), hasActedThisBettingRound = false)))
+      Player("A", stack = 10, currentBet = 10, holeCards = Some(Card('A', '♥'), Card('K', '♥')), hasActedThisBettingRound = true),
+      Player("B", stack = 10, currentBet = 10, holeCards = Some(Card('Q', '♥'), Card('J', '♥')), hasActedThisBettingRound = false)))
     "not play next move" in {
       table.shouldPlayNextMove shouldBe true
     }
@@ -103,8 +103,8 @@ class packageSpec extends AnyWordSpec {
 
   "Given a table where NOT all players have the same current bet" should {
     val table = Table(players = List(
-      Player("A", currentBet = 10, holeCards = Some(Card('A', '♥'), Card('K', '♥'))),
-      Player("B", currentBet = 20, holeCards = Some(Card('Q', '♥'), Card('J', '♥')))))
+      Player("A", stack = 10, currentBet = 10, holeCards = Some(Card('A', '♥'), Card('K', '♥'))),
+      Player("B", stack = 10, currentBet = 20, holeCards = Some(Card('Q', '♥'), Card('J', '♥')))))
     "play next move" in {
       table.shouldPlayNextMove shouldBe true
     }
@@ -112,8 +112,8 @@ class packageSpec extends AnyWordSpec {
 
   "Given a table where one player is All-In with less than maxCurrentBet" should {
     val table = Table(players = List(
-      Player("A", currentBet = 150, holeCards = Some(Card('A', '♥'), Card('K', '♥')), stack = 50),
-      Player("B", currentBet = 100, holeCards = Some(Card('Q', '♥'), Card('J', '♥')))
+      Player("A", currentBet = 150, holeCards = Some(Card('A', '♥'), Card('K', '♥')), stack = 50, hasActedThisBettingRound = true),
+      Player("B", currentBet = 100, holeCards = Some(Card('Q', '♥'), Card('J', '♥')), hasActedThisBettingRound = true)
     ))
     "not play next move" in {
       table.shouldPlayNextMove shouldBe false
