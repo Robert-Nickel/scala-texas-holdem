@@ -56,7 +56,7 @@ call
 raise 42
 all-in
 ```
-for example:
+Here is an example of how it looks if you call. Look at your current bet (that 6 above the betting line) to understand what is going on.
 ```
                                           Pot 0
                                             
