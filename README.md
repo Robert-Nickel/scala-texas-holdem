@@ -34,7 +34,7 @@ To get the implementation of the evaluation done, we looked [here](https://githu
 ## Functional
 All typical [cash game rules](https://www.pokerlistings.com/poker-rules-texas-holdem) are covered.  
 
-// TODO: Add image of output with explanation
+![](board.png)
 
 ### Manual
 #### Starting the Game
