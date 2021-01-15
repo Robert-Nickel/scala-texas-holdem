@@ -3,6 +3,7 @@ package poker
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 import poker.model.{Card, Player, Table}
+import poker.dsl.TableDSL
 
 class packageSpec extends AnyWordSpec {
 

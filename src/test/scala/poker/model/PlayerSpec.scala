@@ -4,7 +4,7 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 import poker._
-import poker.{PlayerDSL, TableDSL}
+import poker.dsl.{PlayerDSL, TableDSL}
 import poker.evaluator.Evaluator.evalHoleCards
 
 import scala.language.postfixOps

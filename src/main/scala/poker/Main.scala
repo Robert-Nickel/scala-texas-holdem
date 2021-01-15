@@ -3,6 +3,7 @@ package poker
 import java.io.{File, FileWriter, PrintWriter}
 
 import poker.model.Table
+import poker.dsl.{TableDSL, PlayerDSL}
 
 import scala.annotation.tailrec
 import scala.io.StdIn
