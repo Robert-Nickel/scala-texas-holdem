@@ -69,9 +69,13 @@ object Evaluator {
 
   val symbolsMap = HashMap(
     '♥' -> 'h',
+    'h' -> 'h',
     '♦' -> 'd',
+    'd' -> 'd',
     '♠' -> 's',
-    '♣' -> 'c'
+    's' -> 's',
+    '♣' -> 'c',
+    'c' -> 'c'
   )
 
   val handTypes = List(

@@ -4,7 +4,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/Robert-Nickel/scala-texas-holdem/badge.svg?branch=master)](https://coveralls.io/github/Robert-Nickel/scala-texas-holdem?branch=master)
  
 *The coverage relates to the [Scala 2 version](https://github.com/Robert-Nickel/scala-texas-holdem/tree/scala2.13) of the project*
-
 ## Technological
 A CLI version of Texas Holdem using **Scala 3** for the course "Reactive Programming" at HTWG WS20/21. Many different aspects of the Scala Programming Language and surrounding libraries are covered, therefore some effort is put onto the technology rather than the game itself.
 
@@ -37,6 +36,11 @@ All typical [cash game rules](https://www.pokerlistings.com/poker-rules-texas-ho
 // TODO: Add image of output with explanation
 
 ### Manual
+#### Starting the Game
+If you want to use card symbols (♥,♦,♣,♠) (mostly working in unix environments) you can start the game like this: `sbt "run symbols"`
+else use card letters (h, d, c, s) for proper display of the cards with `sbt "run letters"`.
+
+#### Playing the Game
 You can use these commands:
 ```
 fold
@@ -54,5 +58,4 @@ all-in
 - [ ] if the next player has folded or is all-in, skip him faster
 
 ### Known Issues
-- The unicode characters ♥, ♠, ♦, ♣ are not supported well on all Windows terminals. The IntelliJ terminal renders them well.
 - If someone has called all-in, but still has chips behind, the betting round continues forever, because he is not considered "all-in", but everyone else has either folded or is all-in.

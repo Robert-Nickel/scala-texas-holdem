@@ -8,6 +8,7 @@ package poker {
     val sb = 1
     val bb = 2
     val cardSymbols = List('♥', '♠', '♦', '♣')
+    val cardLetters = List('h', 's', 'd', 'c')
     val cardValues: HashMap[Char, Set[Int]] = HashMap(
         ('2', Set(2)),
         ('3', Set(3)),
@@ -22,10 +23,10 @@ package poker {
         ('Q', Set(12)),
         ('K', Set(13)),
         ('A', Set(1, 14)))
-    def getDeck: List[Card] = {
+    def getDeck(letters: Boolean = false): List[Card] = {
         (for {
         v <- cardValues
-        s <- cardSymbols
+        s <- if letters then cardLetters else cardSymbols
         } yield Card(v._1, s)).toList
     }
     implicit class TableDSL(table: Table) {
