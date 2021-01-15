@@ -151,8 +151,8 @@ class TableSpec extends AnyWordSpec with Matchers {
   }
 
   "Given a table and a deck" when {
-    val deck = getDeck
-    val table = Table(threePlayers, getDeck)
+    val deck = getDeck()
+    val table = Table(threePlayers, getDeck())
     "flop" should {
       "show 3 board cards and reduce the deck by three" in {
         val newTable = table.flop
@@ -192,35 +192,35 @@ class TableSpec extends AnyWordSpec with Matchers {
   }
 
   "Given a table and betting round = 0" should {
-    val table = Table(threePlayers, getDeck, currentBettingRound = 0)
+    val table = Table(threePlayers, getDeck(), currentBettingRound = 0)
     "do nothing" in {
       table.showBoardIfRequired.board.length shouldBe (0)
     }
   }
 
   "Given a table and betting round = 1" should {
-    val table = Table(threePlayers, getDeck, currentBettingRound = 1)
+    val table = Table(threePlayers, getDeck(), currentBettingRound = 1)
     "flop" in {
       table.showBoardIfRequired.board.length shouldBe (3)
     }
   }
 
   "Given a table and betting round = 2" should {
-    val table = Table(threePlayers, getDeck, currentBettingRound = 2)
+    val table = Table(threePlayers, getDeck(), currentBettingRound = 2)
     "turn" in {
       table.showBoardIfRequired.board.length shouldBe (1)
     }
   }
 
   "Given a table and betting round = 3" should {
-    val table = Table(threePlayers, getDeck, currentBettingRound = 3)
+    val table = Table(threePlayers, getDeck(), currentBettingRound = 3)
     "river" in {
       table.showBoardIfRequired.board.length shouldBe (1)
     }
   }
 
   "Given a table and players with current bet and flop and current player = 0" when {
-    val table = Table(twoPlayers, getDeck).flop
+    val table = Table(twoPlayers, getDeck()).flop
 
     "collect current bets" should {
       "set current bets to 0 and push it to the pot" in {
@@ -250,7 +250,7 @@ class TableSpec extends AnyWordSpec with Matchers {
     val table =
       Table(List(Player("Bernard") is 200 deep, Player("Arnold") is 50 deep))
     "give cards to the players" in {
-      val newTable = table.handOutCards(getDeck)
+      val newTable = table.handOutCards(getDeck())
       newTable.players.head.holeCards.isDefined shouldBe true
       newTable.players(1).holeCards.isDefined shouldBe true
       newTable.deck.length shouldBe (48)
@@ -335,7 +335,7 @@ class TableSpec extends AnyWordSpec with Matchers {
   "Given table where Jim is not in game" should {
     val table = Table(List(Player("Amy") is 200 deep, Player("Jim") is 0 deep))
     "handout cards to Amy but not to Jim" in {
-      val players = table.handOutCards(getDeck).players
+      val players = table.handOutCards(getDeck()).players
       players(0).holeCards.isDefined shouldBe (true)
       players(1).holeCards.isDefined shouldBe (false)
     }
