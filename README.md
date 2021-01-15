@@ -8,12 +8,7 @@
 ## Technological
 A CLI version of Texas Holdem using **Scala 3** for the course "Reactive Programming" at HTWG WS20/21. Many different aspects of the Scala Programming Language and surrounding libraries are covered, therefore some effort is put onto the technology rather than the game itself.
 
-You can find the basics
-- Introduction to Scala
-- More Scala
-- Tests
-- Functional Style and Monads
-everywhere around the code. The more specific aspects and technologies are linked below.
+You can find the basics (Introduction to Scala, More Scala, Tests, Functional Style and Monads) everywhere around the code. The more specific aspects and technologies are linked below:  
 
 [Internal DSLs](https://github.com/Robert-Nickel/scala-texas-holdem/tree/master/src/main/scala/poker/dsl)
 
