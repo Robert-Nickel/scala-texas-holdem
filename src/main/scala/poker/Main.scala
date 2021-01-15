@@ -2,7 +2,7 @@ package poker
 
 import java.io.{File, FileWriter, PrintWriter}
 
-import poker.model.Table
+import poker.model.{Table, Dealer}
 import poker.dsl.{TableDSL, PlayerDSL}
 
 import scala.annotation.tailrec
@@ -44,7 +44,7 @@ object Main:
     Thread.sleep(4_500)
     printText("------------- BETTING ROUND ENDS -------------")
     if newTable.shouldPlayNextBettingRound then
-      playBettingRounds(newTable.copy(currentBettingRound = table.currentBettingRound + 1).showBoardIfRequired)
+      playBettingRounds(Dealer.showBoardIfRequired(newTable.copy(currentBettingRound = table.currentBettingRound + 1)))
     else 
       newTable
 

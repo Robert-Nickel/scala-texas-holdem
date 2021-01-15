@@ -151,77 +151,8 @@ class TableSpec extends AnyWordSpec with Matchers {
     }
   }
 
-  "Given a table and a deck" when {
-    val deck = getDeck()
-    val table = Table(threePlayers, getDeck())
-    "flop" should {
-      "show 3 board cards and reduce the deck by three" in {
-        val newTable = table.flop
-        newTable.deck.size shouldBe (deck.size - 3)
-        newTable.board shouldBe (List(
-          Card('8', '♥'),
-          Card('8', '♠'),
-          Card('8', '♦')
-        ))
-      }
-    }
-    "turn" should {
-      "show turn card and reduce the deck by one" in {
-        val newTable = table.flop.turn
-        newTable.deck.size shouldBe (deck.size - 4)
-        newTable.board shouldBe (List(
-          Card('8', '♥'),
-          Card('8', '♠'),
-          Card('8', '♦'),
-          Card('8', '♣')
-        ))
-      }
-    }
-    "river" should {
-      "show river card and reduce the deck by one" in {
-        val newTable = table.flop.turn.river
-        newTable.deck.size shouldBe (deck.size - 5)
-        newTable.board shouldBe (List(
-          Card('8', '♥'),
-          Card('8', '♠'),
-          Card('8', '♦'),
-          Card('8', '♣'),
-          Card('4', '♥')
-        ))
-      }
-    }
-  }
-
-  "Given a table and betting round = 0" should {
-    val table = Table(threePlayers, getDeck(), currentBettingRound = 0)
-    "do nothing" in {
-      table.showBoardIfRequired.board.length shouldBe (0)
-    }
-  }
-
-  "Given a table and betting round = 1" should {
-    val table = Table(threePlayers, getDeck(), currentBettingRound = 1)
-    "flop" in {
-      table.showBoardIfRequired.board.length shouldBe (3)
-    }
-  }
-
-  "Given a table and betting round = 2" should {
-    val table = Table(threePlayers, getDeck(), currentBettingRound = 2)
-    "turn" in {
-      table.showBoardIfRequired.board.length shouldBe (1)
-    }
-  }
-
-  "Given a table and betting round = 3" should {
-    val table = Table(threePlayers, getDeck(), currentBettingRound = 3)
-    "river" in {
-      table.showBoardIfRequired.board.length shouldBe (1)
-    }
-  }
-
   "Given a table and players with current bet and flop and current player = 0" when {
-    val table = Table(twoPlayers, getDeck()).flop
+    val table = Dealer.flop(Table(twoPlayers, getDeck()))
 
     "collect current bets" should {
       "set current bets to 0 and push it to the pot" in {

@@ -52,21 +52,6 @@ case class Table(players: List[Player],
       case _ => Failure(new Throwable("invalid move by player"))
     }
 
-  def showBoardIfRequired: Table = 
-    if currentBettingRound == 1 then flop
-    else if currentBettingRound == 2 then turn
-    else if currentBettingRound == 3 then river
-    else this
-
-  def flop: Table = 
-    val newBoard = board :+ deck.head :+ deck.tail.head :+ deck.tail.tail.head
-    val newDeck = deck.tail.tail.tail
-    copy(board = newBoard, deck = newDeck)
-
-  def turn: Table = copy(board = board :+ deck.head, deck = deck.tail)
-  
-  def river: Table = turn
-
   def collectCurrentBets: Table = 
     this.copy(
       pot = pot + this.players.map(player => player.currentBet).sum,
