@@ -1,5 +1,4 @@
 package poker.model
-import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
@@ -10,7 +9,7 @@ import poker.evaluator.Evaluator.evalHoleCards
 import scala.language.postfixOps
 import scala.util.Failure
 
-class PlayerSpec extends AnyWordSpec with BeforeAndAfterAll with Matchers {
+class PlayerSpec extends AnyWordSpec with Matchers {
 
   "Given a Player with name 'You', Stack is 200 and cards are Ah As" when {
     val player = (Player("You") are 200 deep) haveCards "Ah As"
@@ -242,46 +241,6 @@ class PlayerSpec extends AnyWordSpec with BeforeAndAfterAll with Matchers {
       "return 0 when jim has no cards" in {
         evalHoleCards(None) shouldBe (0)
       }
-    }
-  }
-
-  "Given a player (bot) with hand value 12001" should {
-    val handValue = 12_001
-    val highestOverallBet = 50
-    val bob = (Player("Bob") is 200 deep)
-    "raise 3 times the highestOverallBet" in {
-      bob
-        .actPostFlop(handValue, highestOverallBet)
-        .currentBet shouldBe (3 * highestOverallBet)
-    }
-  }
-
-  "Given a player (bot) with hand value 9001" should {
-    val handValue = 9_001
-    val highestOverallBet = 50
-    val bob = (Player("Bob") is 200 deep)
-    "call" in {
-      bob
-        .actPostFlop(handValue, highestOverallBet)
-        .currentBet shouldBe (highestOverallBet)
-    }
-  }
-
-  "Given a player (bot) with hand value 1000" should {
-    val handValue = 1_000
-    val highestOverallBet = 50
-    val bob = (Player("Bob") is 200 deep)
-    "fold" in {
-      bob.actPostFlop(handValue, highestOverallBet).currentBet shouldBe (0)
-    }
-  }
-
-  "Given a player (bot) with hand value 12001" should {
-    val handValue = 12_001
-    val highestOverallBet = 50
-    val bob = (Player("Bob") is 0 deep)
-    "fold if invalid raise" in {
-      bob.actPostFlop(handValue, highestOverallBet).isInRound shouldBe (false)
     }
   }
 }

@@ -1,8 +1,6 @@
 package poker.model
 
-import poker.evaluator.FastPostFlopEvaluator.getPostFlopEvaluation
-import poker.evaluator.Evaluator.evalHoleCards
-import poker.bb
+import poker.model.Bot
 
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
@@ -55,54 +53,4 @@ case class Player(name: String,
     }
 
   def actAsBot(highestOverallBet: Int, board: List[Card] = List()): Player = 
-    if board.isEmpty then
-      val handValue = evalHoleCards(holeCards)
-      actPreflop(handValue, highestOverallBet)
-    else
-      val flopValue = getPostFlopEvaluation(board :+ holeCards.get._1 :+ holeCards.get._2)
-      actPostFlop(flopValue, highestOverallBet)
-
-  def actPostFlop(handValue: Int, highestOverallBet: Int): Player = 
-    handValue match {
-      case handValue if handValue > 24_000 => {
-        allIn(highestOverallBet)
-      }
-      case handValue if handValue > 12_000 => {
-        val tryRaise = raise(highestOverallBet * 3, highestOverallBet)
-        if (tryRaise.isFailure) {
-          fold()
-        } else {
-          tryRaise.get
-        }
-      }
-
-      case handValue if handValue > 8_000 =>
-        val tryCall = call(highestOverallBet)
-        if (tryCall.isSuccess) tryCall.get else fold()
-      case _ => fold()
-    }
-  
-  private def actPreflop(handValue: Int, highestOverallBet: Int): Player = 
-    handValue match {
-      case handValue if handValue > 30 =>
-        val tryRaise = raise(5 * bb, highestOverallBet)
-        if tryRaise.isFailure then
-          val tryCall = call(highestOverallBet)
-          if tryCall.isSuccess then tryCall.get else fold()
-        else
-          tryRaise.get
-      case x if x > 20 =>
-        val tryRaise = raise(3 * bb, highestOverallBet)
-        if tryRaise.isFailure then
-          val tryCall = call(highestOverallBet)
-          if tryCall.isSuccess then tryCall.get else fold()
-        else tryRaise.get
-      case _ if stack < 10 * bb =>
-        raise(stack, highestOverallBet).get
-      // TODO: What if no prior bet has been made? Technically its a check then.
-      case _ if highestOverallBet <= 3 * bb => {
-        if call(highestOverallBet).isFailure then fold()
-        else call(highestOverallBet).get
-      }
-      case _ => fold()
-    }
+    Bot.act(this, highestOverallBet, board)  
