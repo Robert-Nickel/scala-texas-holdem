@@ -7,6 +7,13 @@ implicit class TableDSL(table: Table) {
 
     def getHighestOverallBet: Int = table.players.map(player => player.currentBet).max
 
+    def getTheWinner: Player = 
+            if table.players.count(p => p.isInRound) == 1 then
+            table.players.find(player => player.isInRound).get else
+            table.players
+                .filter(player => player.isInRound)
+                .maxBy(player => table.evaluate(player).value)
+
     def isSB(player: Player): Boolean = table.players(1) == player
 
     def isBB(player: Player): Boolean = table.players(2) == player

@@ -52,7 +52,7 @@ case class Table(players: List[Player],
     this.copy(players = players.map(player => player.copy(hasActedThisBettingRound = false)))
 
   def payTheWinner: Table = 
-    val winner = getTheWinner
+    val winner = this.getTheWinner
     val index = players.indexWhere(_.name == winner.name)
     // TODO: use roundInvestment to pay the winner AND reset it
     val newPlayers = players.updated(index, players(index).copy(stack = winner.stack + pot))
@@ -60,14 +60,6 @@ case class Table(players: List[Player],
 
   def evaluate(player: Player): Evaluation = 
     Evaluator.eval(List(player.holeCards.get._1, player.holeCards.get._2).appendedAll(board))
-
-  def getTheWinner: Player = 
-    if players.count(p => p.isInRound) == 1 then
-      players.find(player => player.isInRound).get
-    else
-      players
-        .filter(player => player.isInRound)
-        .maxBy(player => evaluate(player).value)
 
   def rotateButton: Table = 
     copy(players = players.drop(1) ++ players.take(1))
