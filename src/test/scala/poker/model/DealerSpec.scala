@@ -9,7 +9,7 @@ import poker.dsl.PlayerDSL
 class DealerSpec extends AnyWordSpec with Matchers:
 
   val threePlayers = List(
-    Player("Alice").is(10).deep.hasCards("7h 2s"),
+    Player("Alice", currentBet = 10).is(10).deep.hasCards("7h 2s"),
     Player("Bob").is(100).deep.hasCards("7c 2d"),
     Player("Charles").is(50).deep.hasCards("7s 2h")
   )
@@ -90,6 +90,14 @@ class DealerSpec extends AnyWordSpec with Matchers:
         Dealer.collectHoleCards(table).players.exists(p =>
           p.holeCards.isDefined
         ) shouldBe (false)
+      }
+    }
+
+    "collect current bets" should {
+      "set current bets to 0 and push it to the pot" in {
+        val newTable = Dealer.collectCurrentBets(table)
+        newTable.pot shouldBe (10)
+        newTable.players.head.currentBet shouldBe (0)
       }
     }
   }

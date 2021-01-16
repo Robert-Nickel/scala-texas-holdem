@@ -13,9 +13,7 @@ case class Table(players: List[Player],
                  board: List[Card] = List()
                 ):
 
-  def resetPlayerActedThisBettingRound(): Table = {
-    this.copy(players = players.map(player => player.copy(hasActedThisBettingRound = false)))
-  }
+
 
   def tryCurrentPlayerAct(maybeInput: Option[String]): Try[Table] =
     val newActivePlayerTry = (players(currentPlayer), maybeInput) match {
@@ -50,12 +48,8 @@ case class Table(players: List[Player],
       case _ => Failure(new Throwable("invalid move by player"))
     }
 
-  def collectCurrentBets: Table = 
-    this.copy(
-      pot = pot + this.players.map(player => player.currentBet).sum,
-      players = this.players.map(player => player.copy(
-        roundInvestment = player.roundInvestment + player.currentBet,
-        currentBet = 0)))
+  def resetPlayerActedThisBettingRound(): Table = 
+    this.copy(players = players.map(player => player.copy(hasActedThisBettingRound = false)))
 
   def payTheWinner: Table = 
     val winner = getTheWinner

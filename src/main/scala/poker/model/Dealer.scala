@@ -18,3 +18,10 @@ object Dealer :
     def river(table: Table): Table = turn(table)
 
     def collectHoleCards(table: Table) = table.copy(players = table.players.map(player => player.copy(holeCards = None)))
+
+    def collectCurrentBets(table: Table): Table = 
+        table.copy(
+            pot = table.pot + table.players.map(player => player.currentBet).sum,
+            players = table.players.map(player => player.copy(
+                roundInvestment = player.roundInvestment + player.currentBet,
+                currentBet = 0)))

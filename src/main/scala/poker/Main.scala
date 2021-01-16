@@ -38,8 +38,10 @@ object Main:
   @tailrec
   def playBettingRounds(table: Table): Table = 
     printText("------------- BETTING ROUND STARTS -------------")
-    val newTable = playMoves(table.setFirstPlayerForBettingRound.resetPlayerActedThisBettingRound())
-      .collectCurrentBets
+    val newTable = Dealer.collectCurrentBets(
+      playMoves(table
+        .setFirstPlayerForBettingRound
+        .resetPlayerActedThisBettingRound()))
     Thread.sleep(4_500)
     printText("------------- BETTING ROUND ENDS -------------")
     if newTable.shouldPlayNextBettingRound then
