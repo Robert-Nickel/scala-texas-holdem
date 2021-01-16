@@ -16,3 +16,5 @@ object Dealer :
     def turn(table: Table): Table = table.copy(board = table.board :+ table.deck.head, deck = table.deck.tail)
     
     def river(table: Table): Table = turn(table)
+
+    def collectHoleCards(table: Table) = table.copy(players = table.players.map(player => player.copy(holeCards = None)))

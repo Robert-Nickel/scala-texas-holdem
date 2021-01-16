@@ -13,8 +13,6 @@ case class Table(players: List[Player],
                  board: List[Card] = List()
                 ):
 
-  def collectHoleCards = copy(players = players.map(player => player.copy(holeCards = None)))
-
   def resetPlayerActedThisBettingRound(): Table = {
     this.copy(players = players.map(player => player.copy(hasActedThisBettingRound = false)))
   }

@@ -82,3 +82,14 @@ class DealerSpec extends AnyWordSpec with Matchers:
       Dealer.showBoardIfRequired(table).board.length shouldBe (1)
     }
   }
+
+  "Given a table with current player = 1 and currentBettingRound = 1" when {
+    val table = Table(threePlayers, currentPlayer = 1, currentBettingRound = 1)
+    "collectHoleCards" should {
+      "return a table with players without cards" in {
+        Dealer.collectHoleCards(table).players.exists(p =>
+          p.holeCards.isDefined
+        ) shouldBe (false)
+      }
+    }
+  }

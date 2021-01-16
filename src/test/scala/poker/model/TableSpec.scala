@@ -46,13 +46,6 @@ class TableSpec extends AnyWordSpec with Matchers {
         table.nextPlayer shouldBe (table.copy(currentPlayer = 0))
       }
     }
-    "collectHoleCards" should {
-      "return a table with players without cards" in {
-        table.collectHoleCards.players.exists(p =>
-          p.holeCards.isDefined
-        ) shouldBe (false)
-      }
-    }
     "get current player" should {
       "return the current player" in {
         table.getCurrentPlayer.name shouldBe ("Jon")
@@ -302,7 +295,7 @@ class TableSpec extends AnyWordSpec with Matchers {
       )
     )
     "evaluate the hand name as 'two pair'" in {
-      table.evaluate(table.players(0)).handName shouldBe("two pairs")
+      table.evaluate(table.players(0)).handName shouldBe ("two pairs")
     }
   }
 }
