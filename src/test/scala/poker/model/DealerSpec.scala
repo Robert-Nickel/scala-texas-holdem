@@ -92,12 +92,16 @@ class DealerSpec extends AnyWordSpec with Matchers:
         ) shouldBe (false)
       }
     }
-
     "collect current bets" should {
       "set current bets to 0 and push it to the pot" in {
         val newTable = Dealer.collectCurrentBets(table)
         newTable.pot shouldBe (10)
         newTable.players.head.currentBet shouldBe (0)
+      }
+    }
+    "rotate button" should {
+      "make Jon the new dealer" in {
+        Dealer.rotateButton(table).players.head.name shouldBe ("Bob")
       }
     }
   }

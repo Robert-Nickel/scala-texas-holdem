@@ -35,3 +35,5 @@ object Dealer :
         val newPlayers = table.players.updated(index, 
             table.players(index).copy(stack = winner.stack + table.pot))
         table.copy(pot = 0, players = newPlayers)
+
+    def rotateButton(table: Table): Table = table.copy(players = table.players.drop(1) ++ table.players.take(1))

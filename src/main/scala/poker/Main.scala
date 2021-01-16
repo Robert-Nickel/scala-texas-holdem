@@ -27,8 +27,7 @@ object Main:
     printText("------------- ROUND ENDS -------------")
 
     val newNewTable = Dealer.collectHoleCards(
-      Dealer.payTheWinner(newTable)
-      .rotateButton
+      Dealer.rotateButton(Dealer.payTheWinner(newTable))
       .resetBoard)
       .handOutCards(Random.shuffle(getDeck()))
     if newNewTable.shouldPlayNextRound then playRounds(newNewTable)

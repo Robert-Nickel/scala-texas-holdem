@@ -54,9 +54,6 @@ case class Table(players: List[Player],
   def evaluate(player: Player): Evaluation = 
     Evaluator.eval(List(player.holeCards.get._1, player.holeCards.get._2).appendedAll(board))
 
-  def rotateButton: Table = 
-    copy(players = players.drop(1) ++ players.take(1))
-
   def resetBoard: Table = 
     copy(board = List())
 

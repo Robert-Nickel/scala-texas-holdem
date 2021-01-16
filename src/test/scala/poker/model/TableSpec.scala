@@ -146,11 +146,6 @@ class TableSpec extends AnyWordSpec with Matchers {
 
   "Given a table and players with current bet and flop and current player = 0" when {
     val table = Dealer.flop(Table(twoPlayers, getDeck()))
-    "rotate button" should {
-      "make Jon the new dealer" in {
-        table.rotateButton.players.head.name shouldBe ("Jon")
-      }
-    }
     "reset board" should {
       "leave an empty board" in {
         table.resetBoard.board.length shouldBe (0)
