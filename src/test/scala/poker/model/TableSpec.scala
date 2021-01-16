@@ -146,6 +146,7 @@ class TableSpec extends AnyWordSpec with Matchers {
 
   "Given a table and players with current bet and flop and current player = 0" when {
     val table = Dealer.flop(Table(twoPlayers, getDeck()))
+    
     "reset board" should {
       "leave an empty board" in {
         table.resetBoard.board.length shouldBe (0)
@@ -155,17 +156,6 @@ class TableSpec extends AnyWordSpec with Matchers {
       "set current player = 1" in {
         table.setFirstPlayerForBettingRound.currentPlayer shouldBe (1)
       }
-    }
-  }
-
-  "Given table with players without cards" should {
-    val table =
-      Table(List(Player("Bernard") is 200 deep, Player("Arnold") is 50 deep))
-    "give cards to the players" in {
-      val newTable = table.handOutCards(getDeck())
-      newTable.players.head.holeCards.isDefined shouldBe true
-      newTable.players(1).holeCards.isDefined shouldBe true
-      newTable.deck.length shouldBe (48)
     }
   }
 
@@ -199,14 +189,7 @@ class TableSpec extends AnyWordSpec with Matchers {
     }
   }
 
-  "Given table where Jim is not in game" should {
-    val table = Table(List(Player("Amy") is 200 deep, Player("Jim") is 0 deep))
-    "handout cards to Amy but not to Jim" in {
-      val players = table.handOutCards(getDeck()).players
-      players(0).holeCards.isDefined shouldBe (true)
-      players(1).holeCards.isDefined shouldBe (false)
-    }
-  }
+
 
   "Given table where Bob is all-in" should {
     val table = Table(

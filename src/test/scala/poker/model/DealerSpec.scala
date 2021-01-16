@@ -150,3 +150,23 @@ class DealerSpec extends AnyWordSpec with Matchers:
       newTable.pot shouldBe (0)
     }
   }
+
+  "Given table where Jim is not in game" should {
+    val table = Table(List(Player("Amy") is 200 deep, Player("Jim") is 0 deep))
+    "handout cards to Amy but not to Jim" in {
+      val players = Dealer.handOutCards(table, getDeck()).players
+      players(0).holeCards.isDefined shouldBe (true)
+      players(1).holeCards.isDefined shouldBe (false)
+    }
+  }
+
+  "Given table with players without cards" should {
+    val table =
+      Table(List(Player("Bernard") is 200 deep, Player("Arnold") is 50 deep))
+    "give cards to the players" in {
+      val newTable = Dealer.handOutCards(table, getDeck())
+      newTable.players.head.holeCards.isDefined shouldBe true
+      newTable.players(1).holeCards.isDefined shouldBe true
+      newTable.deck.length shouldBe (48)
+    }
+  }

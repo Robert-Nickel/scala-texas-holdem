@@ -57,19 +57,6 @@ case class Table(players: List[Player],
   def resetBoard: Table = 
     copy(board = List())
 
-  def handOutCards(deck: List[Card]): Table = 
-    handOutCardsToPlayers(players, deck)
-
-  private def handOutCardsToPlayers(oldPlayers: List[Player], deck: List[Card], newPlayers: List[Player] = List()): Table =
-    (oldPlayers.size, deck.size) match {
-      case (oldPlayerSize, _) if oldPlayerSize == 0 => Table(newPlayers, deck)
-      case _ =>
-        if oldPlayers.head.isInGame then
-          handOutCardsToPlayers(oldPlayers.tail, deck.tail.tail, newPlayers :+ oldPlayers.head.copy(holeCards = Some(deck.head, deck.tail.head)))
-        else
-          handOutCardsToPlayers(oldPlayers.tail, deck, newPlayers :+ oldPlayers.head)
-    }
-
   def setFirstPlayerForBettingRound: Table =
     val firstPlayerForBettingRound = if players.count(player => player.isInRound) == 1 then
       players.indexWhere(player => player.isInRound)

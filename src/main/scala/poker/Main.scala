@@ -10,27 +10,28 @@ import scala.io.StdIn
 import scala.util.Random
 
 object Main:
-  
+
   @main def playGame(symbols: String) =
     new File("poker.txt").delete()
-
-    val table = Table(players, getDeck(symbols == "letters"))
-    val newTable = table.handOutCards(Random.shuffle(table.deck))
-    printText(playRounds(newTable).getPrintableTable())
+    val letterSymbols = symbols == "letters"
+    val table = Table(players, getDeck(letterSymbols))
+    val newTable = Dealer.handOutCards(table, Random.shuffle(table.deck))
+    printText(playRounds(newTable, letterSymbols).getPrintableTable())
     printText("Game over!")
 
-  def playRounds(table: Table): Table = {
+  def playRounds(table: Table, letterSymbols: Boolean): Table = {
     printText("------------- ROUND STARTS -------------")
     val newTable = playBettingRounds(table)
     printText(newTable.getPrintableWinning)
     Thread.sleep(10_000)
     printText("------------- ROUND ENDS -------------")
 
-    val newNewTable = Dealer.collectHoleCards(
-      Dealer.rotateButton(Dealer.payTheWinner(newTable))
-      .resetBoard)
-      .handOutCards(Random.shuffle(getDeck()))
-    if newNewTable.shouldPlayNextRound then playRounds(newNewTable)
+    val newNewTable = 
+      Dealer.handOutCards(
+        Dealer.collectHoleCards(
+          Dealer.rotateButton(
+            Dealer.payTheWinner(newTable)).resetBoard), Random.shuffle(getDeck(letterSymbols)))
+    if newNewTable.shouldPlayNextRound then playRounds(newNewTable, letterSymbols)
     newNewTable
   } 
   

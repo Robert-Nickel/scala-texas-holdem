@@ -1,6 +1,6 @@
 package poker.model
 
-import poker.dsl.TableDSL
+import poker.dsl.{TableDSL, PlayerDSL}
 
 object Dealer :
 
@@ -37,3 +37,15 @@ object Dealer :
         table.copy(pot = 0, players = newPlayers)
 
     def rotateButton(table: Table): Table = table.copy(players = table.players.drop(1) ++ table.players.take(1))
+
+    def handOutCards(table: Table, deck: List[Card]): Table = handOutCardsToPlayers(table.players, deck)
+
+    private def handOutCardsToPlayers(oldPlayers: List[Player], deck: List[Card], newPlayers: List[Player] = List()): Table =
+        (oldPlayers.size, deck.size) match {
+            case (oldPlayerSize, _) if oldPlayerSize == 0 => Table(newPlayers, deck)
+            case _ =>
+                if oldPlayers.head.isInGame then
+                handOutCardsToPlayers(oldPlayers.tail, deck.tail.tail, newPlayers :+ oldPlayers.head.copy(holeCards = Some(deck.head, deck.tail.head)))
+                else
+                handOutCardsToPlayers(oldPlayers.tail, deck, newPlayers :+ oldPlayers.head)
+        }
