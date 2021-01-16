@@ -189,22 +189,5 @@ class TableSpec extends AnyWordSpec with Matchers {
         .head
         .hasActedThisBettingRound shouldBe (true)
     }
-  }
-
-  "Given table where Alice has two pair" should {
-    val table = Table(
-      players =
-        List(Player("Alice", holeCards = Some(Card('A', '♥'), Card('A', '♠')))),
-      board = List(
-        Card('K', '♥'),
-        Card('K', '♠'),
-        Card('2', '♣'),
-        Card('6', '♣'),
-        Card('9', '♣')
-      )
-    )
-    "evaluate the hand name as 'two pair'" in {
-      table.evaluate(table.players(0)).handName shouldBe ("two pairs")
-    }
-  }
+  } 
 }

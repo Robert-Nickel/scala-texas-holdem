@@ -5,7 +5,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import poker.model.{Card, Player, Table}
 import poker.dsl.TableDSL
 
-class packageSpec extends AnyWordSpec {
+class TableDSLSpec extends AnyWordSpec {
 
   "Given a table where more than one player is in the game" should {
     val table = Table(players =

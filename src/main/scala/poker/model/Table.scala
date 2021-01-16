@@ -49,9 +49,6 @@ case class Table(players: List[Player],
   def resetPlayerActedThisBettingRound(): Table = 
     this.copy(players = players.map(player => player.copy(hasActedThisBettingRound = false)))
 
-  def evaluate(player: Player): Evaluation = 
-    Evaluator.eval(List(player.holeCards.get._1, player.holeCards.get._2).appendedAll(board))
-
   def resetBoard: Table = 
     copy(board = List())
 

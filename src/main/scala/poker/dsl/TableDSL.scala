@@ -12,7 +12,7 @@ implicit class TableDSL(table: Table) {
             table.players.find(player => player.isInRound).get else
             table.players
                 .filter(player => player.isInRound)
-                .maxBy(player => table.evaluate(player).value)
+                .maxBy(player => player.evaluate(table.board).value)
 
     def isSB(player: Player): Boolean = table.players(1) == player
 
@@ -37,7 +37,7 @@ implicit class TableDSL(table: Table) {
         table.getPrintableTable(showCards = true) + "\n" +
           s"${winner.name} wins ${table.pot}\n\n"
       } else {
-        val evaluation = table.evaluate(winner)
+        val evaluation = winner.evaluate(table.board)
         table.getPrintableTable(showCards = true) + "\n" +
           s"${winner.name} wins ${table.pot} with ${evaluation.handName}\n\n"
       }
