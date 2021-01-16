@@ -51,13 +51,6 @@ case class Table(players: List[Player],
   def resetPlayerActedThisBettingRound(): Table = 
     this.copy(players = players.map(player => player.copy(hasActedThisBettingRound = false)))
 
-  def payTheWinner: Table = 
-    val winner = this.getTheWinner
-    val index = players.indexWhere(_.name == winner.name)
-    // TODO: use roundInvestment to pay the winner AND reset it
-    val newPlayers = players.updated(index, players(index).copy(stack = winner.stack + pot))
-    copy(pot = 0, players = newPlayers)
-
   def evaluate(player: Player): Evaluation = 
     Evaluator.eval(List(player.holeCards.get._1, player.holeCards.get._2).appendedAll(board))
 

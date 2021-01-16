@@ -1,5 +1,7 @@
 package poker.model
 
+import poker.dsl.TableDSL
+
 object Dealer :
 
     def showBoardIfRequired(table: Table): Table = 
@@ -25,3 +27,11 @@ object Dealer :
             players = table.players.map(player => player.copy(
                 roundInvestment = player.roundInvestment + player.currentBet,
                 currentBet = 0)))
+
+    def payTheWinner(table: Table): Table = 
+        val winner = table.getTheWinner
+        val index = table.players.indexWhere(_.name == winner.name)
+        // TODO: use roundInvestment to pay the winner AND reset it
+        val newPlayers = table.players.updated(index, 
+            table.players(index).copy(stack = winner.stack + table.pot))
+        table.copy(pot = 0, players = newPlayers)

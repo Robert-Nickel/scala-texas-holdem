@@ -174,51 +174,6 @@ class TableSpec extends AnyWordSpec with Matchers {
     }
   }
 
-  "Given table after the river with 2 players in the round" should {
-    val table = Table(
-      players = List(
-        Player("1"),
-        Player("2"),
-        Player("Bernard").hasCards("A♠ K♠"),
-        Player("Arnold").hasCards("Q♦ Q♥"),
-        Player("5"),
-        Player("6")
-      ),
-      board = List(
-        Card('Q', '♠'),
-        Card('J', '♠'),
-        Card('T', '♠'),
-        Card('Q', '♣'),
-        Card('2', '♣')
-      ),
-      pot = 1_000_000
-    )
-    "pay Bernard as the winner" in {
-      val newTable = table.payTheWinner
-      newTable.players(2).stack shouldBe (1_000_000)
-      newTable.pot shouldBe (0)
-    }
-  }
-
-  "Given table after the turn with only 1 player in the round" should {
-    val table = Table(
-      players = List(Player("Bernard").hasCards("2♠ 7♥"), Player("Arnold")),
-      board = List(
-        Card('Q', '♠'),
-        Card('J', '♠'),
-        Card('T', '♠'),
-        Card('Q', '♣'),
-        Card('2', '♣')
-      ),
-      pot = 300_000
-    )
-    "pay Bernard as the winner" in {
-      val newTable = table.payTheWinner
-      newTable.players.head.stack shouldBe (300_000)
-      newTable.pot shouldBe (0)
-    }
-  }
-
   "Given table where all players have acted " should {
     val table = Table(players =
       List(

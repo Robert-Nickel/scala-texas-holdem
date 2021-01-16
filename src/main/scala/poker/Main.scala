@@ -26,8 +26,8 @@ object Main:
     Thread.sleep(10_000)
     printText("------------- ROUND ENDS -------------")
 
-    val newNewTable = Dealer.collectHoleCards(newTable
-      .payTheWinner
+    val newNewTable = Dealer.collectHoleCards(
+      Dealer.payTheWinner(newTable)
       .rotateButton
       .resetBoard)
       .handOutCards(Random.shuffle(getDeck()))
