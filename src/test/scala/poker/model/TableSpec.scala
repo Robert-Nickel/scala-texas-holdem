@@ -21,15 +21,6 @@ class TableSpec extends AnyWordSpec with Matchers {
     Player("Charles").is(50).deep.hasCards("7s 2h")
   )
 
-  "Given a Table with no specified current player" when {
-    val table = Table(twoPlayers)
-    "next player is called" should {
-      "default currentPlayer = 0 and return a table with current player = 1" in {
-        table.nextPlayer shouldBe (table.copy(currentPlayer = 1))
-      }
-    }
-  }
-
   "Given a Table where the current player is not in the round" when {
     val table = Table(List(Player("Jack")))
     "tryCurrentPlayerAct" should {
@@ -41,11 +32,6 @@ class TableSpec extends AnyWordSpec with Matchers {
 
   "Given a table with current player = 1 and currentBettingRound = 1" when {
     val table = Table(twoPlayers, currentPlayer = 1, currentBettingRound = 1)
-    "next player" should {
-      "return a table with current player = 0" in {
-        table.nextPlayer shouldBe (table.copy(currentPlayer = 0))
-      }
-    }
     "get current player" should {
       "return the current player" in {
         table.getCurrentPlayer.name shouldBe ("Jon")
@@ -146,7 +132,7 @@ class TableSpec extends AnyWordSpec with Matchers {
 
   "Given a table and players with current bet and flop and current player = 0" when {
     val table = Dealer.flop(Table(twoPlayers, getDeck()))
-    
+
     "reset board" should {
       "leave an empty board" in {
         table.resetBoard.board.length shouldBe (0)
@@ -188,8 +174,6 @@ class TableSpec extends AnyWordSpec with Matchers {
       table.setFirstPlayerForBettingRound.currentPlayer shouldBe (0)
     }
   }
-
-
 
   "Given table where Bob is all-in" should {
     val table = Table(

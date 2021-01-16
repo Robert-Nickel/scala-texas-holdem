@@ -49,3 +49,5 @@ object Dealer :
                 else
                 handOutCardsToPlayers(oldPlayers.tail, deck, newPlayers :+ oldPlayers.head)
         }
+
+    def nextPlayer(table: Table): Table = table.copy(currentPlayer = (table.currentPlayer + 1) % table.players.length)

@@ -13,8 +13,6 @@ case class Table(players: List[Player],
                  board: List[Card] = List()
                 ):
 
-
-
   def tryCurrentPlayerAct(maybeInput: Option[String]): Try[Table] =
     val newActivePlayerTry = (players(currentPlayer), maybeInput) match {
       // skip
@@ -66,5 +64,3 @@ case class Table(players: List[Player],
         .filter(playerAndIndex => playerAndIndex._2 != 0) // filter out the dealer
         .head._2
     this.copy(currentPlayer = firstPlayerForBettingRound)
-
-  def nextPlayer: Table = this.copy(currentPlayer = (currentPlayer + 1) % players.length)

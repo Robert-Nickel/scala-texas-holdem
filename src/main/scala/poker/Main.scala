@@ -65,7 +65,7 @@ object Main:
     if newTryTable.isFailure then
       playMove(table)
     else 
-      newTryTable.get.nextPlayer
+      Dealer.nextPlayer(newTryTable.get)
 
   @tailrec
   def getValidatedInput: String = 

@@ -170,3 +170,21 @@ class DealerSpec extends AnyWordSpec with Matchers:
       newTable.deck.length shouldBe (48)
     }
   }
+
+  "Given a Table with no specified current player" when {
+    val table = Table(threePlayers)
+    "next player is called" should {
+      "default currentPlayer = 0 and return a table with current player = 1" in {
+        Dealer.nextPlayer(table) shouldBe (table.copy(currentPlayer = 1))
+      }
+    }
+  }
+
+  "Given a table with current player = 1 and currentBettingRound = 1" when {
+    val table = Table(threePlayers, currentPlayer = 1, currentBettingRound = 1)
+    "next player" should {
+      "return a table with current player = 2" in {
+        Dealer.nextPlayer(table) shouldBe (table.copy(currentPlayer = 2))
+      }
+    }
+  }
