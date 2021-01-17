@@ -10,6 +10,7 @@ scala-texas-holdem.iml
 /.bsp
 .DS_Store
 poker.txt
+what_happened.txt
 /.bloop
 /.metals
 /.vscode

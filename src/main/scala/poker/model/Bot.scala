@@ -31,7 +31,13 @@ object Bot :
         case handValue if handValue > 8_000 =>
             val tryCall = player.call(highestOverallBet)
             if (tryCall.isSuccess) tryCall.get else player.fold()
-        case _ => player.fold()
+        case _ => if(highestOverallBet == 0)
+            then
+                val tryCheck = player.check(highestOverallBet)
+                if(tryCheck.isFailure)
+                    then player.fold()
+                    else tryCheck.get
+            else player.fold()
         }
 
     def actPreflop(player: Player, handValue: Int, highestOverallBet: Int): Player = 

@@ -84,7 +84,7 @@ ________
 ```
 Here you have called Udo's bet of 6 with `[7♦][8♦]`.  
 
-*If you ever get confused on what is going on, have a look into poker.txt, where you can analyse your current match in detail.*
+*If you ever get confused on what happened, have a look into what_happened.txt, where you can analyse your current match in detail.*
 
 
 ### Bot logic

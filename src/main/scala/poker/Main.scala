@@ -12,7 +12,7 @@ import scala.util.Random
 object Main:
 
   @main def playGame(symbols: String) =
-    new File("poker.txt").delete()
+    new File("what_happened.txt").delete()
     val letterSymbols = symbols == "letters"
     val table = Table(players, getDeck(letterSymbols))
     val newTable = Dealer.handOutCards(table, Random.shuffle(table.deck))
@@ -90,7 +90,7 @@ object Main:
       None
 
   def printText(text: String): Unit = 
-    new PrintWriter(new FileWriter("poker.txt", true)) {
+    new PrintWriter(new FileWriter("what_happened.txt", true)) {
       write(text + "\n")
       close()
     }
