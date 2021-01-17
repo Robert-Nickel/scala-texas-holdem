@@ -8,18 +8,20 @@
 A CLI version of Texas Holdem using **Scala 3** for the course "Reactive Programming" at HTWG WS20/21. 
 
 ## Table of contents
-- **Functional**
-  - How to play
-    - Starting the game
-    - Playing the game
-  - Bot logic
-    - Preflop
-    - Postflop
-  - Yet missing features
-- **Technological**
-  - List of applied tech
-  - Internal links to tech usages
+1. [Poker: Texas Holdem CLI game - built with Scala 3](#poker-texas-holdem-cli-game---built-with-scala-3)
+   1. [Overview](#overview)
+   2. [Table of contents](#table-of-contents)
+   3. [Functional](#functional)
+      1. [How to play](#how-to-play)
+         1. [Starting the Game](#starting-the-game)
+         2. [Playing the Game](#playing-the-game)
+      2. [Bot logic](#bot-logic)
+         1. [Preflop](#preflop)
+         2. [Postflop](#postflop)
+      3. [Yet missing Features](#yet-missing-features)
+   4. [Technological](#technological)
 
+___
 ## Functional
 All typical [cash game rules](https://www.pokerlistings.com/poker-rules-texas-holdem) are covered.  
 
@@ -104,6 +106,8 @@ If the board is a flush and the bot has no card of that suit, he will play aggre
 
 ### Yet missing Features
 - [ ] Side pots, so that if two players with different stacks go all-in, they win different amounts. Reason: A player should not be able to win more than what he invested.
+
+___
 
 ## Technological
 Many different aspects of the Scala Programming Language and surrounding libraries are covered, therefore some effort is put onto the technology rather than the game itself.
