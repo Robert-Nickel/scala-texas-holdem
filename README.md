@@ -8,7 +8,7 @@
 A CLI version of Texas Holdem using **Scala 3** for the course "Reactive Programming" at HTWG WS20/21. 
 
 ## Table of contents
-1. [Poker: Texas Holdem CLI game - built with Scala 3](#poker-texas-holdem-cli-game---built-with-scala-3)
+[Poker: Texas Holdem CLI game - built with Scala 3](#poker-texas-holdem-cli-game---built-with-scala-3)
    1. [Overview](#overview)
    2. [Table of contents](#table-of-contents)
    3. [Functional](#functional)
