@@ -69,7 +69,7 @@ object Main:
 
   @tailrec
   def getValidatedInput: String = 
-    printText(s"Your options are:\nfold\ncheck\ncall\nraise 123 (with any number)\nall-in")
+    printText(s"Your options are:\nfold\ncheck\ncall\nraise 123 (with any number)\nall-in\n")
     StdIn.readLine() match {
       case input if isValidSyntax(input) => input
       case _ => getValidatedInput

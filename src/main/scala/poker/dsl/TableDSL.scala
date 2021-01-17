@@ -14,9 +14,19 @@ implicit class TableDSL(table: Table) {
                 .filter(player => player.isInRound)
                 .maxBy(player => player.evaluate(table.board).value)
 
-    def isSB(player: Player): Boolean = table.players(1) == player
+    def isSB(player: Player): Boolean = 
+      val playersInRound = table.players.filter(player => player.isInRound)
+      if(playersInRound.size > 1)
+        then table.players.filter(player => player.isInRound).tail.head == player
+        else false
 
-    def isBB(player: Player): Boolean = table.players(2) == player
+    def isBB(player: Player): Boolean = 
+      val playersInRound = table.players.filter(player => player.isInRound)
+      if(playersInRound.size > 2)
+        then playersInRound.tail.tail.head == player
+        else if(playersInRound.size == 2)
+          then playersInRound.head == player
+        else false
 
     def isPreFlop: Boolean = table.currentBettingRound == 0
 
