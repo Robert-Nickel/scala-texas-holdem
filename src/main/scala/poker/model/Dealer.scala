@@ -29,7 +29,6 @@ object Dealer :
     def payTheWinner(table: Table): Table = 
         val winner = table.getTheWinner
         val index = table.players.indexWhere(_.name == winner.name)
-        // TODO: use roundInvestment to pay the winner AND reset it
         val newPlayers = table.players.updated(index, 
             table.players(index).copy(stack = winner.stack + table.pot))
         table.copy(pot = 0, players = newPlayers)

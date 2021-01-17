@@ -1,4 +1,4 @@
-# Poker: Texas Holdem CLI game - built with Scala 3
+# Poker: Texas Holdem CLI game - built with Scala 3 <!-- omit in toc-->
 [![Build Status](https://travis-ci.com/Robert-Nickel/scala-texas-holdem.svg?branch=master)](https://travis-ci.com/Robert-Nickel/scala-texas-holdem)
 [![Coverage Status](https://coveralls.io/repos/github/Robert-Nickel/scala-texas-holdem/badge.svg?branch=master)](https://coveralls.io/github/Robert-Nickel/scala-texas-holdem?branch=master)
  
@@ -8,18 +8,15 @@
 A CLI version of Texas Holdem using **Scala 3** for the course "Reactive Programming" at HTWG WS20/21. 
 
 ## Table of contents
-Poker: Texas Holdem CLI game - built with Scala 3
-    1. [Overview](#overview)
-    2. [Table of contents](#table-of-contents)
-    3. [Functional](#functional)
-        1. [How to play](#how-to-play)
-            1. [Starting the Game](#starting-the-game)
-            2. [Playing the Game](#playing-the-game)
-        2. [Bot logic](#bot-logic)
-            1. [Preflop](#preflop)
-            2. [Postflop](#postflop)
-        3. [Yet missing Features](#yet-missing-features)
-    4. [Technological](#technological)
+1. [Functional](#functional)
+   1. [How to play](#how-to-play)
+      1. [Starting the Game](#starting-the-game)
+      2. [Playing the Game](#playing-the-game)
+   2. [Bot logic](#bot-logic)
+      1. [Preflop](#preflop)
+      2. [Postflop](#postflop)
+   3. [Yet missing Features](#yet-missing-features)
+2. [Technological](#technological)
 
 ___
 ## Functional
