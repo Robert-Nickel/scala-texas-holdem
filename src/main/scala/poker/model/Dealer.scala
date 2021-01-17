@@ -24,9 +24,7 @@ object Dealer :
     def collectCurrentBets(table: Table): Table = 
         table.copy(
             pot = table.pot + table.players.map(player => player.currentBet).sum,
-            players = table.players.map(player => player.copy(
-                roundInvestment = player.roundInvestment + player.currentBet,
-                currentBet = 0)))
+            players = table.players.map(player => player.copy(currentBet = 0)))
 
     def payTheWinner(table: Table): Table = 
         val winner = table.getTheWinner

@@ -9,8 +9,7 @@ case class Player(name: String,
                   stack: Int = 0,
                   holeCards: Option[(Card, Card)] = None,
                   currentBet: Int = 0,
-                  hasActedThisBettingRound: Boolean = false,
-                  roundInvestment: Int = 0) :
+                  hasActedThisBettingRound: Boolean = false) :
 
   def getHoleCardsString(showCards: Boolean = false): String = 
     if holeCards.isDefined then
