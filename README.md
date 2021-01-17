@@ -9,17 +9,17 @@ A CLI version of Texas Holdem using **Scala 3** for the course "Reactive Program
 
 ## Table of contents
 Poker: Texas Holdem CLI game - built with Scala 3
-    1. [Overview](#overview)
-    2. [Table of contents](#table-of-contents)
-    3. [Functional](#functional)
-        1. [How to play](#how-to-play)
-            1. [Starting the Game](#starting-the-game)
-            2. [Playing the Game](#playing-the-game)
-        2. [Bot logic](#bot-logic)
-            1. [Preflop](#preflop)
-            2. [Postflop](#postflop)
-        3. [Yet missing Features](#yet-missing-features)
-    4. [Technological](#technological)
+1. [Overview](#overview)
+2. [Table of contents](#table-of-contents)
+3. [Functional](#functional)
+    1. [How to play](#how-to-play)
+        1. [Starting the Game](#starting-the-game)
+        2. [Playing the Game](#playing-the-game)
+    2. [Bot logic](#bot-logic)
+        1. [Preflop](#preflop)
+        2. [Postflop](#postflop)
+    3. [Yet missing Features](#yet-missing-features)
+4. [Technological](#technological)
 
 ___
 ## Functional
