@@ -1,5 +1,4 @@
-# A CLI version of Texas Holdem using Scala
- 
+# Poker: Texas Holdem CLI game - built with Scala 3
 [![Build Status](https://travis-ci.com/Robert-Nickel/scala-texas-holdem.svg?branch=master)](https://travis-ci.com/Robert-Nickel/scala-texas-holdem)
 [![Coverage Status](https://coveralls.io/repos/github/Robert-Nickel/scala-texas-holdem/badge.svg?branch=master)](https://coveralls.io/github/Robert-Nickel/scala-texas-holdem?branch=master)
  
@@ -77,9 +76,9 @@ Here you have called Udo's bet of 6 with `[7♦][8♦]`.
 
 *If you ever get confused on what happened, have a look into what_happened.txt, where you can analyse your current match in detail.*
 
-
 ### Bot logic
 You are playing against our bots **Amy, Bob, Dev, Fox and Udo** that make their actions based on multiple parameters.
+
 #### Preflop
 The bot evaluates his hand by
 - If the values are high
@@ -89,11 +88,13 @@ If the evaluation of the hole cards is
 - good, the bot will play aggressively
 - mediocre, the bot will play passively
 - bad, the bot is likely to fold
+
 #### Postflop
 After the flop, the bot evaluates his own hand in combination with the board. This is a more complex process, since the evaluation is multidimensional:
 - The bot might have nothing
 - The bot might have something, e.g. a pair
-- The bot might have nothing yet, but a relatively high chance to get a flush or a straight (a "draw")
+- The bot might have nothing yet, but a relatively high chance to get a flush or a straight (a "draw")  
+   
 All that is taken into consideration.  
 One thing that is not taken into consideration is a differentiation between the absolute and the relative hand value.
 If the board is a flush and the bot has no card of that suit, he will play aggressively, since he thinks he has a great hand, without taking into consideration, that EVERYONE has a flush.
