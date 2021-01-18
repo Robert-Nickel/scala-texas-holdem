@@ -80,7 +80,7 @@ object Main:
     if currentPlayer.isHumanPlayer &&
       currentPlayer.isInRound &&
       !currentPlayer.isAllIn &&
-      !(table.isSB(currentPlayer) || table.isBB(currentPlayer)) then
+      !(table.currentBettingRound == 0 && (table.isSB(currentPlayer) || table.isBB(currentPlayer))) then
       Some(getValidatedInput)
     else if currentPlayer.isInRound &&
       !currentPlayer.isAllIn then
