@@ -116,6 +116,7 @@ You can find the basics (Introduction to Scala, More Scala, Tests, Functional St
 [External DSLs](https://github.com/Robert-Nickel/scala-texas-holdem/blob/scala2.13/src/main/scala/poker/dsl/HandHistoryParser.scala)
 
 [Actors](https://github.com/Robert-Nickel/scala-texas-holdem/tree/kafka/src/main/scala/poker/actor)
+![](actor_evaluation.png)
 
 [Reactive Streams](https://github.com/Robert-Nickel/scala-texas-holdem/blob/kafka/src/main/scala/poker/stream/EquityCalculator.scala)
 
