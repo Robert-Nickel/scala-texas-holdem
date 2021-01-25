@@ -31,8 +31,6 @@ implicit class PlayerDSL(player: Player) {
 
   def areInGame: Boolean = isInGame
 
-  // highest overall bet is not necessary when going all-in
-  // TODO: handle failure case if shove is called with stack == 0
   def shoves(unit: Unit): Player = player.raise(player.stack, 0).get
 
   def isHumanPlayer: Boolean = player.name == "You"
